@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Contro Cuentas Cobranzas</title>
+  <title>Control Cuentas Cobranzas V2</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -48,6 +48,7 @@
     input:focus { border-color: var(--accent); }
     .btn-submit { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; }
     .btn-submit:active { background: var(--accent-hover); }
+    .btn-submit:disabled { background: var(--card-border); cursor: not-allowed; }
 
     /* Listado de Cuentas */
     .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -90,12 +91,13 @@
     .sale-card.is-paid .btn-toggle { background: #064e3b; color: #6ee7b7; border-color: #059669; }
     .btn-delete { background: transparent; border: none; color: #64748b; padding: 8px; cursor: pointer; font-size: 1.1rem; }
     .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; }
+    .loading-state { text-align: center; padding: 40px 20px; color: var(--accent); font-size: 1rem; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>📦 Cuentas Abiertas</h1>
+    <h1>📦 Cuentas Abiertas V2</h1>
     <div class="rate-pill">
       <span>Tasa BCV:</span>
       <input type="number" id="tasaBCV" value="45.00" step="0.5" onchange="actualizarTasa()">
@@ -138,7 +140,7 @@
         <label>Detalle / Producto</label>
         <input type="text" id="concepto" placeholder="Ej: Galletas y Helados" required autocomplete="off">
       </div>
-      <button type="submit" class="btn-submit">
+      <button type="submit" class="btn-submit" id="btnSubmit">
         <span>Añadir a la Cuenta</span>
       </button>
     </form>
@@ -153,26 +155,59 @@
     </div>
   </div>
 
-  <div class="sales-list" id="listaCuentas"></div>
+  <div class="sales-list" id="listaCuentas">
+      <div class="loading-state">Cargando base de datos en la nube...</div>
+  </div>
 
-  <script>
-    // BASE DE DATOS
-    let cuentas = JSON.parse(localStorage.getItem('cuentas_v4')) || [];
-    let directorio = JSON.parse(localStorage.getItem('directorio_v4')) || [];
+  <!-- SCRIPT TIPO MÓDULO PARA IMPORTAR FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHmlRXlEylEwPviIe2aXhUfoUS1DTR-No",
+      authDomain: "gestiondecobranza-2026.firebaseapp.com",
+      projectId: "gestiondecobranza-2026",
+      storageBucket: "gestiondecobranza-2026.firebasestorage.app",
+      messagingSenderId: "439231609072",
+      appId: "1:439231609072:web:2eb9839d60e40f935eaa35"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let cuentas = [];
+    let directorio = [];
     let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
     let filtroActual = 'pendientes';
 
     document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
-    actualizarDatalist();
 
-    // 1. TASA DE CAMBIO
-    function actualizarTasa() {
-      tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
-      localStorage.setItem('tasa_bcv_v4', tasaActual);
+    // ESCUCHADOR EN TIEMPO REAL A FIRESTORE
+    onSnapshot(collection(db, "cuentas"), (snapshot) => {
+      cuentas = [];
+      directorio = [];
+      const nombresUnicos = new Set();
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        data.id = doc.id; // Asignamos el ID oficial de Firebase a la tarjeta
+        cuentas.push(data);
+
+        // Construir directorio de autocompletado leyendo los datos en la nube
+        if (!nombresUnicos.has(data.cliente.toLowerCase())) {
+          nombresUnicos.add(data.cliente.toLowerCase());
+          directorio.push({ nombre: data.cliente, telefono: data.telefono });
+        }
+      });
+
+      // Ordenar para mostrar las más nuevas arriba
+      cuentas.sort((a, b) => b.timestamp - a.timestamp);
+
+      actualizarDatalist();
       renderizarCuentas();
-    }
+    });
 
-    // 2. DIRECTORIO INVISIBLE Y AUTOCOMPLETADO
     function actualizarDatalist() {
       const datalist = document.getElementById('listaDirectorio');
       datalist.innerHTML = '';
@@ -183,7 +218,14 @@
       });
     }
 
-    function autocompletarTelefono() {
+    // EXPONER FUNCIONES AL WINDOW PARA QUE EL HTML LAS PUEDA LLAMAR DESDE EL MÓDULO
+    window.actualizarTasa = function() {
+      tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
+      localStorage.setItem('tasa_bcv_v4', tasaActual);
+      renderizarCuentas();
+    }
+
+    window.autocompletarTelefono = function() {
       const nombreInput = document.getElementById('cliente').value.trim().toLowerCase();
       const clienteEncontrado = directorio.find(c => c.nombre.toLowerCase() === nombreInput);
       if (clienteEncontrado) {
@@ -191,8 +233,7 @@
       }
     }
 
-    // 3. REGISTRO Y AGRUPACIÓN DE VENTAS
-    function guardarVenta(e) {
+    window.guardarVenta = async function(e) {
       e.preventDefault();
       
       const nombre = document.getElementById('cliente').value.trim();
@@ -201,106 +242,79 @@
       const concepto = document.getElementById('concepto').value.trim();
       const fechaHoy = new Date().toLocaleDateString('es-VE');
 
-      // Actualizar el directorio de teléfonos en silencio
-      const indexDir = directorio.findIndex(c => c.nombre.toLowerCase() === nombre.toLowerCase());
-      if (indexDir !== -1) {
-        directorio[indexDir].telefono = telefono; // Actualiza el número por si cambió
-      } else {
-        directorio.push({ nombre: nombre, telefono: telefono });
-      }
-      localStorage.setItem('directorio_v4', JSON.stringify(directorio));
-      actualizarDatalist();
-
-      // Buscar si el cliente ya tiene una cuenta "Pendiente" abierta
       const cuentaActiva = cuentas.find(c => c.cliente.toLowerCase() === nombre.toLowerCase() && !c.pagado);
+      
+      const btn = document.getElementById('btnSubmit');
+      btn.innerHTML = "<span>Guardando en la Nube...</span>";
+      btn.disabled = true;
 
-      if (cuentaActiva) {
-        // AGRUPAR: Ya debe dinero, le agregamos el nuevo producto a su lista
-        cuentaActiva.items.push({
-          concepto: concepto,
-          monto: montoUSD,
-          fecha: fechaHoy
-        });
-        // Si por casualidad cambió de número, lo actualizamos en su tarjeta
-        cuentaActiva.telefono = telefono;
-      } else {
-        // NUEVA CUENTA: Creamos una tarjeta desde cero
-        cuentas.unshift({
-          id: 'cta_' + Date.now(),
-          cliente: nombre,
-          telefono: telefono,
-          pagado: false,
-          items: [{
-            concepto: concepto,
-            monto: montoUSD,
-            fecha: fechaHoy
-          }]
-        });
+      try {
+        if (cuentaActiva) {
+          // Ya existe en la nube, la actualizamos
+          const cuentaRef = doc(db, "cuentas", cuentaActiva.id);
+          const nuevosItems = [...cuentaActiva.items, { concepto, monto: montoUSD, fecha: fechaHoy }];
+          await updateDoc(cuentaRef, {
+            items: nuevosItems,
+            telefono: telefono
+          });
+        } else {
+          // Es nueva, la creamos en la nube
+          await addDoc(collection(db, "cuentas"), {
+            cliente: nombre,
+            telefono: telefono,
+            pagado: false,
+            items: [{ concepto, monto: montoUSD, fecha: fechaHoy }],
+            timestamp: Date.now()
+          });
+        }
+        document.getElementById('formVenta').reset();
+        document.getElementById('cliente').focus();
+      } catch (error) {
+        alert("Hubo un error de conexión: " + error.message);
       }
 
-      guardarEnStorage();
-      document.getElementById('formVenta').reset();
-      document.getElementById('cliente').focus(); // Vuelve el teclado al nombre para registrar más rápido
-      renderizarCuentas();
+      btn.innerHTML = "<span>Añadir a la Cuenta</span>";
+      btn.disabled = false;
     }
 
-    // 4. FUNCIONES DE CONTROL
-    function togglePago(id) {
+    window.togglePago = async function(id) {
       const c = cuentas.find(item => item.id === id);
       if (c) {
-        c.pagado = !c.pagado;
-        guardarEnStorage();
-        renderizarCuentas();
+        await updateDoc(doc(db, "cuentas", id), { pagado: !c.pagado });
       }
     }
 
-    function eliminarCuenta(id) {
-      if (confirm('¿Deseas eliminar todo el registro de este cliente?')) {
-        cuentas = cuentas.filter(item => item.id !== id);
-        guardarEnStorage();
-        renderizarCuentas();
+    window.eliminarCuenta = async function(id) {
+      if (confirm('¿Deseas eliminar todo el registro de este cliente de forma permanente en la nube?')) {
+        await deleteDoc(doc(db, "cuentas", id));
       }
     }
 
-    function guardarEnStorage() {
-      localStorage.setItem('cuentas_v4', JSON.stringify(cuentas));
-    }
-
-    function cambiarFiltro(filtro, elemento) {
+    window.cambiarFiltro = function(filtro, elemento) {
       filtroActual = filtro;
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       elemento.classList.add('active');
       renderizarCuentas();
     }
 
-    // 5. COBRANZA DESGLOSADA POR WHATSAPP
-    function formatearTelefono(tel) {
-      let limpio = tel.replace(/\D/g, '');
-      if (limpio.startsWith('0')) limpio = '58' + limpio.substring(1);
-      else if (!limpio.startsWith('58')) limpio = '58' + limpio;
-      return limpio;
-    }
-
-    function abrirWhatsApp(id) {
+    window.abrirWhatsApp = function(id) {
       const c = cuentas.find(item => item.id === id);
       if (!c) return;
 
-      const telInternacional = formatearTelefono(c.telefono);
-      
-      // Calcular el total de la cuenta
+      let limpio = c.telefono.replace(/\D/g, '');
+      if (limpio.startsWith('0')) limpio = '58' + limpio.substring(1);
+      else if (!limpio.startsWith('58')) limpio = '58' + limpio;
+
       const totalCtaUSD = c.items.reduce((sum, item) => sum + item.monto, 0);
       const totalCtaBs = (totalCtaUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      
-      // Armar el desglose de productos
       let desgloseTexto = c.items.map(i => `▪ ${i.concepto}: $${i.monto.toFixed(2)}`).join('\n');
 
       const mensaje = `Hola ${c.cliente}, un cordial saludo. Te escribo para recordarte el saldo total de tu cuenta: *$${totalCtaUSD.toFixed(2)} (${totalCtaBs} Bs)* a la tasa actual del BCV.\n\n*Detalle de tu cuenta:*\n${desgloseTexto}\n\nMe avisas por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
 
-      const url = `https://wa.me/${telInternacional}?text=${encodeURIComponent(mensaje)}`;
+      const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
 
-    // 6. RENDERIZADO VISUAL
     function renderizarCuentas() {
       const contenedor = document.getElementById('listaCuentas');
       contenedor.innerHTML = '';
@@ -308,11 +322,9 @@
       let pendientesUSD = 0;
       let pagadosUSD = 0;
 
-      // Filtrar y calcular totales
       let filtradas = cuentas.filter(c => {
-        // Calcular el total de esta cuenta en específico sumando sus items
         let totalCuenta = c.items.reduce((sum, item) => sum + item.monto, 0);
-        c.totalCalculado = totalCuenta; // Guardamos el total temporalmente para usarlo en el dibujo
+        c.totalCalculado = totalCuenta;
 
         if (c.pagado) pagadosUSD += totalCuenta;
         else pendientesUSD += totalCuenta;
@@ -322,7 +334,6 @@
         return true;
       });
 
-      // Actualizar tarjetas de arriba
       document.getElementById('totalPendienteUSD').textContent = `$${pendientesUSD.toFixed(2)}`;
       document.getElementById('totalPendienteBs').textContent = `${(pendientesUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2 })} Bs`;
       document.getElementById('totalCobradoUSD').textContent = `$${pagadosUSD.toFixed(2)}`;
@@ -333,13 +344,11 @@
         return;
       }
 
-      // Dibujar tarjetas
       filtradas.forEach(c => {
         const totalBs = (c.totalCalculado * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const tarjeta = document.createElement('div');
         tarjeta.className = `sale-card ${c.pagado ? 'is-paid' : ''}`;
 
-        // Armar el HTML interno del desglose
         let htmlItems = c.items.map(item => `
           <li>
             <span class="item-concept">${item.concepto} <small style="color:#64748b;">(${item.fecha})</small></span>
@@ -381,8 +390,6 @@
         contenedor.appendChild(tarjeta);
       });
     }
-
-    renderizarCuentas();
   </script>
 </body>
 </html>
