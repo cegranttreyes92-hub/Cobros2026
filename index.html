@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Contro Cuentas Cobranzas</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --wa-color: #25d366;
+      --wa-hover: #1ebd5a;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text-main); padding: 16px; padding-bottom: 90px; line-height: 1.5; }
+
+    /* Encabezado */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border); }
+    .header h1 { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
+    .rate-pill { background: #0f2723; border: 1px solid #134e4a; padding: 6px 12px; border-radius: 20px; font-size: 0.82rem; color: #34d399; display: flex; align-items: center; gap: 6px; }
+    .rate-pill input { background: transparent; border: none; color: #34d399; font-weight: 700; font-size: 0.85rem; width: 55px; text-align: right; outline: none; }
+
+    /* Métricas */
+    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 14px; }
+    .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .metric-value-usd { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+    .metric-value-bs { font-size: 0.85rem; color: var(--text-muted); }
+    .metric-card.pending .metric-value-usd { color: var(--warning); }
+    .metric-card.paid .metric-value-usd { color: var(--accent); }
+
+    /* Formulario */
+    .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
+    .form-card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    .input-group { margin-bottom: 12px; }
+    .input-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    input { width: 100%; background: #090e17; border: 1px solid var(--card-border); color: var(--text-main); padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: var(--accent); }
+    .btn-submit { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; }
+    .btn-submit:active { background: var(--accent-hover); }
+
+    /* Listado de Cuentas */
+    .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .list-header h2 { font-size: 1rem; font-weight: 600; }
+    .filter-tabs { display: flex; gap: 6px; background: #090e17; padding: 4px; border-radius: 20px; border: 1px solid var(--card-border); }
+    .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 4px 10px; border-radius: 14px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .tab-btn.active { background: var(--card-bg); color: var(--text-main); }
+    .sales-list { display: flex; flex-direction: column; gap: 12px; }
+
+    /* Tarjeta de Cuenta Agrupada */
+    .sale-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 14px; position: relative; transition: all 0.2s ease; }
+    .sale-card.is-paid { border-color: #1e3a2f; background: #11221b; opacity: 0.85; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .client-name { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+    .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-paid { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.3); }
+    
+    /* Desglose de Items */
+    .items-breakdown { background: #090e17; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.85rem; }
+    .items-breakdown ul { list-style: none; padding: 0; margin: 0; }
+    .items-breakdown li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e293b; color: var(--text-muted); }
+    .items-breakdown li:last-child { border-bottom: none; }
+    .item-concept { flex-grow: 1; }
+    .item-price { font-weight: 600; color: #cbd5e1; }
+    .sale-card.is-paid .client-name, .sale-card.is-paid .item-concept, .sale-card.is-paid .item-price, .sale-card.is-paid .amount-usd { text-decoration: line-through; color: #64748b; }
+
+    /* Totales */
+    .amounts-box { margin: 10px 0 14px 0; display: flex; align-items: baseline; justify-content: flex-end; gap: 8px; border-top: 1px dashed var(--card-border); padding-top: 10px; }
+    .amounts-box span.label-total { flex-grow: 1; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+    .amount-usd { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+    .amount-bs { font-size: 0.9rem; color: #64748b; }
+
+    /* Botones */
+    .actions-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+    .btn-wa { background: #0f3320; color: var(--wa-color); border: 1px solid #165e38; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+    .btn-wa:active { background: var(--wa-hover); color: #fff; }
+    .sale-card.is-paid .btn-wa { display: none; }
+    .btn-toggle { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .sale-card.is-paid .btn-toggle { background: #064e3b; color: #6ee7b7; border-color: #059669; }
+    .btn-delete { background: transparent; border: none; color: #64748b; padding: 8px; cursor: pointer; font-size: 1.1rem; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>📦 Cuentas Abiertas</h1>
+    <div class="rate-pill">
+      <span>Tasa BCV:</span>
+      <input type="number" id="tasaBCV" value="45.00" step="0.5" onchange="actualizarTasa()">
+      <span>Bs</span>
+    </div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card pending">
+      <div class="metric-title">Por Cobrar</div>
+      <div class="metric-value-usd" id="totalPendienteUSD">$0.00</div>
+      <div class="metric-value-bs" id="totalPendienteBs">0,00 Bs</div>
+    </div>
+    <div class="metric-card paid">
+      <div class="metric-title">Cobrado</div>
+      <div class="metric-value-usd" id="totalCobradoUSD">$0.00</div>
+      <div class="metric-value-bs" id="totalCobradoBs">0,00 Bs</div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h2>➕ Registrar Venta</h2>
+    <form id="formVenta" onsubmit="guardarVenta(event)">
+      <div class="input-group">
+        <label>Nombre del Cliente (Si ya existe, se sumará a su cuenta)</label>
+        <input type="text" id="cliente" list="listaDirectorio" placeholder="Ej: Víctor" oninput="autocompletarTelefono()" required autocomplete="off">
+        <datalist id="listaDirectorio"></datalist>
+      </div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Teléfono WhatsApp</label>
+          <input type="tel" id="telefono" placeholder="Ej: 04121234567" required autocomplete="off">
+        </div>
+        <div class="input-group">
+          <label>Monto en USD ($)</label>
+          <input type="number" id="montoUSD" step="0.01" placeholder="Ej: 5.00" required>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Detalle / Producto</label>
+        <input type="text" id="concepto" placeholder="Ej: Galletas y Helados" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn-submit">
+        <span>Añadir a la Cuenta</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="list-header">
+    <h2>Estados de Cuenta</h2>
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
+      <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
+      <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
+    </div>
+  </div>
+
+  <div class="sales-list" id="listaCuentas"></div>
+
+  <script>
+    // BASE DE DATOS
+    let cuentas = JSON.parse(localStorage.getItem('cuentas_v4')) || [];
+    let directorio = JSON.parse(localStorage.getItem('directorio_v4')) || [];
+    let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
+    let filtroActual = 'pendientes';
+
+    document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
+    actualizarDatalist();
+
+    // 1. TASA DE CAMBIO
+    function actualizarTasa() {
+      tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
+      localStorage.setItem('tasa_bcv_v4', tasaActual);
+      renderizarCuentas();
+    }
+
+    // 2. DIRECTORIO INVISIBLE Y AUTOCOMPLETADO
+    function actualizarDatalist() {
+      const datalist = document.getElementById('listaDirectorio');
+      datalist.innerHTML = '';
+      directorio.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.nombre;
+        datalist.appendChild(option);
+      });
+    }
+
+    function autocompletarTelefono() {
+      const nombreInput = document.getElementById('cliente').value.trim().toLowerCase();
+      const clienteEncontrado = directorio.find(c => c.nombre.toLowerCase() === nombreInput);
+      if (clienteEncontrado) {
+        document.getElementById('telefono').value = clienteEncontrado.telefono;
+      }
+    }
+
+    // 3. REGISTRO Y AGRUPACIÓN DE VENTAS
+    function guardarVenta(e) {
+      e.preventDefault();
+      
+      const nombre = document.getElementById('cliente').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const montoUSD = parseFloat(document.getElementById('montoUSD').value) || 0;
+      const concepto = document.getElementById('concepto').value.trim();
+      const fechaHoy = new Date().toLocaleDateString('es-VE');
+
+      // Actualizar el directorio de teléfonos en silencio
+      const indexDir = directorio.findIndex(c => c.nombre.toLowerCase() === nombre.toLowerCase());
+      if (indexDir !== -1) {
+        directorio[indexDir].telefono = telefono; // Actualiza el número por si cambió
+      } else {
+        directorio.push({ nombre: nombre, telefono: telefono });
+      }
+      localStorage.setItem('directorio_v4', JSON.stringify(directorio));
+      actualizarDatalist();
+
+      // Buscar si el cliente ya tiene una cuenta "Pendiente" abierta
+      const cuentaActiva = cuentas.find(c => c.cliente.toLowerCase() === nombre.toLowerCase() && !c.pagado);
+
+      if (cuentaActiva) {
+        // AGRUPAR: Ya debe dinero, le agregamos el nuevo producto a su lista
+        cuentaActiva.items.push({
+          concepto: concepto,
+          monto: montoUSD,
+          fecha: fechaHoy
+        });
+        // Si por casualidad cambió de número, lo actualizamos en su tarjeta
+        cuentaActiva.telefono = telefono;
+      } else {
+        // NUEVA CUENTA: Creamos una tarjeta desde cero
+        cuentas.unshift({
+          id: 'cta_' + Date.now(),
+          cliente: nombre,
+          telefono: telefono,
+          pagado: false,
+          items: [{
+            concepto: concepto,
+            monto: montoUSD,
+            fecha: fechaHoy
+          }]
+        });
+      }
+
+      guardarEnStorage();
+      document.getElementById('formVenta').reset();
+      document.getElementById('cliente').focus(); // Vuelve el teclado al nombre para registrar más rápido
+      renderizarCuentas();
+    }
+
+    // 4. FUNCIONES DE CONTROL
+    function togglePago(id) {
+      const c = cuentas.find(item => item.id === id);
+      if (c) {
+        c.pagado = !c.pagado;
+        guardarEnStorage();
+        renderizarCuentas();
+      }
+    }
+
+    function eliminarCuenta(id) {
+      if (confirm('¿Deseas eliminar todo el registro de este cliente?')) {
+        cuentas = cuentas.filter(item => item.id !== id);
+        guardarEnStorage();
+        renderizarCuentas();
+      }
+    }
+
+    function guardarEnStorage() {
+      localStorage.setItem('cuentas_v4', JSON.stringify(cuentas));
+    }
+
+    function cambiarFiltro(filtro, elemento) {
+      filtroActual = filtro;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      elemento.classList.add('active');
+      renderizarCuentas();
+    }
+
+    // 5. COBRANZA DESGLOSADA POR WHATSAPP
+    function formatearTelefono(tel) {
+      let limpio = tel.replace(/\D/g, '');
+      if (limpio.startsWith('0')) limpio = '58' + limpio.substring(1);
+      else if (!limpio.startsWith('58')) limpio = '58' + limpio;
+      return limpio;
+    }
+
+    function abrirWhatsApp(id) {
+      const c = cuentas.find(item => item.id === id);
+      if (!c) return;
+
+      const telInternacional = formatearTelefono(c.telefono);
+      
+      // Calcular el total de la cuenta
+      const totalCtaUSD = c.items.reduce((sum, item) => sum + item.monto, 0);
+      const totalCtaBs = (totalCtaUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      
+      // Armar el desglose de productos
+      let desgloseTexto = c.items.map(i => `▪ ${i.concepto}: $${i.monto.toFixed(2)}`).join('\n');
+
+      const mensaje = `Hola ${c.cliente}, un cordial saludo. Te escribo para recordarte el saldo total de tu cuenta: *$${totalCtaUSD.toFixed(2)} (${totalCtaBs} Bs)* a la tasa actual del BCV.\n\n*Detalle de tu cuenta:*\n${desgloseTexto}\n\nMe avisas por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+
+      const url = `https://wa.me/${telInternacional}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+
+    // 6. RENDERIZADO VISUAL
+    function renderizarCuentas() {
+      const contenedor = document.getElementById('listaCuentas');
+      contenedor.innerHTML = '';
+
+      let pendientesUSD = 0;
+      let pagadosUSD = 0;
+
+      // Filtrar y calcular totales
+      let filtradas = cuentas.filter(c => {
+        // Calcular el total de esta cuenta en específico sumando sus items
+        let totalCuenta = c.items.reduce((sum, item) => sum + item.monto, 0);
+        c.totalCalculado = totalCuenta; // Guardamos el total temporalmente para usarlo en el dibujo
+
+        if (c.pagado) pagadosUSD += totalCuenta;
+        else pendientesUSD += totalCuenta;
+
+        if (filtroActual === 'pendientes') return !c.pagado;
+        if (filtroActual === 'pagados') return c.pagado;
+        return true;
+      });
+
+      // Actualizar tarjetas de arriba
+      document.getElementById('totalPendienteUSD').textContent = `$${pendientesUSD.toFixed(2)}`;
+      document.getElementById('totalPendienteBs').textContent = `${(pendientesUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2 })} Bs`;
+      document.getElementById('totalCobradoUSD').textContent = `$${pagadosUSD.toFixed(2)}`;
+      document.getElementById('totalCobradoBs').textContent = `${(pagadosUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2 })} Bs`;
+
+      if (filtradas.length === 0) {
+        contenedor.innerHTML = `<div class="empty-state">No hay cuentas en esta sección.</div>`;
+        return;
+      }
+
+      // Dibujar tarjetas
+      filtradas.forEach(c => {
+        const totalBs = (c.totalCalculado * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const tarjeta = document.createElement('div');
+        tarjeta.className = `sale-card ${c.pagado ? 'is-paid' : ''}`;
+
+        // Armar el HTML interno del desglose
+        let htmlItems = c.items.map(item => `
+          <li>
+            <span class="item-concept">${item.concepto} <small style="color:#64748b;">(${item.fecha})</small></span>
+            <span class="item-price">$${item.monto.toFixed(2)}</span>
+          </li>
+        `).join('');
+
+        tarjeta.innerHTML = `
+          <div class="card-top">
+            <div>
+              <div class="client-name">${c.cliente} <span style="font-size:0.8rem; font-weight:normal; color:#94a3b8;">${c.telefono}</span></div>
+            </div>
+            <span class="badge ${c.pagado ? 'badge-paid' : 'badge-pending'}">
+              ${c.pagado ? '✓ Cancelada' : 'Deuda Abierta'}
+            </span>
+          </div>
+
+          <div class="items-breakdown">
+            <ul>${htmlItems}</ul>
+          </div>
+
+          <div class="amounts-box">
+            <span class="label-total">Total General:</span>
+            <span class="amount-usd">$${c.totalCalculado.toFixed(2)}</span>
+            <span class="amount-bs">≈ ${totalBs} Bs</span>
+          </div>
+
+          <div class="actions-grid">
+            <button class="btn-wa" onclick="abrirWhatsApp('${c.id}')">
+              <span>💬 Enviar Factura a WhatsApp</span>
+            </button>
+            <button class="btn-toggle" onclick="togglePago('${c.id}')">
+              ${c.pagado ? 'Reabrir Cuenta' : '✓ Marcar Todo Pagado'}
+            </button>
+            <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${c.id}')">✕</button>
+          </div>
+        `;
+
+        contenedor.appendChild(tarjeta);
+      });
+    }
+
+    renderizarCuentas();
+  </script>
+</body>
+</html>
