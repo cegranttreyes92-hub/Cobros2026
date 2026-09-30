@@ -971,9 +971,9 @@
             <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()" title="Gestionar múltiples cuentas de Pago Móvil">
                 ⚙️ Datos Pago (<span id="contadorCuentasPago">0</span>)
             </button>
-            <div class="rate-pill">
+            <div class="rate-pill" title="Tasa BCV sincronizada en la nube en tiempo real">
                 <span>Tasa BCV:</span>
-                <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()">
+                <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()" onkeydown="if(event.key==='Enter'){this.blur();}">
                 <span>Bs</span>
             </div>
         </div>
@@ -1333,6 +1333,7 @@
 
         let cuentas = [];
         let directorio = [];
+        let cuentasPago = [];
         let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
         let filtroActual = 'pendientes';
         let textoBusquedaCuentas = '';
@@ -1432,56 +1433,13 @@
             }
         });
 
-        // ================= GESTIÓN MÚLTIPLES CUENTAS DE PAGO MÓVIL =================
-        function obtenerCuentasPago() {
-            const guardadas = localStorage.getItem('cuentas_pago_movil_v2');
-            if (guardadas) {
-                try {
-                    return JSON.parse(guardadas);
-                } catch (e) {
-                    return [];
-                }
-            }
-
-            // Migración transparente desde v1 si existía
-            const oldV1 = localStorage.getItem('config_pago_movil_v1');
-            if (oldV1) {
-                try {
-                    const v1 = JSON.parse(oldV1);
-                    if (v1.banco || v1.telefono || v1.cedula || v1.titular) {
-                        const inicial = [{
-                            id: 'pago_' + Date.now(),
-                            alias: v1.banco ? `${v1.banco} (Principal)` : 'Cuenta Principal',
-                            banco: v1.banco || '',
-                            telefono: v1.telefono || '',
-                            cedula: v1.cedula || '',
-                            titular: v1.titular || '',
-                            nota: v1.nota || '',
-                            esPredeterminado: true
-                        }];
-                        localStorage.setItem('cuentas_pago_movil_v2', JSON.stringify(inicial));
-                        return inicial;
-                    }
-                } catch (e) { }
-            }
-
-            return [];
-        }
-
-        function guardarCuentasPagoEnStorage(lista) {
-            localStorage.setItem('cuentas_pago_movil_v2', JSON.stringify(lista));
-            actualizarContadorCuentasHeader();
-        }
-
+        // ================= GESTIÓN MÚLTIPLES CUENTAS DE PAGO MÓVIL EN FIRESTORE =================
         function actualizarContadorCuentasHeader() {
-            const cuentasPago = obtenerCuentasPago();
             const contadorEl = document.getElementById('contadorCuentasPago');
             if (contadorEl) {
                 contadorEl.textContent = cuentasPago.length;
             }
         }
-
-        actualizarContadorCuentasHeader();
 
         window.abrirModalConfigPago = function () {
             renderizarListaCuentasPagoUI();
@@ -1492,7 +1450,7 @@
 
         function renderizarListaCuentasPagoUI() {
             const contenedor = document.getElementById('contenedorCuentasPagoGuardadas');
-            const cuentasPago = obtenerCuentasPago();
+            if (!contenedor) return;
 
             if (cuentasPago.length === 0) {
                 contenedor.innerHTML = `
@@ -1545,9 +1503,7 @@
             document.getElementById('cfgEditId').value = '';
             document.getElementById('cfgFormTitulo').textContent = '➕ Agregar Cuenta de Pago Móvil';
             document.getElementById('formConfigPago').reset();
-
-            const cuentasPago = obtenerCuentasPago();
-            document.getElementById('cfgEsPredeterminado').checked = cuentasPago.length === 0;
+            document.getElementById('cfgEsPredeterminado').checked = (cuentasPago.length === 0);
 
             document.getElementById('seccionListaCuentasPago').style.display = 'none';
             document.getElementById('formConfigPago').style.display = 'block';
@@ -1560,7 +1516,7 @@
             document.getElementById('seccionListaCuentasPago').style.display = 'block';
         };
 
-        window.guardarCuentaPagoSubmit = function (e) {
+        window.guardarCuentaPagoSubmit = async function (e) {
             e.preventDefault();
             const editId = document.getElementById('cfgEditId').value;
             const alias = document.getElementById('cfgAlias').value.trim();
@@ -1576,54 +1532,56 @@
                 return;
             }
 
-            let cuentasPago = obtenerCuentasPago();
+            const btn = document.getElementById('btnGuardarCuentaPago');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando en Firebase...</span>';
 
-            if (editId) {
-                // Editar cuenta existente
-                const index = cuentasPago.findIndex(p => p.id === editId);
-                if (index !== -1) {
-                    if (esPredeterminado) {
-                        cuentasPago.forEach(p => p.esPredeterminado = false);
-                    }
-                    cuentasPago[index] = {
-                        ...cuentasPago[index],
+            try {
+                // Si esta cuenta será predeterminada, desmarcamos las demás
+                if (esPredeterminado) {
+                    const updatesOtras = cuentasPago
+                        .filter(p => p.id !== editId && p.esPredeterminado)
+                        .map(p => updateDoc(doc(db, "cuentas_pago", p.id), { esPredeterminado: false }));
+                    await Promise.all(updatesOtras);
+                }
+
+                if (editId) {
+                    await updateDoc(doc(db, "cuentas_pago", editId), {
                         alias,
                         banco,
                         telefono,
                         cedula,
                         titular,
                         nota,
-                        esPredeterminado: esPredeterminado || cuentasPago.length === 1
-                    };
-                    window.mostrarToast('Cuenta de pago actualizada', 'success');
+                        esPredeterminado: esPredeterminado || cuentasPago.length <= 1
+                    });
+                    window.mostrarToast('Cuenta actualizada en Firebase', 'success');
+                } else {
+                    await addDoc(collection(db, "cuentas_pago"), {
+                        alias,
+                        banco,
+                        telefono,
+                        cedula,
+                        titular,
+                        nota,
+                        esPredeterminado: esPredeterminado || cuentasPago.length === 0,
+                        timestamp: Date.now()
+                    });
+                    window.mostrarToast(`Cuenta "${alias}" guardada en Firebase`, 'success');
                 }
-            } else {
-                // Nueva cuenta
-                if (esPredeterminado || cuentasPago.length === 0) {
-                    cuentasPago.forEach(p => p.esPredeterminado = false);
-                }
-                const nueva = {
-                    id: 'pago_' + Date.now(),
-                    alias,
-                    banco,
-                    telefono,
-                    cedula,
-                    titular,
-                    nota,
-                    esPredeterminado: esPredeterminado || cuentasPago.length === 0
-                };
-                cuentasPago.push(nueva);
-                window.mostrarToast(`Cuenta "${alias}" registrada con éxito`, 'success');
-            }
 
-            guardarCuentasPagoEnStorage(cuentasPago);
-            renderizarListaCuentasPagoUI();
-            document.getElementById('formConfigPago').style.display = 'none';
-            document.getElementById('seccionListaCuentasPago').style.display = 'block';
+                document.getElementById('formConfigPago').reset();
+                document.getElementById('formConfigPago').style.display = 'none';
+                document.getElementById('seccionListaCuentasPago').style.display = 'block';
+            } catch (err) {
+                window.mostrarToast('Error al guardar en Firebase: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Guardar Cuenta</span>';
+            }
         };
 
         window.editarCuentaPago = function (id) {
-            const cuentasPago = obtenerCuentasPago();
             const p = cuentasPago.find(item => item.id === id);
             if (!p) return;
 
@@ -1641,34 +1599,43 @@
             document.getElementById('formConfigPago').style.display = 'block';
         };
 
-        window.marcarPredeterminada = function (id) {
-            let cuentasPago = obtenerCuentasPago();
-            cuentasPago.forEach(p => {
-                p.esPredeterminado = (p.id === id);
-            });
-            guardarCuentasPagoEnStorage(cuentasPago);
-            renderizarListaCuentasPagoUI();
-            window.mostrarToast('Cuenta predeterminada para WhatsApp actualizada', 'info');
+        window.marcarPredeterminada = async function (id) {
+            try {
+                const promises = cuentasPago.map(p => {
+                    const debaSerPredeterminada = (p.id === id);
+                    if (p.esPredeterminado !== debaSerPredeterminada) {
+                        return updateDoc(doc(db, "cuentas_pago", p.id), { esPredeterminado: debaSerPredeterminada });
+                    }
+                    return null;
+                }).filter(Boolean);
+
+                await Promise.all(promises);
+                window.mostrarToast('Cuenta predeterminada actualizada en Firebase', 'info');
+            } catch (err) {
+                window.mostrarToast('Error al actualizar en Firebase: ' + err.message, 'error');
+            }
         };
 
         window.eliminarCuentaPago = function (id) {
-            const cuentasPago = obtenerCuentasPago();
             const p = cuentasPago.find(item => item.id === id);
             if (!p) return;
 
             window.mostrarConfirmacion({
                 titulo: '¿Eliminar Cuenta de Pago?',
-                mensaje: `¿Deseas eliminar la cuenta "${p.alias || p.banco}"?`,
+                mensaje: `¿Deseas eliminar permanentemente la cuenta "${p.alias || p.banco}" de Firebase?`,
                 textoConfirmar: 'Eliminar',
                 esPeligroso: true,
-                onConfirm: () => {
-                    let filtradas = cuentasPago.filter(item => item.id !== id);
-                    if (p.esPredeterminado && filtradas.length > 0) {
-                        filtradas[0].esPredeterminado = true;
+                onConfirm: async () => {
+                    try {
+                        await deleteDoc(doc(db, "cuentas_pago", id));
+                        const restantes = cuentasPago.filter(item => item.id !== id);
+                        if (p.esPredeterminado && restantes.length > 0) {
+                            await updateDoc(doc(db, "cuentas_pago", restantes[0].id), { esPredeterminado: true });
+                        }
+                        window.mostrarToast('Cuenta eliminada de Firebase', 'info');
+                    } catch (err) {
+                        window.mostrarToast('Error al eliminar: ' + err.message, 'error');
                     }
-                    guardarCuentasPagoEnStorage(filtradas);
-                    renderizarListaCuentasPagoUI();
-                    window.mostrarToast('Cuenta de pago eliminada', 'info');
                 }
             });
         };
@@ -1699,7 +1666,6 @@
             }
 
             const contenedor = document.getElementById('listaOpcionesPagoWhatsApp');
-            const cuentasPago = obtenerCuentasPago();
 
             let htmlOpciones = '';
 
@@ -1807,7 +1773,6 @@
             const valorSeleccionado = radioSeleccionado ? radioSeleccionado.value : 'ninguno';
 
             if (valorSeleccionado && valorSeleccionado !== 'ninguno') {
-                const cuentasPago = obtenerCuentasPago();
                 const cuentaElegida = cuentasPago.find(p => p.id === valorSeleccionado);
                 if (cuentaElegida) {
                     mensaje += `\n\n📌 *Datos para Pago Móvil (${cuentaElegida.alias || cuentaElegida.banco}):*`;
@@ -1884,6 +1849,83 @@
             });
             cuentas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             renderizarCuentas();
+        });
+
+        // ESCUCHADOR 3: CUENTAS DE PAGO MÓVIL EN FIRESTORE
+        let migracionPagoMovilRealizada = false;
+        onSnapshot(collection(db, "cuentas_pago"), async (snapshot) => {
+            cuentasPago = [];
+            snapshot.forEach((doc) => {
+                let data = doc.data();
+                data.id = doc.id;
+                cuentasPago.push(data);
+            });
+
+            // Si está vacío en Firestore pero había datos en localStorage, migrarlos automáticamente
+            if (cuentasPago.length === 0 && !migracionPagoMovilRealizada) {
+                migracionPagoMovilRealizada = true;
+                const guardadasLocal = localStorage.getItem('cuentas_pago_movil_v2') || localStorage.getItem('config_pago_movil_v1');
+                if (guardadasLocal) {
+                    try {
+                        let parsed = JSON.parse(guardadasLocal);
+                        if (!Array.isArray(parsed)) parsed = [parsed];
+                        for (const item of parsed) {
+                            if (item.banco || item.telefono || item.cedula || item.titular) {
+                                await addDoc(collection(db, "cuentas_pago"), {
+                                    alias: item.alias || (item.banco ? `${item.banco} (Principal)` : 'Cuenta Principal'),
+                                    banco: item.banco || '',
+                                    telefono: item.telefono || '',
+                                    cedula: item.cedula || '',
+                                    titular: item.titular || '',
+                                    nota: item.nota || '',
+                                    esPredeterminado: item.esPredeterminado ?? true,
+                                    timestamp: Date.now()
+                                });
+                            }
+                        }
+                        localStorage.removeItem('cuentas_pago_movil_v2');
+                        localStorage.removeItem('config_pago_movil_v1');
+                        return;
+                    } catch (e) { }
+                }
+            }
+
+            cuentasPago.sort((a, b) => {
+                if (a.esPredeterminado && !b.esPredeterminado) return -1;
+                if (!a.esPredeterminado && b.esPredeterminado) return 1;
+                return (b.timestamp || 0) - (a.timestamp || 0);
+            });
+
+            actualizarContadorCuentasHeader();
+            renderizarListaCuentasPagoUI();
+        }, (error) => {
+            console.error("Error en escucha cuentas_pago:", error);
+            window.mostrarToast("Error sincronizando cuentas de pago: " + error.message, "error");
+        });
+
+        // ESCUCHADOR 4: TASA BCV EN FIRESTORE (SINCRONIZACIÓN EN TIEMPO REAL)
+        onSnapshot(doc(db, "configuracion", "tasa"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const nuevaTasa = parseFloat(data.tasa);
+                if (!isNaN(nuevaTasa) && nuevaTasa > 0 && Math.abs(nuevaTasa - tasaActual) > 0.0001) {
+                    tasaActual = nuevaTasa;
+                    localStorage.setItem('tasa_bcv_v4', tasaActual);
+                    const inputTasa = document.getElementById('tasaBCV');
+                    if (inputTasa && document.activeElement !== inputTasa) {
+                        inputTasa.value = tasaActual.toFixed(2);
+                    }
+                    renderizarCuentas();
+                }
+            } else {
+                // Si el documento en Firebase no existe aún, inicializarlo con la tasa actual
+                setDoc(doc(db, "configuracion", "tasa"), {
+                    tasa: tasaActual,
+                    timestamp: Date.now()
+                }, { merge: true }).catch(err => console.error("Error al inicializar tasa en Firebase:", err));
+            }
+        }, (error) => {
+            console.error("Error en escucha de tasa BCV:", error);
         });
 
         // ================= FUNCIONES DE CLIENTES (DIRECTORIO) =================
@@ -1991,11 +2033,30 @@
         };
 
         // ================= FUNCIONES DE VENTAS (CUENTAS) =================
-        window.actualizarTasa = function () {
-            tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
+        window.actualizarTasa = async function () {
+            const inputEl = document.getElementById('tasaBCV');
+            const valorIngresado = parseFloat(inputEl.value);
+
+            if (isNaN(valorIngresado) || valorIngresado <= 0) {
+                window.mostrarToast('Por favor ingresa una tasa válida mayor a 0', 'error');
+                inputEl.value = tasaActual.toFixed(2);
+                return;
+            }
+
+            tasaActual = valorIngresado;
             localStorage.setItem('tasa_bcv_v4', tasaActual);
             renderizarCuentas();
-            window.mostrarToast(`Tasa BCV actualizada a ${tasaActual.toFixed(2)} Bs`, 'info');
+
+            try {
+                await setDoc(doc(db, "configuracion", "tasa"), {
+                    tasa: tasaActual,
+                    timestamp: Date.now()
+                }, { merge: true });
+                window.mostrarToast(`Tasa BCV guardada en Firebase: ${tasaActual.toFixed(2)} Bs`, 'success');
+            } catch (err) {
+                console.error("Error al guardar tasa en Firebase:", err);
+                window.mostrarToast(`Tasa actualizada localmente a ${tasaActual.toFixed(2)} Bs (Error en nube: ${err.message})`, 'warning');
+            }
         };
 
         window.guardarVenta = async function (e) {
