@@ -1,488 +1,960 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Control Cuentas Cobranzas V2.1</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #10b981;
-      --accent-hover: #059669;
-      --wa-color: #25d366;
-      --wa-hover: #1ebd5a;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --radius: 12px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Cuentas Cobranzas V2.1</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --wa-color: #25d366;
+            --wa-hover: #1ebd5a;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius: 12px;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text-main); padding: 16px; padding-bottom: 90px; line-height: 1.5; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    /* Encabezado */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border); }
-    .header h1 { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
-    .rate-pill { background: #0f2723; border: 1px solid #134e4a; padding: 6px 12px; border-radius: 20px; font-size: 0.82rem; color: #34d399; display: flex; align-items: center; gap: 6px; }
-    .rate-pill input { background: transparent; border: none; color: #34d399; font-weight: 700; font-size: 0.85rem; width: 55px; text-align: right; outline: none; }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 16px;
+            padding-bottom: 90px;
+            line-height: 1.5;
+        }
 
-    /* Métricas */
-    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .metric-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 14px; }
-    .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .metric-value-usd { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-    .metric-value-bs { font-size: 0.85rem; color: var(--text-muted); }
-    .metric-card.pending .metric-value-usd { color: var(--warning); }
-    .metric-card.paid .metric-value-usd { color: var(--accent); }
+        /* Encabezado */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--card-border);
+        }
 
-    /* Formularios */
-    .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
-    .form-card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-    .input-group { margin-bottom: 12px; }
-    .input-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
-    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    input { width: 100%; background: #090e17; border: 1px solid var(--card-border); color: var(--text-main); padding: 10px 12px; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
-    input:focus { border-color: var(--accent); }
-    .btn-submit { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; }
-    .btn-submit:active { background: var(--accent-hover); }
-    .btn-submit:disabled { background: var(--card-border); cursor: not-allowed; }
-    .btn-blue { background: #3b82f6; }
-    .btn-blue:active { background: #2563eb; }
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
-    /* Listados */
-    .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .list-header h2 { font-size: 1rem; font-weight: 600; }
-    .filter-tabs { display: flex; gap: 6px; background: #090e17; padding: 4px; border-radius: 20px; border: 1px solid var(--card-border); }
-    .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 4px 10px; border-radius: 14px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
-    .tab-btn.active { background: var(--card-bg); color: var(--text-main); }
-    .sales-list { display: flex; flex-direction: column; gap: 12px; }
+        .rate-pill {
+            background: #0f2723;
+            border: 1px solid #134e4a;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            color: #34d399;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    /* Tarjetas de Cuenta y Cliente */
-    .sale-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 14px; position: relative; transition: all 0.2s ease; }
-    .sale-card.is-paid { border-color: #1e3a2f; background: #11221b; opacity: 0.85; }
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .client-name { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
-    .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
-    .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-paid { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.3); }
-    
-    .items-breakdown { background: #090e17; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.85rem; }
-    .items-breakdown ul { list-style: none; padding: 0; margin: 0; }
-    .items-breakdown li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1e293b; color: var(--text-muted); }
-    .items-breakdown li:last-child { border-bottom: none; }
-    .item-concept { flex-grow: 1; }
-    .item-price { font-weight: 600; color: #cbd5e1; }
-    .sale-card.is-paid .client-name, .sale-card.is-paid .item-concept, .sale-card.is-paid .item-price, .sale-card.is-paid .amount-usd { text-decoration: line-through; color: #64748b; }
+        .rate-pill input {
+            background: transparent;
+            border: none;
+            color: #34d399;
+            font-weight: 700;
+            font-size: 0.85rem;
+            width: 55px;
+            text-align: right;
+            outline: none;
+        }
 
-    .amounts-box { margin: 10px 0 14px 0; display: flex; align-items: baseline; justify-content: flex-end; gap: 8px; border-top: 1px dashed var(--card-border); padding-top: 10px; }
-    .amounts-box span.label-total { flex-grow: 1; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .amount-usd { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-    .amount-bs { font-size: 0.9rem; color: #64748b; }
+        /* Métricas */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-    /* Botones */
-    .actions-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
-    .btn-wa { background: #0f3320; color: var(--wa-color); border: 1px solid #165e38; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
-    .btn-wa:active { background: var(--wa-hover); color: #fff; }
-    .sale-card.is-paid .btn-wa { display: none; }
-    .btn-toggle { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-    .sale-card.is-paid .btn-toggle { background: #064e3b; color: #6ee7b7; border-color: #059669; }
-    .btn-delete { background: transparent; border: none; color: #64748b; padding: 8px; cursor: pointer; font-size: 1.1rem; }
-    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; }
-    .loading-state { text-align: center; padding: 40px 20px; color: var(--accent); font-size: 1rem; font-weight: bold; }
-    
-    .divider { border-top: 2px dashed var(--card-border); margin: 40px 0 20px 0; }
-  </style>
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 14px;
+        }
+
+        .metric-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value-usd {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-value-bs {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .metric-card.pending .metric-value-usd {
+            color: var(--warning);
+        }
+
+        .metric-card.paid .metric-value-usd {
+            color: var(--accent);
+        }
+
+        /* Formularios */
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-card h2 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        input {
+            width: 100%;
+            background: #090e17;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-submit:active {
+            background: var(--accent-hover);
+        }
+
+        .btn-submit:disabled {
+            background: var(--card-border);
+            cursor: not-allowed;
+        }
+
+        .btn-blue {
+            background: #3b82f6;
+        }
+
+        .btn-blue:active {
+            background: #2563eb;
+        }
+
+        /* Listados */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .list-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            background: #090e17;
+            padding: 4px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        .sales-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Tarjetas de Cuenta y Cliente */
+        .sale-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 14px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .sale-card.is-paid {
+            border-color: #1e3a2f;
+            background: #11221b;
+            opacity: 0.85;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .client-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-paid {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .items-breakdown {
+            background: #090e17;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .items-breakdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .items-breakdown li {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #1e293b;
+            color: var(--text-muted);
+        }
+
+        .items-breakdown li:last-child {
+            border-bottom: none;
+        }
+
+        .item-concept {
+            flex-grow: 1;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-item-delete {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .btn-item-delete:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .item-price {
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .sale-card.is-paid .client-name,
+        .sale-card.is-paid .item-concept,
+        .sale-card.is-paid .item-price,
+        .sale-card.is-paid .amount-usd {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .amounts-box {
+            margin: 10px 0 14px 0;
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-end;
+            gap: 8px;
+            border-top: 1px dashed var(--card-border);
+            padding-top: 10px;
+        }
+
+        .amounts-box span.label-total {
+            flex-grow: 1;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .amount-usd {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .amount-bs {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* Botones */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-wa {
+            background: #0f3320;
+            color: var(--wa-color);
+            border: 1px solid #165e38;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-wa:active {
+            background: var(--wa-hover);
+            color: #fff;
+        }
+
+        .sale-card.is-paid .btn-wa {
+            display: none;
+        }
+
+        .btn-toggle {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .sale-card.is-paid .btn-toggle {
+            background: #064e3b;
+            color: #6ee7b7;
+            border-color: #059669;
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .divider {
+            border-top: 2px dashed var(--card-border);
+            margin: 40px 0 20px 0;
+        }
+    </style>
 </head>
+
 <body>
 
-  <!-- ================= SECCIÓN: VENTAS ================= -->
-  <div class="header">
-    <h1>📦 Cuentas Abiertas</h1>
-    <div class="rate-pill">
-      <span>Tasa BCV:</span>
-      <input type="number" id="tasaBCV" value="45.00" step="0.5" onchange="actualizarTasa()">
-      <span>Bs</span>
-    </div>
-  </div>
-
-  <div class="metrics-grid">
-    <div class="metric-card pending">
-      <div class="metric-title">Por Cobrar</div>
-      <div class="metric-value-usd" id="totalPendienteUSD">$0.00</div>
-      <div class="metric-value-bs" id="totalPendienteBs">0,00 Bs</div>
-    </div>
-    <div class="metric-card paid">
-      <div class="metric-title">Cobrado</div>
-      <div class="metric-value-usd" id="totalCobradoUSD">$0.00</div>
-      <div class="metric-value-bs" id="totalCobradoBs">0,00 Bs</div>
-    </div>
-  </div>
-
-  <div class="form-card">
-    <h2>➕ Registrar Venta</h2>
-    <form id="formVenta" onsubmit="guardarVenta(event)">
-      <div class="input-group">
-        <label>Nombre del Cliente (Selecciona de la lista si ya existe)</label>
-        <input type="text" id="cliente" list="listaDirectorio" placeholder="Ej: Víctor" oninput="autocompletarTelefono()" required autocomplete="off">
-        <datalist id="listaDirectorio"></datalist>
-      </div>
-      <div class="input-row">
-        <div class="input-group">
-          <label>Teléfono WhatsApp</label>
-          <input type="tel" id="telefono" placeholder="Ej: 04121234567" required autocomplete="off">
+    <!-- ================= SECCIÓN: VENTAS ================= -->
+    <div class="header">
+        <h1>📦 Cuentas Abiertas</h1>
+        <div class="rate-pill">
+            <span>Tasa BCV:</span>
+            <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()">
+            <span>Bs</span>
         </div>
-        <div class="input-group">
-          <label>Monto en USD ($)</label>
-          <input type="number" id="montoUSD" step="0.01" placeholder="Ej: 5.00" required>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>Detalle / Producto</label>
-        <input type="text" id="concepto" placeholder="Ej: Galletas y Helados" required autocomplete="off">
-      </div>
-      <button type="submit" class="btn-submit" id="btnSubmit">
-        <span>Añadir a la Cuenta</span>
-      </button>
-    </form>
-  </div>
-
-  <div class="list-header">
-    <h2>Estados de Cuenta</h2>
-    <div class="filter-tabs">
-      <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
-      <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
-      <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
     </div>
-  </div>
 
-  <div class="sales-list" id="listaCuentas">
-      <div class="loading-state">Cargando cuentas en la nube...</div>
-  </div>
-
-  <!-- ================= SECCIÓN: MÓDULO DE CLIENTES ================= -->
-  <div class="divider"></div>
-
-  <div class="header">
-    <h1>👥 Módulo de Clientes</h1>
-  </div>
-
-  <div class="form-card" style="border-color: #1e3a8a;">
-    <h2>➕ Agregar Cliente Manual</h2>
-    <form id="formCliente" onsubmit="guardarClienteManual(event)">
-      <div class="input-row">
-        <div class="input-group">
-          <label>Nombre del Cliente</label>
-          <input type="text" id="nombreNuevo" placeholder="Ej: Katherine" required autocomplete="off">
+    <div class="metrics-grid">
+        <div class="metric-card pending">
+            <div class="metric-title">Por Cobrar</div>
+            <div class="metric-value-usd" id="totalPendienteUSD">$0.00</div>
+            <div class="metric-value-bs" id="totalPendienteBs">0,00 Bs</div>
         </div>
-        <div class="input-group">
-          <label>Teléfono</label>
-          <input type="tel" id="telefonoNuevo" placeholder="Ej: 04241234567" required autocomplete="off">
+        <div class="metric-card paid">
+            <div class="metric-title">Cobrado</div>
+            <div class="metric-value-usd" id="totalCobradoUSD">$0.00</div>
+            <div class="metric-value-bs" id="totalCobradoBs">0,00 Bs</div>
         </div>
-      </div>
-      <button type="submit" class="btn-submit btn-blue" id="btnSubmitCliente">
-        <span>Guardar en Directorio</span>
-      </button>
-    </form>
-  </div>
+    </div>
 
-  <div class="list-header">
-    <h2>Directorio Guardado</h2>
-  </div>
-
-  <div class="sales-list" id="listaDirectorioUI">
-      <div class="loading-state">Cargando directorio...</div>
-  </div>
-
-  <!-- SCRIPT TIPO MÓDULO PARA IMPORTAR FIREBASE -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCHmlRXlEylEwPviIe2aXhUfoUS1DTR-No",
-      authDomain: "gestiondecobranza-2026.firebaseapp.com",
-      projectId: "gestiondecobranza-2026",
-      storageBucket: "gestiondecobranza-2026.firebasestorage.app",
-      messagingSenderId: "439231609072",
-      appId: "1:439231609072:web:2eb9839d60e40f935eaa35"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let cuentas = [];
-    let directorio = [];
-    let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
-    let filtroActual = 'pendientes';
-
-    document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
-
-    // ESCUCHADOR 1: DIRECTORIO PERMANENTE DE CLIENTES
-    onSnapshot(collection(db, "clientes"), (snapshot) => {
-      directorio = [];
-      snapshot.forEach((doc) => {
-        let data = doc.data();
-        data.id = doc.id;
-        directorio.push(data);
-      });
-      // Ordenar alfabéticamente
-      directorio.sort((a, b) => a.nombre.localeCompare(b.nombre));
-      actualizarDatalist();
-      renderizarDirectorioUI();
-    });
-
-    // ESCUCHADOR 2: LISTA DE VENTAS Y CUENTAS
-    onSnapshot(collection(db, "cuentas"), (snapshot) => {
-      cuentas = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        data.id = doc.id; 
-        cuentas.push(data);
-      });
-      cuentas.sort((a, b) => b.timestamp - a.timestamp);
-      renderizarCuentas();
-    });
-
-    // ================= FUNCIONES DE CLIENTES (DIRECTORIO) =================
-    
-    function actualizarDatalist() {
-      const datalist = document.getElementById('listaDirectorio');
-      datalist.innerHTML = '';
-      directorio.forEach(c => {
-        const option = document.createElement('option');
-        option.value = c.nombre;
-        datalist.appendChild(option);
-      });
-    }
-
-    function renderizarDirectorioUI() {
-      const contenedor = document.getElementById('listaDirectorioUI');
-      contenedor.innerHTML = '';
-      
-      if (directorio.length === 0) {
-        contenedor.innerHTML = `<div class="empty-state">Tu agenda está vacía.</div>`;
-        return;
-      }
-
-      directorio.forEach(c => {
-        contenedor.innerHTML += `
-          <div class="sale-card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div class="client-name">${c.nombre}</div>
-              <div style="color:var(--text-muted); font-size:0.85rem;">${c.telefono}</div>
+    <div class="form-card">
+        <h2>➕ Registrar Venta</h2>
+        <form id="formVenta" onsubmit="guardarVenta(event)">
+            <div class="input-group">
+                <label>Nombre del Cliente (Selecciona de la lista si ya existe)</label>
+                <input type="text" id="cliente" list="listaDirectorio" placeholder="Ej: Víctor"
+                    oninput="autocompletarTelefono()" required autocomplete="off">
+                <datalist id="listaDirectorio"></datalist>
             </div>
-            <button class="btn-delete" title="Borrar Cliente" onclick="eliminarClienteDirectorio('${c.id}')">✕</button>
-          </div>
-        `;
-      });
-    }
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Teléfono WhatsApp</label>
+                    <input type="tel" id="telefono" placeholder="Ej: 04121234567" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Monto en USD ($)</label>
+                    <input type="number" id="montoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Detalle / Producto</label>
+                <input type="text" id="concepto" placeholder="Ej: Galletas y Helados" required autocomplete="off">
+            </div>
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                <span>Añadir a la Cuenta</span>
+            </button>
+        </form>
+    </div>
 
-    window.guardarClienteManual = async function(e) {
-      e.preventDefault();
-      const nombre = document.getElementById('nombreNuevo').value.trim();
-      const telefono = document.getElementById('telefonoNuevo').value.trim();
-      
-      const btn = document.getElementById('btnSubmitCliente');
-      btn.innerHTML = "<span>Guardando...</span>";
-      btn.disabled = true;
+    <div class="list-header">
+        <h2>Estados de Cuenta</h2>
+        <div class="filter-tabs">
+            <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
+            <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
+            <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
+        </div>
+    </div>
 
-      try {
-        const idCliente = nombre.trim().toLowerCase().replace(/\//g, "-");
-        await setDoc(doc(db, "clientes", idCliente), {
-          nombre: nombre,
-          telefono: telefono
-        });
-        document.getElementById('formCliente').reset();
-      } catch (error) {
-        alert("Error al guardar cliente: " + error.message);
-      }
-      
-      btn.innerHTML = "<span>Guardar en Directorio</span>";
-      btn.disabled = false;
-    }
+    <div class="sales-list" id="listaCuentas">
+        <div class="loading-state">Cargando cuentas en la nube...</div>
+    </div>
 
-    window.eliminarClienteDirectorio = async function(id) {
-      if (confirm('¿Deseas eliminar permanentemente a este cliente de tu agenda? (Sus ventas pasadas no se borrarán)')) {
-        await deleteDoc(doc(db, "clientes", id));
-      }
-    }
+    <!-- ================= SECCIÓN: MÓDULO DE CLIENTES ================= -->
+    <div class="divider"></div>
 
-    window.autocompletarTelefono = function() {
-      const nombreInput = document.getElementById('cliente').value.trim().toLowerCase();
-      const clienteEncontrado = directorio.find(c => c.nombre.toLowerCase() === nombreInput);
-      if (clienteEncontrado) {
-        document.getElementById('telefono').value = clienteEncontrado.telefono;
-      }
-    }
+    <div class="header">
+        <h1>👥 Módulo de Clientes</h1>
+    </div>
 
-    // ================= FUNCIONES DE VENTAS (CUENTAS) =================
+    <div class="form-card" style="border-color: #1e3a8a;">
+        <h2>➕ Agregar Cliente Manual</h2>
+        <form id="formCliente" onsubmit="guardarClienteManual(event)">
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Nombre del Cliente</label>
+                    <input type="text" id="nombreNuevo" placeholder="Ej: Katherine" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="telefonoNuevo" placeholder="Ej: 04241234567" required autocomplete="off">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit btn-blue" id="btnSubmitCliente">
+                <span>Guardar en Directorio</span>
+            </button>
+        </form>
+    </div>
 
-    window.actualizarTasa = function() {
-      tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
-      localStorage.setItem('tasa_bcv_v4', tasaActual);
-      renderizarCuentas();
-    }
+    <div class="list-header">
+        <h2>Directorio Guardado</h2>
+    </div>
 
-    window.guardarVenta = async function(e) {
-      e.preventDefault();
-      
-      const nombre = document.getElementById('cliente').value.trim();
-      const telefono = document.getElementById('telefono').value.trim();
-      const montoUSD = parseFloat(document.getElementById('montoUSD').value) || 0;
-      const concepto = document.getElementById('concepto').value.trim();
-      const fechaHoy = new Date().toLocaleDateString('es-VE');
+    <div class="sales-list" id="listaDirectorioUI">
+        <div class="loading-state">Cargando directorio...</div>
+    </div>
 
-      const cuentaActiva = cuentas.find(c => c.cliente.toLowerCase() === nombre.toLowerCase() && !c.pagado);
-      
-      const btn = document.getElementById('btnSubmit');
-      btn.innerHTML = "<span>Guardando...</span>";
-      btn.disabled = true;
+    <!-- SCRIPT TIPO MÓDULO PARA IMPORTAR FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-      try {
-        // Guardar/Actualizar en directorio automáticamente
-        const idCliente = nombre.trim().toLowerCase().replace(/\//g, "-");
-        await setDoc(doc(db, "clientes", idCliente), { nombre: nombre, telefono: telefono });
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHmlRXlEylEwPviIe2aXhUfoUS1DTR-No",
+            authDomain: "gestiondecobranza-2026.firebaseapp.com",
+            projectId: "gestiondecobranza-2026",
+            storageBucket: "gestiondecobranza-2026.firebasestorage.app",
+            messagingSenderId: "439231609072",
+            appId: "1:439231609072:web:2eb9839d60e40f935eaa35"
+        };
 
-        // Procesar Venta
-        if (cuentaActiva) {
-          const cuentaRef = doc(db, "cuentas", cuentaActiva.id);
-          const nuevosItems = [...cuentaActiva.items, { concepto, monto: montoUSD, fecha: fechaHoy }];
-          await updateDoc(cuentaRef, { items: nuevosItems, telefono: telefono });
-        } else {
-          await addDoc(collection(db, "cuentas"), {
-            cliente: nombre,
-            telefono: telefono,
-            pagado: false,
-            items: [{ concepto, monto: montoUSD, fecha: fechaHoy }],
-            timestamp: Date.now()
-          });
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let cuentas = [];
+        let directorio = [];
+        let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
+        let filtroActual = 'pendientes';
+
+        document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
+
+        // Helper para prevenir vulnerabilidades XSS e inyecciones en HTML
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
-        document.getElementById('formVenta').reset();
-        document.getElementById('cliente').focus();
-      } catch (error) {
-        alert("Error de conexión: " + error.message);
-      }
 
-      btn.innerHTML = "<span>Añadir a la Cuenta</span>";
-      btn.disabled = false;
-    }
+        // Generador seguro de IDs para Firestore basado en el nombre
+        function normalizarIdCliente(nombre) {
+            return encodeURIComponent(nombre.trim().toLowerCase()).replace(/%/g, "_");
+        }
 
-    window.togglePago = async function(id) {
-      const c = cuentas.find(item => item.id === id);
-      if (c) {
-        await updateDoc(doc(db, "cuentas", id), { pagado: !c.pagado });
-      }
-    }
+        // ESCUCHADOR 1: DIRECTORIO PERMANENTE DE CLIENTES
+        onSnapshot(collection(db, "clientes"), (snapshot) => {
+            directorio = [];
+            snapshot.forEach((doc) => {
+                let data = doc.data();
+                data.id = doc.id;
+                directorio.push(data);
+            });
+            // Ordenar alfabéticamente
+            directorio.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+            actualizarDatalist();
+            renderizarDirectorioUI();
+        });
 
-    window.eliminarCuenta = async function(id) {
-      if (confirm('¿Deseas eliminar el registro de esta venta? (Los datos del cliente seguirán guardados en tu módulo de clientes)')) {
-        await deleteDoc(doc(db, "cuentas", id));
-      }
-    }
+        // ESCUCHADOR 2: LISTA DE VENTAS Y CUENTAS
+        onSnapshot(collection(db, "cuentas"), (snapshot) => {
+            cuentas = [];
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                data.id = doc.id;
+                cuentas.push(data);
+            });
+            cuentas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            renderizarCuentas();
+        });
 
-    window.cambiarFiltro = function(filtro, elemento) {
-      filtroActual = filtro;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      elemento.classList.add('active');
-      renderizarCuentas();
-    }
+        // ================= FUNCIONES DE CLIENTES (DIRECTORIO) =================
 
-    window.abrirWhatsApp = function(id) {
-      const c = cuentas.find(item => item.id === id);
-      if (!c) return;
+        function actualizarDatalist() {
+            const datalist = document.getElementById('listaDirectorio');
+            datalist.innerHTML = '';
+            directorio.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.nombre;
+                datalist.appendChild(option);
+            });
+        }
 
-      let limpio = c.telefono.replace(/\D/g, '');
-      if (limpio.startsWith('0')) limpio = '58' + limpio.substring(1);
-      else if (!limpio.startsWith('58')) limpio = '58' + limpio;
+        function renderizarDirectorioUI() {
+            const contenedor = document.getElementById('listaDirectorioUI');
 
-      const totalCtaUSD = c.items.reduce((sum, item) => sum + item.monto, 0);
-      const totalCtaBs = (totalCtaUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      let desgloseTexto = c.items.map(i => `▪ ${i.concepto}: $${i.monto.toFixed(2)}`).join('\n');
+            if (directorio.length === 0) {
+                contenedor.innerHTML = `<div class="empty-state">Tu agenda está vacía.</div>`;
+                return;
+            }
 
-      const mensaje = `Hola ${c.cliente}, un cordial saludo. Te escribo para recordarte el saldo total de tu cuenta: *$${totalCtaUSD.toFixed(2)} (${totalCtaBs} Bs)* a la tasa actual del BCV.\n\n*Detalle de tu cuenta:*\n${desgloseTexto}\n\nMe avisas por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+            // Construir HTML en una sola pasada para máximo rendimiento
+            const html = directorio.map(c => {
+                const safeId = escapeHTML(c.id);
+                const safeNombre = escapeHTML(c.nombre);
+                const safeTelefono = escapeHTML(c.telefono);
+                return `
+                  <div class="sale-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                      <div class="client-name">${safeNombre}</div>
+                      <div style="color:var(--text-muted); font-size:0.85rem;">${safeTelefono}</div>
+                    </div>
+                    <button class="btn-delete" title="Borrar Cliente" onclick="eliminarClienteDirectorio('${safeId}')">✕</button>
+                  </div>
+                `;
+            }).join('');
 
-      const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
-    }
+            contenedor.innerHTML = html;
+        }
 
-    function renderizarCuentas() {
-      const contenedor = document.getElementById('listaCuentas');
-      contenedor.innerHTML = '';
+        window.guardarClienteManual = async function (e) {
+            e.preventDefault();
+            const nombre = document.getElementById('nombreNuevo').value.trim();
+            const telefono = document.getElementById('telefonoNuevo').value.trim();
 
-      let pendientesUSD = 0;
-      let pagadosUSD = 0;
+            if (!nombre || !telefono) {
+                alert("Por favor ingresa nombre y teléfono.");
+                return;
+            }
 
-      let filtradas = cuentas.filter(c => {
-        let totalCuenta = c.items.reduce((sum, item) => sum + item.monto, 0);
-        c.totalCalculado = totalCuenta;
+            const btn = document.getElementById('btnSubmitCliente');
+            btn.innerHTML = "<span>Guardando...</span>";
+            btn.disabled = true;
 
-        if (c.pagado) pagadosUSD += totalCuenta;
-        else pendientesUSD += totalCuenta;
+            try {
+                const idCliente = normalizarIdCliente(nombre);
+                await setDoc(doc(db, "clientes", idCliente), {
+                    nombre: nombre,
+                    telefono: telefono
+                }, { merge: true });
+                document.getElementById('formCliente').reset();
+            } catch (error) {
+                alert("Error al guardar cliente: " + error.message);
+            }
 
-        if (filtroActual === 'pendientes') return !c.pagado;
-        if (filtroActual === 'pagados') return c.pagado;
-        return true;
-      });
+            btn.innerHTML = "<span>Guardar en Directorio</span>";
+            btn.disabled = false;
+        }
 
-      document.getElementById('totalPendienteUSD').textContent = `$${pendientesUSD.toFixed(2)}`;
-      document.getElementById('totalPendienteBs').textContent = `${(pendientesUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2 })} Bs`;
-      document.getElementById('totalCobradoUSD').textContent = `$${pagadosUSD.toFixed(2)}`;
-      document.getElementById('totalCobradoBs').textContent = `${(pagadosUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2 })} Bs`;
+        window.eliminarClienteDirectorio = async function (id) {
+            if (confirm('¿Deseas eliminar permanentemente a este cliente de tu agenda? (Sus ventas pasadas no se borrarán)')) {
+                await deleteDoc(doc(db, "clientes", id));
+            }
+        }
 
-      if (filtradas.length === 0) {
-        contenedor.innerHTML = `<div class="empty-state">No hay cuentas en esta sección.</div>`;
-        return;
-      }
+        window.autocompletarTelefono = function () {
+            const val = document.getElementById('cliente').value.trim().toLowerCase();
+            const telInput = document.getElementById('telefono');
+            if (!val) {
+                telInput.value = '';
+                return;
+            }
+            const clienteEncontrado = directorio.find(c => (c.nombre || '').toLowerCase() === val);
+            if (clienteEncontrado) {
+                telInput.value = clienteEncontrado.telefono || '';
+            }
+        }
 
-      filtradas.forEach(c => {
-        const totalBs = (c.totalCalculado * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const tarjeta = document.createElement('div');
-        tarjeta.className = `sale-card ${c.pagado ? 'is-paid' : ''}`;
+        // ================= FUNCIONES DE VENTAS (CUENTAS) =================
 
-        let htmlItems = c.items.map(item => `
-          <li>
-            <span class="item-concept">${item.concepto} <small style="color:#64748b;">(${item.fecha})</small></span>
-            <span class="item-price">$${item.monto.toFixed(2)}</span>
-          </li>
-        `).join('');
+        window.actualizarTasa = function () {
+            tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
+            localStorage.setItem('tasa_bcv_v4', tasaActual);
+            renderizarCuentas();
+        }
 
-        tarjeta.innerHTML = `
-          <div class="card-top">
-            <div>
-              <div class="client-name">${c.cliente} <span style="font-size:0.8rem; font-weight:normal; color:#94a3b8;">${c.telefono}</span></div>
-            </div>
-            <span class="badge ${c.pagado ? 'badge-paid' : 'badge-pending'}">
-              ${c.pagado ? '✓ Cancelada' : 'Deuda Abierta'}
-            </span>
-          </div>
+        window.guardarVenta = async function (e) {
+            e.preventDefault();
 
-          <div class="items-breakdown">
-            <ul>${htmlItems}</ul>
-          </div>
+            const nombre = document.getElementById('cliente').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const montoUSD = parseFloat(document.getElementById('montoUSD').value);
+            const concepto = document.getElementById('concepto').value.trim();
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
 
-          <div class="amounts-box">
-            <span class="label-total">Total General:</span>
-            <span class="amount-usd">$${c.totalCalculado.toFixed(2)}</span>
-            <span class="amount-bs">≈ ${totalBs} Bs</span>
-          </div>
+            if (!nombre || !telefono || !concepto) {
+                alert("Por favor completa todos los campos requeridos.");
+                return;
+            }
 
-          <div class="actions-grid">
-            <button class="btn-wa" onclick="abrirWhatsApp('${c.id}')">
-              <span>💬 Factura a WhatsApp</span>
-            </button>
-            <button class="btn-toggle" onclick="togglePago('${c.id}')">
-              ${c.pagado ? 'Reabrir Cuenta' : '✓ Marcar Todo Pagado'}
-            </button>
-            <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${c.id}')">✕</button>
-          </div>
-        `;
+            if (isNaN(montoUSD) || montoUSD <= 0) {
+                alert("Por favor ingresa un monto válido mayor a 0.");
+                return;
+            }
 
-        contenedor.appendChild(tarjeta);
-      });
-    }
-  </script>
+            const cuentaActiva = cuentas.find(c => (c.cliente || '').toLowerCase() === nombre.toLowerCase() && !c.pagado);
+
+            const btn = document.getElementById('btnSubmit');
+            btn.innerHTML = "<span>Guardando...</span>";
+            btn.disabled = true;
+
+            try {
+                // Guardar/Actualizar en directorio automáticamente con merge
+                const idCliente = normalizarIdCliente(nombre);
+                await setDoc(doc(db, "clientes", idCliente), { nombre: nombre, telefono: telefono }, { merge: true });
+
+                // Procesar Venta
+                if (cuentaActiva) {
+                    const cuentaRef = doc(db, "cuentas", cuentaActiva.id);
+                    const itemsPrevios = Array.isArray(cuentaActiva.items) ? cuentaActiva.items : [];
+                    const nuevosItems = [...itemsPrevios, { concepto, monto: montoUSD, fecha: fechaHoy }];
+                    await updateDoc(cuentaRef, { items: nuevosItems, telefono: telefono });
+                } else {
+                    await addDoc(collection(db, "cuentas"), {
+                        cliente: nombre,
+                        telefono: telefono,
+                        pagado: false,
+                        items: [{ concepto, monto: montoUSD, fecha: fechaHoy }],
+                        timestamp: Date.now()
+                    });
+                }
+                document.getElementById('formVenta').reset();
+                document.getElementById('cliente').focus();
+            } catch (error) {
+                alert("Error de conexión: " + error.message);
+            }
+
+            btn.innerHTML = "<span>Añadir a la Cuenta</span>";
+            btn.disabled = false;
+        }
+
+        window.togglePago = async function (id) {
+            const c = cuentas.find(item => item.id === id);
+            if (c) {
+                await updateDoc(doc(db, "cuentas", id), { pagado: !c.pagado });
+            }
+        }
+
+        window.eliminarCuenta = async function (id) {
+            if (confirm('¿Deseas eliminar el registro de esta venta? (Los datos del cliente seguirán guardados en tu módulo de clientes)')) {
+                await deleteDoc(doc(db, "cuentas", id));
+            }
+        }
+
+        window.eliminarItemCuenta = async function (id, itemIndex) {
+            const c = cuentas.find(item => item.id === id);
+            if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
+
+            if (c.items.length <= 1) {
+                if (confirm('Este es el único producto de esta cuenta. ¿Deseas eliminar la cuenta completa?')) {
+                    await deleteDoc(doc(db, "cuentas", id));
+                }
+                return;
+            }
+
+            const itemNombre = c.items[itemIndex].concepto;
+            if (confirm(`¿Deseas eliminar el ítem "${itemNombre}" de esta cuenta?`)) {
+                const nuevosItems = c.items.filter((_, idx) => idx !== itemIndex);
+                await updateDoc(doc(db, "cuentas", id), { items: nuevosItems });
+            }
+        }
+
+        window.cambiarFiltro = function (filtro, elemento) {
+            filtroActual = filtro;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            elemento.classList.add('active');
+            renderizarCuentas();
+        }
+
+        window.abrirWhatsApp = function (id) {
+            const c = cuentas.find(item => item.id === id);
+            if (!c) return;
+
+            let limpio = (c.telefono || '').replace(/\D/g, '');
+            if (!limpio) {
+                alert("Este cliente no tiene un teléfono válido registrado.");
+                return;
+            }
+
+            // Formateo inteligente para números venezolanos e internacionales
+            if (limpio.startsWith('0')) {
+                // Ej: 04121234567 -> 584121234567
+                limpio = '58' + limpio.substring(1);
+            } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
+                // Sin el 0 inicial: 4121234567 -> 584121234567
+                limpio = '58' + limpio;
+            }
+
+            const totalCtaUSD = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const totalCtaBs = (totalCtaUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            let desgloseTexto = (c.items || []).map(i => `▪ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
+
+            const mensaje = `Hola ${c.cliente}, un cordial saludo. Te escribo para recordarte el saldo total de tu cuenta: *$${totalCtaUSD.toFixed(2)} (${totalCtaBs} Bs)* a la tasa actual del BCV.\n\n*Detalle de tu cuenta:*\n${desgloseTexto}\n\nMe avisas por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+
+            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function renderizarCuentas() {
+            const contenedor = document.getElementById('listaCuentas');
+
+            let pendientesUSD = 0;
+            let pagadosUSD = 0;
+
+            // 1. Calcular totales primero de forma pura y limpia
+            cuentas.forEach(c => {
+                const items = Array.isArray(c.items) ? c.items : [];
+                const totalCuenta = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+                c.totalCalculado = totalCuenta;
+
+                if (c.pagado) {
+                    pagadosUSD += totalCuenta;
+                } else {
+                    pendientesUSD += totalCuenta;
+                }
+            });
+
+            // 2. Actualizar tarjetas métricas
+            document.getElementById('totalPendienteUSD').textContent = `$${pendientesUSD.toFixed(2)}`;
+            document.getElementById('totalPendienteBs').textContent = `${(pendientesUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
+            document.getElementById('totalCobradoUSD').textContent = `$${pagadosUSD.toFixed(2)}`;
+            document.getElementById('totalCobradoBs').textContent = `${(pagadosUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
+
+            // 3. Filtrar según la pestaña activa
+            const filtradas = cuentas.filter(c => {
+                if (filtroActual === 'pendientes') return !c.pagado;
+                if (filtroActual === 'pagados') return c.pagado;
+                return true;
+            });
+
+            if (filtradas.length === 0) {
+                contenedor.innerHTML = `<div class="empty-state">No hay cuentas en esta sección.</div>`;
+                return;
+            }
+
+            // 4. Renderizar tarjetas de forma segura contra XSS y de alto rendimiento
+            const html = filtradas.map(c => {
+                const safeId = escapeHTML(c.id);
+                const safeCliente = escapeHTML(c.cliente);
+                const safeTelefono = escapeHTML(c.telefono);
+                const totalBs = (c.totalCalculado * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const items = Array.isArray(c.items) ? c.items : [];
+
+                const htmlItems = items.map((item, index) => {
+                    const safeConcepto = escapeHTML(item.concepto);
+                    const safeFecha = escapeHTML(item.fecha || '');
+                    const montoNum = Number(item.monto) || 0;
+                    return `
+                      <li>
+                        <span class="item-concept">${safeConcepto} ${safeFecha ? `<small style="color:#64748b;">(${safeFecha})</small>` : ''}</span>
+                        <div class="item-actions">
+                          <span class="item-price">$${montoNum.toFixed(2)}</span>
+                          ${!c.pagado ? `<button type="button" class="btn-item-delete" title="Eliminar ítem" onclick="eliminarItemCuenta('${safeId}', ${index})">✕</button>` : ''}
+                        </div>
+                      </li>
+                    `;
+                }).join('');
+
+                return `
+                  <div class="sale-card ${c.pagado ? 'is-paid' : ''}">
+                    <div class="card-top">
+                      <div>
+                        <div class="client-name">${safeCliente} <span style="font-size:0.8rem; font-weight:normal; color:#94a3b8;">${safeTelefono}</span></div>
+                      </div>
+                      <span class="badge ${c.pagado ? 'badge-paid' : 'badge-pending'}">
+                        ${c.pagado ? '✓ Cancelada' : 'Deuda Abierta'}
+                      </span>
+                    </div>
+
+                    <div class="items-breakdown">
+                      <ul>${htmlItems}</ul>
+                    </div>
+
+                    <div class="amounts-box">
+                      <span class="label-total">Total General:</span>
+                      <span class="amount-usd">$${c.totalCalculado.toFixed(2)}</span>
+                      <span class="amount-bs">≈ ${totalBs} Bs</span>
+                    </div>
+
+                    <div class="actions-grid">
+                      <button class="btn-wa" onclick="abrirWhatsApp('${safeId}')">
+                        <span>💬 Factura a WhatsApp</span>
+                      </button>
+                      <button class="btn-toggle" onclick="togglePago('${safeId}')">
+                        ${c.pagado ? 'Reabrir Cuenta' : '✓ Marcar Todo Pagado'}
+                      </button>
+                      <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
+                    </div>
+                  </div>
+                `;
+            }).join('');
+
+            contenedor.innerHTML = html;
+        }
+    </script>
 </body>
+
 </html>
