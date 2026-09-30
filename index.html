@@ -571,15 +571,16 @@
             background: #0f3320;
             color: var(--wa-color);
             border: 1px solid #165e38;
-            padding: 9px 12px;
+            padding: 8px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 2px;
             text-decoration: none;
             width: 100%;
             transition: all 0.2s;
@@ -588,6 +589,19 @@
         .btn-wa:active {
             background: var(--wa-hover);
             color: #fff;
+        }
+
+        .wa-btn-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .wa-btn-subtitle {
+            font-size: 0.72rem;
+            color: #86efac;
+            font-weight: 500;
+            opacity: 0.9;
         }
 
         .btn-abono {
@@ -1085,6 +1099,10 @@
                 <div style="display:flex; justify-content:space-between;">
                     <span style="color:var(--text-muted);">Saldo por cobrar:</span>
                     <strong id="waModalMonto" style="color:var(--accent);"></strong>
+                </div>
+                <div id="waModalUltimoEnvioContainer" style="display:none; justify-content:space-between; border-top:1px dashed var(--card-border); padding-top:4px; margin-top:4px;">
+                    <span style="color:var(--text-muted);">Último aviso enviado:</span>
+                    <strong id="waModalUltimoEnvio" style="color:#86efac; font-size:0.8rem;"></strong>
                 </div>
             </div>
 
@@ -1671,6 +1689,15 @@
             document.getElementById('waModalCliente').textContent = c.cliente;
             document.getElementById('waModalMonto').textContent = `$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)`;
 
+            const contenedorUltimo = document.getElementById('waModalUltimoEnvioContainer');
+            const textoUltimo = document.getElementById('waModalUltimoEnvio');
+            if (c.ultimaNotificacionWA) {
+                textoUltimo.textContent = c.ultimaNotificacionWA;
+                contenedorUltimo.style.display = 'flex';
+            } else {
+                contenedorUltimo.style.display = 'none';
+            }
+
             const contenedor = document.getElementById('listaOpcionesPagoWhatsApp');
             const cuentasPago = obtenerCuentasPago();
 
@@ -1793,6 +1820,16 @@
             }
 
             mensaje += `\n\nMe avisa por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+
+            // Registrar fecha y hora del último aviso por WhatsApp
+            const ahora = new Date();
+            const fechaStr = ahora.toLocaleDateString('es-VE');
+            const horaStr = ahora.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const fechaHoraRegistro = `${fechaStr} - ${horaStr}`;
+
+            updateDoc(doc(db, "cuentas", c.id), {
+                ultimaNotificacionWA: fechaHoraRegistro
+            }).catch(err => console.error("Error al registrar fecha WhatsApp:", err));
 
             window.cerrarModal('modalSeleccionarPagoWhatsApp');
             const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
@@ -2425,7 +2462,8 @@
                     actionsHTML = `
                       <div class="actions-grid">
                         <button class="btn-wa" onclick="abrirModalSeleccionarPago('${safeId}')">
-                          <span>💬 Factura a WhatsApp</span>
+                          <span class="wa-btn-title">💬 Factura a WhatsApp</span>
+                          ${c.ultimaNotificacionWA ? `<span class="wa-btn-subtitle">🕒 Último aviso: ${escapeHTML(c.ultimaNotificacionWA)}</span>` : ''}
                         </button>
                         <div class="actions-row">
                           <button class="btn-abono" onclick="abrirModalAbono('${safeId}')">
