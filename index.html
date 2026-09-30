@@ -1758,15 +1758,17 @@
             const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             const tasaStr = tasaActual.toFixed(2);
 
-            let desgloseProductos = items.map(i => `▪ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
+            let desgloseProductos = items.map(i => `▪️ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
 
-            const tipoSaldo = abonos.length > 0 ? 'saldo pendiente' : 'saldo total';
-            let mensaje = `Hola ${c.cliente}, un cordial saludo. Le escribo para recordarle el ${tipoSaldo} de tu cuenta: *$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*\n*Detalle de tu cuenta:*\n${desgloseProductos}`;
+            let mensaje = `Hola ${c.cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:\n\nDetalle de compras:\n${desgloseProductos}`;
 
             if (abonos.length > 0) {
-                const desgloseAbonos = abonos.map(a => `▪ -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
-                mensaje += `\n*Abonos realizados:*\n${desgloseAbonos}`;
+                const desgloseAbonos = abonos.map(a => `▪️ -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
+                mensaje += `\n\nAbonos realizados:\n${desgloseAbonos}`;
             }
+
+            const etiquetaSaldo = abonos.length > 0 ? 'SALDO PENDIENTE A PAGAR' : 'SALDO TOTAL A PAGAR';
+            mensaje += `\n\n👉 ${etiquetaSaldo}: *$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*\n(Calculado a tasa BCV: ${tasaStr} Bs)`;
 
             // Obtener opción de pago seleccionada por el usuario
             const radioSeleccionado = document.querySelector('input[name="opcionPagoWA"]:checked');
@@ -1775,16 +1777,16 @@
             if (valorSeleccionado && valorSeleccionado !== 'ninguno') {
                 const cuentaElegida = cuentasPago.find(p => p.id === valorSeleccionado);
                 if (cuentaElegida) {
-                    mensaje += `\n\n📌 *Datos para Pago Móvil (${cuentaElegida.alias || cuentaElegida.banco}):*`;
-                    if (cuentaElegida.banco) mensaje += `\n🏦 *Banco:* ${cuentaElegida.banco}`;
-                    if (cuentaElegida.telefono) mensaje += `\n📱 *Teléfono:* ${cuentaElegida.telefono}`;
-                    if (cuentaElegida.cedula) mensaje += `\n🪪 *Cédula/RIF:* ${cuentaElegida.cedula}`;
-                    if (cuentaElegida.titular) mensaje += `\n👤 *Titular:* ${cuentaElegida.titular}`;
+                    mensaje += `\n\n📌 Datos para Pago Móvil:`;
+                    if (cuentaElegida.banco) mensaje += `\n🏦 Banco: ${cuentaElegida.banco}`;
+                    if (cuentaElegida.telefono) mensaje += `\n📱 Teléfono: ${cuentaElegida.telefono}`;
+                    if (cuentaElegida.cedula) mensaje += `\n🪪 Cédula/RIF: ${cuentaElegida.cedula}`;
+                    if (cuentaElegida.titular) mensaje += `\n👤 Titular: ${cuentaElegida.titular}`;
                     if (cuentaElegida.nota) mensaje += `\n_${cuentaElegida.nota}_`;
                 }
             }
 
-            mensaje += `\n\nMe avisa por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+            mensaje += `\n\nMe avisas por favor al realizar el pago para registrar tu comprobante. ¡Muchas gracias!`;
 
             // Registrar fecha y hora del último aviso por WhatsApp
             const ahora = new Date();
