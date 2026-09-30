@@ -666,6 +666,87 @@
             color: var(--danger);
         }
 
+        .btn-item-edit {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 3px 6px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-item-edit:hover {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-inline-edit {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.72rem;
+            padding: 1px 7px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .btn-inline-edit:hover {
+            color: #38bdf8;
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        .btn-item-receipt {
+            background: rgba(37, 211, 102, 0.12);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            color: var(--wa-color);
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .btn-item-receipt:hover {
+            background: rgba(37, 211, 102, 0.25);
+            color: #fff;
+        }
+
+        /* Badges de Antigüedad de Deuda: Azul (< 15 días), Amarillo (15 a 29 días), Rojo (>= 30 días) */
+        .badge-age-normal {
+            background: rgba(59, 130, 246, 0.16);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.38);
+        }
+
+        .badge-age-warning {
+            background: rgba(245, 158, 11, 0.18);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.45);
+        }
+
+        .badge-age-danger {
+            background: rgba(239, 68, 68, 0.22);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.55);
+            animation: pulseWarning 2s infinite;
+        }
+
+        @keyframes pulseWarning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+
         .empty-state {
             text-align: center;
             padding: 30px 20px;
@@ -1292,6 +1373,68 @@
                     <button type="button" class="btn-cancel" onclick="cancelarEdicionCuentaPago()">Cancelar</button>
                     <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarCuentaPago">
                         <span>Guardar Cuenta</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: EDITAR ÍTEM / PRODUCTO ================= -->
+    <div id="modalEditarItem" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalEditarItem')">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>✏️ Editar Producto</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalEditarItem')">✕</button>
+            </div>
+            <form id="formEditarItem" onsubmit="guardarEdicionItemSubmit(event)">
+                <input type="hidden" id="editItemCuentaId">
+                <input type="hidden" id="editItemIndex">
+                <div class="input-group">
+                    <label>Concepto / Detalle del Producto</label>
+                    <input type="text" id="editItemConcepto" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Monto en USD ($)</label>
+                    <input type="number" id="editItemMontoUSD" step="0.01" min="0.01" required oninput="actualizarEquivalenteEditItem()">
+                    <small id="editItemEquivalenteBs" style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalEditarItem')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarEdicionItem">
+                        <span>Guardar Cambios</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: EDITAR CLIENTE Y TELÉFONO ================= -->
+    <div id="modalEditarClienteCuenta" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalEditarClienteCuenta')">
+        <div class="modal-dialog" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3>✏️ Editar Datos del Cliente</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalEditarClienteCuenta')">✕</button>
+            </div>
+            <form id="formEditarClienteCuenta" onsubmit="guardarEdicionClienteCuentaSubmit(event)">
+                <input type="hidden" id="editClienteCuentaId">
+                <div class="input-group">
+                    <label>Nombre del Cliente</label>
+                    <input type="text" id="editClienteNombre" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Teléfono WhatsApp</label>
+                    <input type="tel" id="editClienteTelefono" required autocomplete="off">
+                </div>
+                <div style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="editClienteActualizarDirectorio" checked style="width:16px; height:16px; accent-color:var(--accent);">
+                    <label for="editClienteActualizarDirectorio" style="font-size:0.82rem; color:var(--text-muted); cursor:pointer;">
+                        Actualizar también en la agenda de contactos
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalEditarClienteCuenta')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarEdicionCliente">
+                        <span>Guardar Cambios</span>
                     </button>
                 </div>
             </form>
@@ -2349,10 +2492,216 @@
                 esPeligroso: true,
                 onConfirm: async () => {
                     const nuevosItems = c.items.filter((_, idx) => idx !== itemIndex);
-                    await updateDoc(doc(db, "cuentas", id), { items: nuevosItems });
+                    const totalDeuda = nuevosItems.reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+                    const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                    const updates = { items: nuevosItems };
+                    if (totalAbonado >= (totalDeuda - 0.009) && totalDeuda > 0) {
+                        updates.pagado = true;
+                    } else if (c.pagado && totalAbonado < (totalDeuda - 0.009)) {
+                        updates.pagado = false;
+                    }
+                    await updateDoc(doc(db, "cuentas", id), updates);
                     window.mostrarToast('Producto eliminado de la cuenta', 'info');
                 }
             });
+        };
+
+        // ================= EDICIÓN DE ÍTEMS Y DATOS DE CLIENTES =================
+        window.abrirModalEditarItem = function (cuentaId, itemIndex) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
+
+            const item = c.items[itemIndex];
+            document.getElementById('editItemCuentaId').value = cuentaId;
+            document.getElementById('editItemIndex').value = itemIndex;
+            document.getElementById('editItemConcepto').value = item.concepto || '';
+            document.getElementById('editItemMontoUSD').value = (Number(item.monto) || 0).toFixed(2);
+            window.actualizarEquivalenteEditItem();
+
+            window.abrirModal('modalEditarItem');
+            setTimeout(() => document.getElementById('editItemConcepto').focus(), 150);
+        };
+
+        window.actualizarEquivalenteEditItem = function () {
+            const monto = parseFloat(document.getElementById('editItemMontoUSD').value) || 0;
+            const bs = (monto * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('editItemEquivalenteBs').textContent = monto > 0 ? `≈ ${bs} Bs a tasa BCV` : '';
+        };
+
+        window.guardarEdicionItemSubmit = async function (e) {
+            e.preventDefault();
+            const cuentaId = document.getElementById('editItemCuentaId').value;
+            const itemIndex = parseInt(document.getElementById('editItemIndex').value, 10);
+            const nuevoConcepto = document.getElementById('editItemConcepto').value.trim();
+            const nuevoMonto = parseFloat(document.getElementById('editItemMontoUSD').value);
+
+            if (!nuevoConcepto || isNaN(nuevoMonto) || nuevoMonto <= 0) {
+                window.mostrarToast('Por favor ingresa un concepto y monto válidos', 'error');
+                return;
+            }
+
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
+
+            const btn = document.getElementById('btnGuardarEdicionItem');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando...</span>';
+
+            try {
+                const nuevosItems = [...c.items];
+                nuevosItems[itemIndex] = {
+                    ...nuevosItems[itemIndex],
+                    concepto: nuevoConcepto,
+                    monto: nuevoMonto
+                };
+
+                const totalDeuda = nuevosItems.reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+                const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                const updates = { items: nuevosItems };
+
+                if (c.pagado && totalDeuda > (totalAbonado + 0.009)) {
+                    updates.pagado = false;
+                } else if (!c.pagado && totalAbonado >= (totalDeuda - 0.009) && totalDeuda > 0) {
+                    updates.pagado = true;
+                }
+
+                await updateDoc(doc(db, "cuentas", cuentaId), updates);
+                window.cerrarModal('modalEditarItem');
+                window.mostrarToast('Producto actualizado correctamente', 'success');
+            } catch (err) {
+                window.mostrarToast('Error al actualizar ítem: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Guardar Cambios</span>';
+            }
+        };
+
+        window.abrirModalEditarClienteCuenta = function (cuentaId) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c) return;
+
+            document.getElementById('editClienteCuentaId').value = cuentaId;
+            document.getElementById('editClienteNombre').value = c.cliente || '';
+            document.getElementById('editClienteTelefono').value = c.telefono || '';
+            document.getElementById('editClienteActualizarDirectorio').checked = true;
+
+            window.abrirModal('modalEditarClienteCuenta');
+            setTimeout(() => document.getElementById('editClienteNombre').focus(), 150);
+        };
+
+        window.guardarEdicionClienteCuentaSubmit = async function (e) {
+            e.preventDefault();
+            const cuentaId = document.getElementById('editClienteCuentaId').value;
+            const nuevoNombre = document.getElementById('editClienteNombre').value.trim();
+            const nuevoTelefono = document.getElementById('editClienteTelefono').value.trim();
+            const actualizarDirectorio = document.getElementById('editClienteActualizarDirectorio').checked;
+
+            if (!nuevoNombre || !nuevoTelefono) {
+                window.mostrarToast('Por favor completa el nombre y teléfono', 'error');
+                return;
+            }
+
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c) return;
+
+            const btn = document.getElementById('btnGuardarEdicionCliente');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando...</span>';
+
+            try {
+                await updateDoc(doc(db, "cuentas", cuentaId), {
+                    cliente: nuevoNombre,
+                    telefono: nuevoTelefono
+                });
+
+                if (actualizarDirectorio) {
+                    const idCliente = normalizarIdCliente(nuevoNombre);
+                    await setDoc(doc(db, "clientes", idCliente), {
+                        nombre: nuevoNombre,
+                        telefono: nuevoTelefono
+                    }, { merge: true });
+                }
+
+                window.cerrarModal('modalEditarClienteCuenta');
+                window.mostrarToast('Datos del cliente actualizados', 'success');
+            } catch (err) {
+                window.mostrarToast('Error al actualizar cliente: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Guardar Cambios</span>';
+            }
+        };
+
+        // ================= COMPROBANTES DE PAGO Y ABONO POR WHATSAPP =================
+        window.enviarReciboAbono = function (cuentaId, abonoIndex) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c || !Array.isArray(c.abonos) || !c.abonos[abonoIndex]) return;
+
+            let limpio = (c.telefono || '').replace(/\D/g, '');
+            if (!limpio) {
+                window.mostrarToast("Este cliente no tiene un teléfono válido registrado.", "error");
+                return;
+            }
+
+            if (limpio.startsWith('0')) {
+                limpio = '58' + limpio.substring(1);
+            } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
+                limpio = '58' + limpio;
+            }
+
+            const abono = c.abonos[abonoIndex];
+            const montoAbonoUSD = Number(abono.monto) || 0;
+            const montoAbonoBs = (montoAbonoUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const totalDeudaUSD = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const totalAbonadoUSD = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoRestanteUSD = Math.max(0, totalDeudaUSD - totalAbonadoUSD);
+            const saldoRestanteBs = (saldoRestanteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const tasaStr = tasaActual.toFixed(2);
+
+            let refTexto = abono.referencia ? ` (Ref: ${abono.referencia})` : '';
+
+            let mensaje = `Hola ${c.cliente}, un cordial saludo.\nConfirmamos la recepción de tu abono a tu cuenta:\n\n💳 Monto abonado: *$${montoAbonoUSD.toFixed(2)} (${montoAbonoBs} Bs)*\n📌 Método: ${abono.metodo || 'Abono'}${refTexto}\n📅 Fecha: ${abono.fecha || 'Hoy'}`;
+
+            if (saldoRestanteUSD > 0.009) {
+                mensaje += `\n\n👉 SALDO RESTANTE POR PAGAR: *$${saldoRestanteUSD.toFixed(2)} (${saldoRestanteBs} Bs)*\n(Calculado a tasa BCV: ${tasaStr} Bs)`;
+            } else {
+                mensaje += `\n\n✅ Estado: *CUENTA TOTALMENTE SALDADA*\n¡Tu cuenta ha quedado cancelada en su totalidad!`;
+            }
+
+            mensaje += `\n\n¡Muchas gracias por tu pago!`;
+
+            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        };
+
+        window.enviarReciboCancelado = function (cuentaId) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c) return;
+
+            let limpio = (c.telefono || '').replace(/\D/g, '');
+            if (!limpio) {
+                window.mostrarToast("Este cliente no tiene un teléfono válido registrado.", "error");
+                return;
+            }
+
+            if (limpio.startsWith('0')) {
+                limpio = '58' + limpio.substring(1);
+            } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
+                limpio = '58' + limpio;
+            }
+
+            const totalDeudaUSD = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const totalDeudaBs = (totalDeudaUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+
+            let metodoInfo = c.metodoPago || 'Pago Completo';
+            if (c.referencia) metodoInfo += ` · Ref: ${c.referencia}`;
+
+            let mensaje = `Hola ${c.cliente}, un cordial saludo.\nConfirmamos que tu cuenta ha quedado totalmente cancelada:\n\n💳 Monto total cancelado: *$${totalDeudaUSD.toFixed(2)} (${totalDeudaBs} Bs)*\n📌 Método: ${metodoInfo}\n📅 Fecha de pago: ${c.fechaPago || fechaHoy}\n\n✅ Estado: *CUENTA TOTALMENTE SALDADA*\n\n¡Muchas gracias por tu puntualidad y preferencia!`;
+
+            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
         };
 
         window.cambiarFiltro = function (filtro, elemento) {
@@ -2425,6 +2774,34 @@
                 const items = Array.isArray(c.items) ? c.items : [];
                 const abonos = Array.isArray(c.abonos) ? c.abonos : [];
 
+                // Cálculo de días de antigüedad
+                let diasAntiguedad = 0;
+                if (c.timestamp) {
+                    diasAntiguedad = Math.floor((Date.now() - c.timestamp) / (1000 * 60 * 60 * 24));
+                } else if (items.length > 0 && items[0].fecha) {
+                    const partes = items[0].fecha.split('/');
+                    if (partes.length === 3) {
+                        const fechaObj = new Date(partes[2], partes[1] - 1, partes[0]);
+                        if (!isNaN(fechaObj.getTime())) {
+                            diasAntiguedad = Math.floor((Date.now() - fechaObj.getTime()) / (1000 * 60 * 60 * 24));
+                        }
+                    }
+                }
+                if (isNaN(diasAntiguedad) || diasAntiguedad < 0) diasAntiguedad = 0;
+
+                let badgeAntiguedadHTML = '';
+                if (!c.pagado) {
+                    if (diasAntiguedad === 0) {
+                        badgeAntiguedadHTML = `<span class="badge badge-age-normal" title="Registrada hoy (< 15 días)">🕒 Hoy</span>`;
+                    } else if (diasAntiguedad < 15) {
+                        badgeAntiguedadHTML = `<span class="badge badge-age-normal" title="Antigüedad de la deuda (< 15 días)">⏳ Hace ${diasAntiguedad} ${diasAntiguedad === 1 ? 'día' : 'días'}</span>`;
+                    } else if (diasAntiguedad < 30) {
+                        badgeAntiguedadHTML = `<span class="badge badge-age-warning" title="Atención: cuenta con ${diasAntiguedad} días pendiente (menos de 29 días)">⚠️ Hace ${diasAntiguedad} días</span>`;
+                    } else {
+                        badgeAntiguedadHTML = `<span class="badge badge-age-danger" title="¡Alerta! Cuenta con más de 30 días de morosidad (${diasAntiguedad} días)">🚨 Hace ${diasAntiguedad} días</span>`;
+                    }
+                }
+
                 const htmlItems = items.map((item, index) => {
                     const safeConcepto = escapeHTML(item.concepto);
                     const safeFecha = escapeHTML(item.fecha || '');
@@ -2434,7 +2811,10 @@
                         <span class="item-concept">${safeConcepto} ${safeFecha ? `<small style="color:#64748b;">(${safeFecha})</small>` : ''}</span>
                         <div class="item-actions">
                           <span class="item-price">$${montoNum.toFixed(2)}</span>
-                          ${!c.pagado ? `<button type="button" class="btn-item-delete" title="Eliminar ítem" onclick="eliminarItemCuenta('${safeId}', ${index})">✕</button>` : ''}
+                          ${!c.pagado ? `
+                            <button type="button" class="btn-item-edit" title="Editar producto o precio" onclick="abrirModalEditarItem('${safeId}', ${index})">✏️</button>
+                            <button type="button" class="btn-item-delete" title="Eliminar ítem" onclick="eliminarItemCuenta('${safeId}', ${index})">✕</button>
+                          ` : ''}
                         </div>
                       </li>
                     `;
@@ -2454,7 +2834,10 @@
                               <span style="color:#38bdf8; font-weight:600;">-$${montoNum.toFixed(2)}</span>
                               <small style="color:#94a3b8; margin-left:4px;">${safeMetodo}${safeRef}${safeFecha}</small>
                             </div>
-                            <button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                              <button type="button" class="btn-item-receipt" title="Enviar comprobante de este abono por WhatsApp" onclick="enviarReciboAbono('${safeId}', ${aIdx})">🧾 Recibo</button>
+                              <button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>
+                            </div>
                           </li>
                         `;
                     }).join('');
@@ -2512,11 +2895,15 @@
                     `;
                 } else if (c.totalAbonado > 0) {
                     badgeHTML = `
+                      ${badgeAntiguedadHTML}
                       <span class="badge badge-partial">Abonado: $${c.totalAbonado.toFixed(2)}</span>
                       <span class="badge badge-pending">Resta: $${c.saldoRestante.toFixed(2)}</span>
                     `;
                 } else {
-                    badgeHTML = `<span class="badge badge-pending">Deuda Abierta</span>`;
+                    badgeHTML = `
+                      ${badgeAntiguedadHTML}
+                      <span class="badge badge-pending">Deuda Abierta</span>
+                    `;
                 }
 
                 // Botones de acción según estado
@@ -2542,6 +2929,9 @@
                 } else {
                     actionsHTML = `
                       <div class="actions-grid">
+                        <button class="btn-wa" style="background:#0f3320; border-color:#165e38;" onclick="enviarReciboCancelado('${safeId}')">
+                          <span class="wa-btn-title">🧾 Enviar Recibo de Cuenta Cancelada</span>
+                        </button>
                         <div class="actions-row">
                           <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
                             <span>↩ Reabrir Cuenta</span>
@@ -2557,7 +2947,10 @@
                     <div class="card-top">
                       <div>
                         <div class="client-name">${safeCliente}</div>
-                        <div style="font-size:0.8rem; color:#94a3b8;">${safeTelefono}</div>
+                        <div style="font-size:0.8rem; color:#94a3b8; display:flex; align-items:center; gap:6px; margin-top:2px;">
+                          <span>📱 ${safeTelefono}</span>
+                          <button type="button" class="btn-inline-edit" title="Editar nombre o teléfono del cliente" onclick="abrirModalEditarClienteCuenta('${safeId}')">✏️ Editar</button>
+                        </div>
                       </div>
                       <div class="badges-row">
                         ${badgeHTML}
