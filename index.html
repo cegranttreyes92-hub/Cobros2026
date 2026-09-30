@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Cuentas Cobranzas V3.0</title>
+    <title>Control Cuentas Cobranzas V3.1</title>
     <style>
         :root {
             --bg: #0b1120;
@@ -768,6 +768,131 @@
             background: #475569;
         }
 
+        /* Gestión de Múltiples Cuentas de Pago Móvil */
+        .cuenta-pago-card {
+            background: #090e17;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .cuenta-pago-card.is-default {
+            border-color: #10b981;
+            background: #091a13;
+        }
+
+        .cuenta-pago-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .cuenta-pago-details {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .cuenta-pago-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        .btn-mini {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-mini:hover {
+            color: var(--text-main);
+            border-color: #64748b;
+        }
+
+        .btn-mini.danger:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-mini.default-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border-color: #10b981;
+        }
+
+        /* Selector interactivo de Pago Móvil para WhatsApp */
+        .pago-select-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #090e17;
+            border: 1.5px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pago-select-item:hover {
+            border-color: #475569;
+        }
+
+        .pago-select-item.active {
+            border-color: var(--accent);
+            background: #091c15;
+        }
+
+        .pago-select-item input[type="radio"] {
+            margin-top: 3px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .pago-select-info {
+            flex: 1;
+        }
+
+        .pago-select-title {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pago-select-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+
         /* Notificaciones Toast */
         #toastContainer {
             position: fixed;
@@ -829,8 +954,8 @@
     <div class="header">
         <h1>📦 Cuentas Abiertas</h1>
         <div class="header-actions">
-            <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()" title="Configurar datos de Pago Móvil">
-                ⚙️ Datos Pago
+            <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()" title="Gestionar múltiples cuentas de Pago Móvil">
+                ⚙️ Datos Pago (<span id="contadorCuentasPago">0</span>)
             </button>
             <div class="rate-pill">
                 <span>Tasa BCV:</span>
@@ -945,6 +1070,41 @@
     <!-- ================= CONTENEDOR DE TOASTS ================= -->
     <div id="toastContainer"></div>
 
+    <!-- ================= MODAL: SELECCIONAR PAGO PARA WHATSAPP ================= -->
+    <div id="modalSeleccionarPagoWhatsApp" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalSeleccionarPagoWhatsApp')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>💬 Enviar Factura a WhatsApp</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">✕</button>
+            </div>
+            <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span style="color:var(--text-muted);">Cliente:</span>
+                    <strong id="waModalCliente" style="color:var(--text-main);"></strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text-muted);">Saldo por cobrar:</span>
+                    <strong id="waModalMonto" style="color:var(--accent);"></strong>
+                </div>
+            </div>
+
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px; font-weight:600;">
+                Elige cuál cuenta de Pago Móvil adjuntar al mensaje:
+            </p>
+
+            <div id="listaOpcionesPagoWhatsApp" style="max-height:260px; overflow-y:auto; margin-bottom:14px;">
+                <!-- Opciones dinámicas de cuentas de pago -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">Cancelar</button>
+                <button type="button" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px; background:var(--wa-color);" onclick="ejecutarEnvioWhatsApp()">
+                    <span>Enviar a WhatsApp 💬</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= MODAL: REGISTRAR ABONO ================= -->
     <div id="modalAbono" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalAbono')">
         <div class="modal-dialog">
@@ -1049,43 +1209,71 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: CONFIGURAR DATOS DE PAGO MÓVIL ================= -->
+    <!-- ================= MODAL: GESTIÓN MÚLTIPLES CUENTAS DE PAGO MÓVIL ================= -->
     <div id="modalConfigPago" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalConfigPago')">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="max-width: 480px;">
             <div class="modal-header">
-                <h3>⚙️ Mis Datos de Pago Móvil</h3>
+                <h3>⚙️ Cuentas de Pago Móvil</h3>
                 <button type="button" class="modal-close" onclick="cerrarModal('modalConfigPago')">✕</button>
             </div>
-            <form id="formConfigPago" onsubmit="guardarConfigPago(event)">
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
-                    Estos datos se adjuntarán automáticamente en el mensaje de cobro por WhatsApp para que tus clientes paguen directamente.
-                </p>
+
+            <!-- Vista 1: Lista de Cuentas Guardadas -->
+            <div id="seccionListaCuentasPago">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Cuentas registradas:</span>
+                    <button type="button" class="btn-mini" style="background:var(--blue); color:#fff; border:none; padding:5px 12px;" onclick="mostrarFormularioNuevaCuenta()">
+                        ➕ Nueva Cuenta
+                    </button>
+                </div>
+                <div id="contenedorCuentasPagoGuardadas" style="max-height:250px; overflow-y:auto; margin-bottom:12px;">
+                    <!-- Tarjetas de cuentas generadas dinámicamente -->
+                </div>
+                <div class="modal-footer" style="margin-top:8px; border-top:1px solid var(--card-border); padding-top:10px;">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfigPago')">Cerrar</button>
+                </div>
+            </div>
+
+            <!-- Vista 2: Formulario Agregar/Editar Cuenta -->
+            <form id="formConfigPago" onsubmit="guardarCuentaPagoSubmit(event)" style="display:none;">
+                <input type="hidden" id="cfgEditId">
+                <h4 id="cfgFormTitulo" style="font-size:0.95rem; color:#38bdf8; margin-bottom:12px; font-weight:700;">➕ Registrar Cuenta</h4>
+                
+                <div class="input-group">
+                    <label>Nombre / Alias (Ej: Banesco Víctor, BDV Tienda, Mercantil)</label>
+                    <input type="text" id="cfgAlias" placeholder="Ej: Banesco Principal" required autocomplete="off">
+                </div>
                 <div class="input-group">
                     <label>Banco</label>
-                    <input type="text" id="cfgBanco" placeholder="Ej: Banesco, Banco de Venezuela, Mercantil, etc." autocomplete="off">
+                    <input type="text" id="cfgBanco" placeholder="Ej: Banesco, Banco de Venezuela, Mercantil, etc." required autocomplete="off">
                 </div>
                 <div class="input-row">
                     <div class="input-group">
                         <label>Teléfono Pago Móvil</label>
-                        <input type="tel" id="cfgTelefono" placeholder="Ej: 04121234567" autocomplete="off">
+                        <input type="tel" id="cfgTelefono" placeholder="Ej: 04121234567" required autocomplete="off">
                     </div>
                     <div class="input-group">
                         <label>Cédula / RIF</label>
-                        <input type="text" id="cfgCedula" placeholder="Ej: V-12345678" autocomplete="off">
+                        <input type="text" id="cfgCedula" placeholder="Ej: V-12345678" required autocomplete="off">
                     </div>
                 </div>
                 <div class="input-group">
                     <label>Nombre del Titular</label>
-                    <input type="text" id="cfgTitular" placeholder="Ej: Tu Nombre o Empresa" autocomplete="off">
+                    <input type="text" id="cfgTitular" placeholder="Ej: Juan Pérez" required autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>Nota adicional para el cliente (Opcional)</label>
-                    <input type="text" id="cfgNota" placeholder="Ej: Por favor enviar comprobante una vez realizado el pago" autocomplete="off">
+                    <input type="text" id="cfgNota" placeholder="Ej: Por favor enviar capture una vez realizado el pago" autocomplete="off">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfigPago')">Cerrar</button>
-                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;">
-                        <span>Guardar Cambios</span>
+                <div style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="cfgEsPredeterminado" style="width:16px; height:16px; accent-color:var(--accent);">
+                    <label for="cfgEsPredeterminado" style="font-size:0.82rem; color:var(--text-muted); cursor:pointer;">
+                        Marcar como cuenta predeterminada para WhatsApp
+                    </label>
+                </div>
+                <div class="modal-footer" style="margin-top:14px;">
+                    <button type="button" class="btn-cancel" onclick="cancelarEdicionCuentaPago()">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarCuentaPago">
+                        <span>Guardar Cuenta</span>
                     </button>
                 </div>
             </form>
@@ -1131,6 +1319,7 @@
         let filtroActual = 'pendientes';
         let textoBusquedaCuentas = '';
         let textoBusquedaDirectorio = '';
+        let cuentaSeleccionadaParaWhatsApp = null;
 
         document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
 
@@ -1225,34 +1414,389 @@
             }
         });
 
-        // ================= CONFIGURACIÓN DE PAGO MÓVIL =================
-        window.abrirModalConfigPago = function () {
-            const saved = localStorage.getItem('config_pago_movil_v1');
-            if (saved) {
+        // ================= GESTIÓN MÚLTIPLES CUENTAS DE PAGO MÓVIL =================
+        function obtenerCuentasPago() {
+            const guardadas = localStorage.getItem('cuentas_pago_movil_v2');
+            if (guardadas) {
                 try {
-                    const data = JSON.parse(saved);
-                    document.getElementById('cfgBanco').value = data.banco || '';
-                    document.getElementById('cfgTelefono').value = data.telefono || '';
-                    document.getElementById('cfgCedula').value = data.cedula || '';
-                    document.getElementById('cfgTitular').value = data.titular || '';
-                    document.getElementById('cfgNota').value = data.nota || '';
+                    return JSON.parse(guardadas);
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            // Migración transparente desde v1 si existía
+            const oldV1 = localStorage.getItem('config_pago_movil_v1');
+            if (oldV1) {
+                try {
+                    const v1 = JSON.parse(oldV1);
+                    if (v1.banco || v1.telefono || v1.cedula || v1.titular) {
+                        const inicial = [{
+                            id: 'pago_' + Date.now(),
+                            alias: v1.banco ? `${v1.banco} (Principal)` : 'Cuenta Principal',
+                            banco: v1.banco || '',
+                            telefono: v1.telefono || '',
+                            cedula: v1.cedula || '',
+                            titular: v1.titular || '',
+                            nota: v1.nota || '',
+                            esPredeterminado: true
+                        }];
+                        localStorage.setItem('cuentas_pago_movil_v2', JSON.stringify(inicial));
+                        return inicial;
+                    }
                 } catch (e) { }
             }
+
+            return [];
+        }
+
+        function guardarCuentasPagoEnStorage(lista) {
+            localStorage.setItem('cuentas_pago_movil_v2', JSON.stringify(lista));
+            actualizarContadorCuentasHeader();
+        }
+
+        function actualizarContadorCuentasHeader() {
+            const cuentasPago = obtenerCuentasPago();
+            const contadorEl = document.getElementById('contadorCuentasPago');
+            if (contadorEl) {
+                contadorEl.textContent = cuentasPago.length;
+            }
+        }
+
+        actualizarContadorCuentasHeader();
+
+        window.abrirModalConfigPago = function () {
+            renderizarListaCuentasPagoUI();
+            document.getElementById('seccionListaCuentasPago').style.display = 'block';
+            document.getElementById('formConfigPago').style.display = 'none';
             window.abrirModal('modalConfigPago');
         };
 
-        window.guardarConfigPago = function (e) {
+        function renderizarListaCuentasPagoUI() {
+            const contenedor = document.getElementById('contenedorCuentasPagoGuardadas');
+            const cuentasPago = obtenerCuentasPago();
+
+            if (cuentasPago.length === 0) {
+                contenedor.innerHTML = `
+                  <div class="empty-state" style="padding:20px 10px;">
+                    No tienes cuentas de Pago Móvil guardadas aún.<br>
+                    <button type="button" class="btn-submit btn-blue" style="margin-top:10px; width:auto; display:inline-flex; padding:8px 16px; font-size:0.85rem;" onclick="mostrarFormularioNuevaCuenta()">
+                      ➕ Agregar tu primera cuenta
+                    </button>
+                  </div>
+                `;
+                return;
+            }
+
+            const html = cuentasPago.map(p => {
+                const safeId = escapeHTML(p.id);
+                const safeAlias = escapeHTML(p.alias || p.banco);
+                const safeBanco = escapeHTML(p.banco);
+                const safeTelefono = escapeHTML(p.telefono);
+                const safeCedula = escapeHTML(p.cedula);
+                const safeTitular = escapeHTML(p.titular);
+                const isDefault = !!p.esPredeterminado;
+
+                return `
+                  <div class="cuenta-pago-card ${isDefault ? 'is-default' : ''}">
+                    <div class="cuenta-pago-info">
+                      <div class="cuenta-pago-header">
+                        <span>${safeAlias}</span>
+                        ${isDefault ? `<span class="badge badge-paid" style="font-size:0.65rem; padding:2px 6px;">⭐ Predeterminada</span>` : ''}
+                      </div>
+                      <div class="cuenta-pago-details">
+                        <div>🏦 <strong>Banco:</strong> ${safeBanco}</div>
+                        <div>📱 <strong>Tel:</strong> ${safeTelefono} · 🪪 <strong>CI/RIF:</strong> ${safeCedula}</div>
+                        <div>👤 <strong>Titular:</strong> ${safeTitular}</div>
+                        ${p.nota ? `<div style="font-style:italic; color:#64748b; margin-top:2px;">"${escapeHTML(p.nota)}"</div>` : ''}
+                      </div>
+                    </div>
+                    <div class="cuenta-pago-actions">
+                      ${!isDefault ? `<button type="button" class="btn-mini" title="Marcar como predeterminada" onclick="marcarPredeterminada('${safeId}')">⭐ Usar por defecto</button>` : ''}
+                      <button type="button" class="btn-mini" onclick="editarCuentaPago('${safeId}')">✏️ Editar</button>
+                      <button type="button" class="btn-mini danger" onclick="eliminarCuentaPago('${safeId}')">🗑️ Borrar</button>
+                    </div>
+                  </div>
+                `;
+            }).join('');
+
+            contenedor.innerHTML = html;
+        }
+
+        window.mostrarFormularioNuevaCuenta = function () {
+            document.getElementById('cfgEditId').value = '';
+            document.getElementById('cfgFormTitulo').textContent = '➕ Agregar Cuenta de Pago Móvil';
+            document.getElementById('formConfigPago').reset();
+
+            const cuentasPago = obtenerCuentasPago();
+            document.getElementById('cfgEsPredeterminado').checked = cuentasPago.length === 0;
+
+            document.getElementById('seccionListaCuentasPago').style.display = 'none';
+            document.getElementById('formConfigPago').style.display = 'block';
+            setTimeout(() => document.getElementById('cfgAlias').focus(), 100);
+        };
+
+        window.cancelarEdicionCuentaPago = function () {
+            document.getElementById('formConfigPago').reset();
+            document.getElementById('formConfigPago').style.display = 'none';
+            document.getElementById('seccionListaCuentasPago').style.display = 'block';
+        };
+
+        window.guardarCuentaPagoSubmit = function (e) {
             e.preventDefault();
-            const config = {
-                banco: document.getElementById('cfgBanco').value.trim(),
-                telefono: document.getElementById('cfgTelefono').value.trim(),
-                cedula: document.getElementById('cfgCedula').value.trim(),
-                titular: document.getElementById('cfgTitular').value.trim(),
-                nota: document.getElementById('cfgNota').value.trim()
-            };
-            localStorage.setItem('config_pago_movil_v1', JSON.stringify(config));
-            window.cerrarModal('modalConfigPago');
-            window.mostrarToast('Datos de Pago Móvil guardados con éxito', 'success');
+            const editId = document.getElementById('cfgEditId').value;
+            const alias = document.getElementById('cfgAlias').value.trim();
+            const banco = document.getElementById('cfgBanco').value.trim();
+            const telefono = document.getElementById('cfgTelefono').value.trim();
+            const cedula = document.getElementById('cfgCedula').value.trim();
+            const titular = document.getElementById('cfgTitular').value.trim();
+            const nota = document.getElementById('cfgNota').value.trim();
+            const esPredeterminado = document.getElementById('cfgEsPredeterminado').checked;
+
+            if (!alias || !banco || !telefono || !cedula || !titular) {
+                window.mostrarToast('Por favor completa los campos requeridos', 'error');
+                return;
+            }
+
+            let cuentasPago = obtenerCuentasPago();
+
+            if (editId) {
+                // Editar cuenta existente
+                const index = cuentasPago.findIndex(p => p.id === editId);
+                if (index !== -1) {
+                    if (esPredeterminado) {
+                        cuentasPago.forEach(p => p.esPredeterminado = false);
+                    }
+                    cuentasPago[index] = {
+                        ...cuentasPago[index],
+                        alias,
+                        banco,
+                        telefono,
+                        cedula,
+                        titular,
+                        nota,
+                        esPredeterminado: esPredeterminado || cuentasPago.length === 1
+                    };
+                    window.mostrarToast('Cuenta de pago actualizada', 'success');
+                }
+            } else {
+                // Nueva cuenta
+                if (esPredeterminado || cuentasPago.length === 0) {
+                    cuentasPago.forEach(p => p.esPredeterminado = false);
+                }
+                const nueva = {
+                    id: 'pago_' + Date.now(),
+                    alias,
+                    banco,
+                    telefono,
+                    cedula,
+                    titular,
+                    nota,
+                    esPredeterminado: esPredeterminado || cuentasPago.length === 0
+                };
+                cuentasPago.push(nueva);
+                window.mostrarToast(`Cuenta "${alias}" registrada con éxito`, 'success');
+            }
+
+            guardarCuentasPagoEnStorage(cuentasPago);
+            renderizarListaCuentasPagoUI();
+            document.getElementById('formConfigPago').style.display = 'none';
+            document.getElementById('seccionListaCuentasPago').style.display = 'block';
+        };
+
+        window.editarCuentaPago = function (id) {
+            const cuentasPago = obtenerCuentasPago();
+            const p = cuentasPago.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('cfgEditId').value = p.id;
+            document.getElementById('cfgFormTitulo').textContent = `✏️ Editar Cuenta: ${p.alias}`;
+            document.getElementById('cfgAlias').value = p.alias || '';
+            document.getElementById('cfgBanco').value = p.banco || '';
+            document.getElementById('cfgTelefono').value = p.telefono || '';
+            document.getElementById('cfgCedula').value = p.cedula || '';
+            document.getElementById('cfgTitular').value = p.titular || '';
+            document.getElementById('cfgNota').value = p.nota || '';
+            document.getElementById('cfgEsPredeterminado').checked = !!p.esPredeterminado;
+
+            document.getElementById('seccionListaCuentasPago').style.display = 'none';
+            document.getElementById('formConfigPago').style.display = 'block';
+        };
+
+        window.marcarPredeterminada = function (id) {
+            let cuentasPago = obtenerCuentasPago();
+            cuentasPago.forEach(p => {
+                p.esPredeterminado = (p.id === id);
+            });
+            guardarCuentasPagoEnStorage(cuentasPago);
+            renderizarListaCuentasPagoUI();
+            window.mostrarToast('Cuenta predeterminada para WhatsApp actualizada', 'info');
+        };
+
+        window.eliminarCuentaPago = function (id) {
+            const cuentasPago = obtenerCuentasPago();
+            const p = cuentasPago.find(item => item.id === id);
+            if (!p) return;
+
+            window.mostrarConfirmacion({
+                titulo: '¿Eliminar Cuenta de Pago?',
+                mensaje: `¿Deseas eliminar la cuenta "${p.alias || p.banco}"?`,
+                textoConfirmar: 'Eliminar',
+                esPeligroso: true,
+                onConfirm: () => {
+                    let filtradas = cuentasPago.filter(item => item.id !== id);
+                    if (p.esPredeterminado && filtradas.length > 0) {
+                        filtradas[0].esPredeterminado = true;
+                    }
+                    guardarCuentasPagoEnStorage(filtradas);
+                    renderizarListaCuentasPagoUI();
+                    window.mostrarToast('Cuenta de pago eliminada', 'info');
+                }
+            });
+        };
+
+        // ================= SELECCIÓN DE PAGO ANTES DE ENVIAR WHATSAPP =================
+        window.abrirModalSeleccionarPago = function (cuentaId) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c) return;
+
+            cuentaSeleccionadaParaWhatsApp = c;
+            const items = Array.isArray(c.items) ? c.items : [];
+            const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+            const totalDeudaUSD = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const totalAbonadoUSD = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoPendienteUSD = Math.max(0, totalDeudaUSD - totalAbonadoUSD);
+            const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('waModalCliente').textContent = c.cliente;
+            document.getElementById('waModalMonto').textContent = `$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)`;
+
+            const contenedor = document.getElementById('listaOpcionesPagoWhatsApp');
+            const cuentasPago = obtenerCuentasPago();
+
+            let htmlOpciones = '';
+
+            if (cuentasPago.length === 0) {
+                htmlOpciones += `
+                  <div style="background:#090e17; border:1px dashed var(--card-border); border-radius:8px; padding:12px; margin-bottom:10px; font-size:0.83rem; color:var(--text-muted); text-align:center;">
+                    No tienes cuentas de Pago Móvil guardadas aún.<br>
+                    <button type="button" class="btn-mini" style="margin-top:6px; background:var(--blue); color:#fff; border:none; padding:4px 10px;" onclick="window.cerrarModal('modalSeleccionarPagoWhatsApp'); window.abrirModalConfigPago();">
+                      ⚙️ Agregar Cuentas de Pago
+                    </button>
+                  </div>
+                `;
+            } else {
+                htmlOpciones += cuentasPago.map((p, idx) => {
+                    const isDefault = !!p.esPredeterminado;
+                    const safeId = escapeHTML(p.id);
+                    const safeAlias = escapeHTML(p.alias || p.banco);
+                    const safeBanco = escapeHTML(p.banco);
+                    const safeTel = escapeHTML(p.telefono);
+                    const safeCI = escapeHTML(p.cedula);
+                    const safeTitular = escapeHTML(p.titular);
+                    const checked = isDefault || idx === 0;
+
+                    return `
+                      <div class="pago-select-item ${checked ? 'active' : ''}" onclick="window.seleccionarOpcionPago(this, '${safeId}')">
+                        <input type="radio" name="opcionPagoWA" id="radio_${safeId}" value="${safeId}" ${checked ? 'checked' : ''}>
+                        <div class="pago-select-info">
+                          <div class="pago-select-title">
+                            <span>${safeAlias}</span>
+                            ${isDefault ? `<span class="badge badge-paid" style="font-size:0.62rem; padding:1px 5px;">⭐ Predeterminada</span>` : ''}
+                          </div>
+                          <div class="pago-select-sub">
+                            🏦 <strong>${safeBanco}</strong> · 📱 ${safeTel} · 🪪 ${safeCI}<br>
+                            👤 ${safeTitular}
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                }).join('');
+            }
+
+            // Opción para no incluir datos de pago (solo detalle)
+            const sinDatosChecked = (cuentasPago.length === 0);
+            htmlOpciones += `
+              <div class="pago-select-item ${sinDatosChecked ? 'active' : ''}" onclick="window.seleccionarOpcionPago(this, 'ninguno')">
+                <input type="radio" name="opcionPagoWA" id="radio_ninguno" value="ninguno" ${sinDatosChecked ? 'checked' : ''}>
+                <div class="pago-select-info">
+                  <div class="pago-select-title" style="color:#cbd5e1;">
+                    <span>❌ No incluir datos de pago</span>
+                  </div>
+                  <div class="pago-select-sub">
+                    Enviar únicamente el detalle de productos y el saldo total a pagar.
+                  </div>
+                </div>
+              </div>
+            `;
+
+            contenedor.innerHTML = htmlOpciones;
+            window.abrirModal('modalSeleccionarPagoWhatsApp');
+        };
+
+        window.seleccionarOpcionPago = function (elemento, valor) {
+            document.querySelectorAll('.pago-select-item').forEach(el => el.classList.remove('active'));
+            elemento.classList.add('active');
+            const radio = elemento.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        };
+
+        window.ejecutarEnvioWhatsApp = function () {
+            if (!cuentaSeleccionadaParaWhatsApp) return;
+            const c = cuentaSeleccionadaParaWhatsApp;
+
+            let limpio = (c.telefono || '').replace(/\D/g, '');
+            if (!limpio) {
+                window.mostrarToast("Este cliente no tiene un teléfono válido registrado.", "error");
+                return;
+            }
+
+            if (limpio.startsWith('0')) {
+                limpio = '58' + limpio.substring(1);
+            } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
+                limpio = '58' + limpio;
+            }
+
+            const items = Array.isArray(c.items) ? c.items : [];
+            const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+            const totalDeudaUSD = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const totalAbonadoUSD = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoPendienteUSD = Math.max(0, totalDeudaUSD - totalAbonadoUSD);
+            const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const tasaStr = tasaActual.toFixed(2);
+
+            let desgloseProductos = items.map(i => `▪ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
+
+            const tipoSaldo = abonos.length > 0 ? 'saldo pendiente' : 'saldo total';
+            let mensaje = `Hola ${c.cliente}, un cordial saludo. Le escribo para recordarle el ${tipoSaldo} de tu cuenta: *$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*\n*Detalle de tu cuenta:*\n${desgloseProductos}`;
+
+            if (abonos.length > 0) {
+                const desgloseAbonos = abonos.map(a => `▪ -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
+                mensaje += `\n*Abonos realizados:*\n${desgloseAbonos}`;
+            }
+
+            // Obtener opción de pago seleccionada por el usuario
+            const radioSeleccionado = document.querySelector('input[name="opcionPagoWA"]:checked');
+            const valorSeleccionado = radioSeleccionado ? radioSeleccionado.value : 'ninguno';
+
+            if (valorSeleccionado && valorSeleccionado !== 'ninguno') {
+                const cuentasPago = obtenerCuentasPago();
+                const cuentaElegida = cuentasPago.find(p => p.id === valorSeleccionado);
+                if (cuentaElegida) {
+                    mensaje += `\n\n📌 *Datos para Pago Móvil (${cuentaElegida.alias || cuentaElegida.banco}):*`;
+                    if (cuentaElegida.banco) mensaje += `\n🏦 *Banco:* ${cuentaElegida.banco}`;
+                    if (cuentaElegida.telefono) mensaje += `\n📱 *Teléfono:* ${cuentaElegida.telefono}`;
+                    if (cuentaElegida.cedula) mensaje += `\n🪪 *Cédula/RIF:* ${cuentaElegida.cedula}`;
+                    if (cuentaElegida.titular) mensaje += `\n👤 *Titular:* ${cuentaElegida.titular}`;
+                    if (cuentaElegida.nota) mensaje += `\n_${cuentaElegida.nota}_`;
+                }
+            }
+
+            mensaje += `\n\nMe avisa por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+
+            window.cerrarModal('modalSeleccionarPagoWhatsApp');
+            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
         };
 
         // ================= BUSCADOR EN TIEMPO REAL =================
@@ -1718,71 +2262,6 @@
             renderizarCuentas();
         };
 
-        // ================= WHATSAPP INTEGRADO CON PAGOS =================
-        window.abrirWhatsApp = function (id) {
-            const c = cuentas.find(item => item.id === id);
-            if (!c) return;
-
-            let limpio = (c.telefono || '').replace(/\D/g, '');
-            if (!limpio) {
-                window.mostrarToast("Este cliente no tiene un teléfono válido registrado.", "error");
-                return;
-            }
-
-            // Formato inteligente para números venezolanos e internacionales
-            if (limpio.startsWith('0')) {
-                limpio = '58' + limpio.substring(1);
-            } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
-                limpio = '58' + limpio;
-            }
-
-            const items = Array.isArray(c.items) ? c.items : [];
-            const abonos = Array.isArray(c.abonos) ? c.abonos : [];
-            const totalDeudaUSD = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
-            const totalAbonadoUSD = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
-            const saldoPendienteUSD = Math.max(0, totalDeudaUSD - totalAbonadoUSD);
-            const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const tasaStr = tasaActual.toFixed(2);
-
-            let desgloseProductos = items.map(i => `▪ ${i.concepto}${i.fecha ? ` (${i.fecha})` : ''}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
-
-            let mensaje = `Hola *${c.cliente}*, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:\n\n*Detalle de compras:*\n${desgloseProductos}`;
-
-            if (abonos.length > 0) {
-                const desgloseAbonos = abonos.map(a => `▪ ${a.fecha || ''}: -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
-                mensaje += `\n\nTotal compras: *$${totalDeudaUSD.toFixed(2)}*`;
-                mensaje += `\n\n*Abonos realizados:*\n${desgloseAbonos}`;
-                mensaje += `\nTotal abonado: *-$${totalAbonadoUSD.toFixed(2)}*`;
-                mensaje += `\n\n👉 *SALDO PENDIENTE POR PAGAR: $${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*`;
-                mensaje += `\n_(Calculado a tasa BCV: ${tasaStr} Bs)_`;
-            } else {
-                mensaje += `\n\n👉 *SALDO TOTAL A PAGAR: $${totalDeudaUSD.toFixed(2)} (${saldoPendienteBs} Bs)*`;
-                mensaje += `\n_(Calculado a tasa BCV: ${tasaStr} Bs)_`;
-            }
-
-            // Datos de Pago Móvil configurados
-            const savedConfig = localStorage.getItem('config_pago_movil_v1');
-            if (savedConfig) {
-                try {
-                    const cfg = JSON.parse(savedConfig);
-                    const tieneDatos = cfg.banco || cfg.telefono || cfg.cedula || cfg.titular;
-                    if (tieneDatos) {
-                        mensaje += `\n\n📌 *Datos para Pago Móvil:*`;
-                        if (cfg.banco) mensaje += `\n🏦 *Banco:* ${cfg.banco}`;
-                        if (cfg.telefono) mensaje += `\n📱 *Teléfono:* ${cfg.telefono}`;
-                        if (cfg.cedula) mensaje += `\n🪪 *Cédula/RIF:* ${cfg.cedula}`;
-                        if (cfg.titular) mensaje += `\n👤 *Titular:* ${cfg.titular}`;
-                        if (cfg.nota) mensaje += `\n_${cfg.nota}_`;
-                    }
-                } catch (e) { }
-            }
-
-            mensaje += `\n\nMe avisas por favor al realizar el pago para registrar tu comprobante. ¡Muchas gracias!`;
-
-            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
-            window.open(url, '_blank');
-        };
-
         // ================= RENDERIZADO PRINCIPAL =================
         function renderizarCuentas() {
             const contenedor = document.getElementById('listaCuentas');
@@ -1945,7 +2424,7 @@
                 if (!c.pagado) {
                     actionsHTML = `
                       <div class="actions-grid">
-                        <button class="btn-wa" onclick="abrirWhatsApp('${safeId}')">
+                        <button class="btn-wa" onclick="abrirModalSeleccionarPago('${safeId}')">
                           <span>💬 Factura a WhatsApp</span>
                         </button>
                         <div class="actions-row">
