@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Cuentas Cobranzas V2.1</title>
+    <title>Control Cuentas Cobranzas V3.0</title>
     <style>
         :root {
-            --bg: #0f172a;
+            --bg: #0b1120;
             --card-bg: #1e293b;
             --card-border: #334155;
             --text-main: #f8fafc;
@@ -18,6 +18,8 @@
             --wa-hover: #1ebd5a;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --blue: #3b82f6;
+            --blue-hover: #2563eb;
             --radius: 12px;
         }
 
@@ -45,12 +47,41 @@
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--card-border);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .header h1 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-main);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-settings-pill {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-settings-pill:hover {
+            background: #334155;
+            border-color: #475569;
         }
 
         .rate-pill {
@@ -71,9 +102,10 @@
             color: #34d399;
             font-weight: 700;
             font-size: 0.85rem;
-            width: 55px;
+            width: 58px;
             text-align: right;
             outline: none;
+            padding: 0;
         }
 
         /* Métricas */
@@ -155,7 +187,7 @@
             gap: 10px;
         }
 
-        input {
+        input, select {
             width: 100%;
             background: #090e17;
             border: 1px solid var(--card-border);
@@ -167,7 +199,7 @@
             transition: border-color 0.2s;
         }
 
-        input:focus {
+        input:focus, select:focus {
             border-color: var(--accent);
         }
 
@@ -186,6 +218,7 @@
             justify-content: center;
             gap: 8px;
             margin-top: 6px;
+            transition: background 0.2s;
         }
 
         .btn-submit:active {
@@ -198,11 +231,54 @@
         }
 
         .btn-blue {
-            background: #3b82f6;
+            background: var(--blue);
         }
 
         .btn-blue:active {
-            background: #2563eb;
+            background: var(--blue-hover);
+        }
+
+        /* Buscador en tiempo real */
+        .search-box {
+            position: relative;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding-left: 36px;
+            padding-right: 36px;
+            background: #090e17;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            height: 42px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-box .btn-clear-search {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .search-box .btn-clear-search:hover {
+            color: var(--text-main);
         }
 
         /* Listados */
@@ -210,7 +286,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .list-header h2 {
@@ -220,7 +298,7 @@
 
         .filter-tabs {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             background: #090e17;
             padding: 4px;
             border-radius: 20px;
@@ -231,11 +309,12 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 14px;
             font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .tab-btn.active {
@@ -246,7 +325,7 @@
         .sales-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         /* Tarjetas de Cuenta y Cliente */
@@ -261,15 +340,16 @@
 
         .sale-card.is-paid {
             border-color: #1e3a2f;
-            background: #11221b;
-            opacity: 0.85;
+            background: #0d1e18;
+            opacity: 0.9;
         }
 
         .card-top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            gap: 8px;
         }
 
         .client-name {
@@ -278,12 +358,20 @@
             color: var(--text-main);
         }
 
+        .badges-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
         .badge {
             font-size: 0.7rem;
             padding: 3px 8px;
             border-radius: 12px;
             font-weight: 700;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .badge-pending {
@@ -292,17 +380,32 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
+        .badge-partial {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
         .badge-paid {
             background: rgba(16, 185, 129, 0.15);
             color: var(--accent);
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
+        .badge-method {
+            background: rgba(147, 197, 253, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(147, 197, 253, 0.3);
+            font-size: 0.65rem;
+            text-transform: none;
+        }
+
+        /* Desglose de Productos */
         .items-breakdown {
             background: #090e17;
             border-radius: 8px;
             padding: 10px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-size: 0.85rem;
         }
 
@@ -315,7 +418,8 @@
         .items-breakdown li {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
+            align-items: center;
+            padding: 5px 0;
             border-bottom: 1px solid #1e293b;
             color: var(--text-muted);
         }
@@ -326,6 +430,7 @@
 
         .item-concept {
             flex-grow: 1;
+            padding-right: 8px;
         }
 
         .item-actions {
@@ -340,7 +445,7 @@
             color: #64748b;
             cursor: pointer;
             font-size: 0.75rem;
-            padding: 2px 5px;
+            padding: 2px 6px;
             border-radius: 4px;
             transition: all 0.2s;
             line-height: 1;
@@ -356,27 +461,83 @@
             color: #cbd5e1;
         }
 
-        .sale-card.is-paid .client-name,
-        .sale-card.is-paid .item-concept,
-        .sale-card.is-paid .item-price,
-        .sale-card.is-paid .amount-usd {
-            text-decoration: line-through;
-            color: #64748b;
+        /* Desglose de Abonos */
+        .abonos-breakdown {
+            background: #0a192f;
+            border: 1px dashed #1e3a5f;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+        }
+
+        .abonos-header {
+            display: flex;
+            justify-content: space-between;
+            color: #38bdf8;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .abonos-breakdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .abono-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid #13283f;
+            color: #94a3b8;
+        }
+
+        .abono-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Resumen de Montos */
+        .amounts-summary {
+            background: #090e17;
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin: 10px 0 12px 0;
+        }
+
+        .amounts-row-sub {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 2px 0;
+        }
+
+        .text-success {
+            color: var(--accent) !important;
+        }
+
+        .text-warning {
+            color: var(--warning) !important;
         }
 
         .amounts-box {
-            margin: 10px 0 14px 0;
+            margin: 8px 0 12px 0;
             display: flex;
             align-items: baseline;
             justify-content: flex-end;
             gap: 8px;
             border-top: 1px dashed var(--card-border);
-            padding-top: 10px;
+            padding-top: 8px;
         }
 
         .amounts-box span.label-total {
             flex-grow: 1;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 600;
@@ -390,13 +551,18 @@
 
         .amount-bs {
             font-size: 0.9rem;
-            color: #64748b;
+            color: #94a3b8;
         }
 
-        /* Botones */
+        /* Botones de Acción */
         .actions-grid {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .actions-row {
+            display: flex;
             gap: 8px;
             align-items: center;
         }
@@ -405,7 +571,7 @@
             background: #0f3320;
             color: var(--wa-color);
             border: 1px solid #165e38;
-            padding: 8px 12px;
+            padding: 9px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -415,6 +581,8 @@
             justify-content: center;
             gap: 6px;
             text-decoration: none;
+            width: 100%;
+            transition: all 0.2s;
         }
 
         .btn-wa:active {
@@ -422,11 +590,30 @@
             color: #fff;
         }
 
-        .sale-card.is-paid .btn-wa {
-            display: none;
+        .btn-abono {
+            flex: 1;
+            background: #1e3a8a;
+            color: #bfdbfe;
+            border: 1px solid #2563eb;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-abono:hover, .btn-abono:active {
+            background: #2563eb;
+            color: #fff;
         }
 
         .btn-toggle {
+            flex: 1;
             background: #1e293b;
             border: 1px solid var(--card-border);
             color: var(--text-muted);
@@ -435,6 +622,13 @@
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-toggle:hover {
+            color: var(--text-main);
+            border-color: #475569;
         }
 
         .sale-card.is-paid .btn-toggle {
@@ -447,29 +641,184 @@
             background: transparent;
             border: none;
             color: #64748b;
-            padding: 8px;
+            padding: 8px 10px;
             cursor: pointer;
             font-size: 1.1rem;
+            border-radius: 6px;
+            transition: color 0.2s;
+        }
+
+        .btn-delete:hover {
+            color: var(--danger);
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
             color: var(--text-muted);
             font-size: 0.9rem;
         }
 
         .loading-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
             color: var(--accent);
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
         .divider {
             border-top: 2px dashed var(--card-border);
-            margin: 40px 0 20px 0;
+            margin: 35px 0 20px 0;
+        }
+
+        /* Modales */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-dialog {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            transform: translateY(20px) scale(0.96);
+            transition: transform 0.2s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-backdrop.show .modal-dialog {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn-cancel {
+            background: #334155;
+            color: #e2e8f0;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #475569;
+        }
+
+        /* Notificaciones Toast */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            left: 16px;
+            max-width: 420px;
+            margin: 0 auto;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            color: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+            animation: toastSlideDown 0.3s ease forwards;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.toast-success {
+            border-left: 4px solid var(--accent);
+        }
+
+        .toast.toast-error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.toast-info {
+            border-left: 4px solid var(--blue);
+        }
+
+        @keyframes toastSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -479,10 +828,15 @@
     <!-- ================= SECCIÓN: VENTAS ================= -->
     <div class="header">
         <h1>📦 Cuentas Abiertas</h1>
-        <div class="rate-pill">
-            <span>Tasa BCV:</span>
-            <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()">
-            <span>Bs</span>
+        <div class="header-actions">
+            <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()" title="Configurar datos de Pago Móvil">
+                ⚙️ Datos Pago
+            </button>
+            <div class="rate-pill">
+                <span>Tasa BCV:</span>
+                <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()">
+                <span>Bs</span>
+            </div>
         </div>
     </div>
 
@@ -520,12 +874,19 @@
             </div>
             <div class="input-group">
                 <label>Detalle / Producto</label>
-                <input type="text" id="concepto" placeholder="Ej: Galletas y Helados" required autocomplete="off">
+                <input type="text" id="concepto" placeholder="Ej: Harina PAN y Café" required autocomplete="off">
             </div>
             <button type="submit" class="btn-submit" id="btnSubmit">
                 <span>Añadir a la Cuenta</span>
             </button>
         </form>
+    </div>
+
+    <!-- Buscador de Cuentas en Tiempo Real -->
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="buscarCuenta" placeholder="Buscar por cliente, teléfono o producto..." oninput="filtrarEnTiempoReal()" autocomplete="off">
+        <button type="button" id="btnLimpiarBusqueda" class="btn-clear-search" onclick="limpiarBusqueda()" style="display:none;" title="Limpiar búsqueda">✕</button>
     </div>
 
     <div class="list-header">
@@ -567,6 +928,12 @@
         </form>
     </div>
 
+    <!-- Buscador de Directorio -->
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="buscarDirectorio" placeholder="Buscar contacto en directorio..." oninput="filtrarDirectorioEnTiempoReal()" autocomplete="off">
+    </div>
+
     <div class="list-header">
         <h2>Directorio Guardado</h2>
     </div>
@@ -575,7 +942,173 @@
         <div class="loading-state">Cargando directorio...</div>
     </div>
 
-    <!-- SCRIPT TIPO MÓDULO PARA IMPORTAR FIREBASE -->
+    <!-- ================= CONTENEDOR DE TOASTS ================= -->
+    <div id="toastContainer"></div>
+
+    <!-- ================= MODAL: REGISTRAR ABONO ================= -->
+    <div id="modalAbono" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalAbono')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>💳 Registrar Abono</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalAbono')">✕</button>
+            </div>
+            <form id="formAbono" onsubmit="guardarAbono(event)">
+                <input type="hidden" id="abonoCuentaId">
+                <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="color:var(--text-muted);">Cliente:</span>
+                        <strong id="abonoClienteNombre" style="color:var(--text-main);"></strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:var(--text-muted);">Saldo Pendiente:</span>
+                        <strong id="abonoSaldoPendiente" style="color:var(--warning);"></strong>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Monto a Abonar en USD ($)</label>
+                    <input type="number" id="abonoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteAbono()">
+                    <small id="abonoEquivalenteBs" style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
+                </div>
+
+                <div class="input-group">
+                    <label>Método de Pago</label>
+                    <select id="abonoMetodo" required>
+                        <option value="Pago Móvil">Pago Móvil</option>
+                        <option value="Efectivo USD">Efectivo USD ($)</option>
+                        <option value="Efectivo Bs">Efectivo Bs</option>
+                        <option value="Zelle">Zelle</option>
+                        <option value="Transferencia">Transferencia Bancaria</option>
+                        <option value="Punto de Venta">Punto de Venta</option>
+                        <option value="Binance / Cripto">Binance / Cripto</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Referencia o Nota (Opcional)</label>
+                    <input type="text" id="abonoReferencia" placeholder="Ej: Ref 8492 o Billetes $5" autocomplete="off">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalAbono')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarAbono">
+                        <span>Guardar Abono</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: MARCAR PAGADO TOTAL ================= -->
+    <div id="modalMarcarPagado" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalMarcarPagado')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>✓ Confirmar Pago Total</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalMarcarPagado')">✕</button>
+            </div>
+            <form id="formMarcarPagado" onsubmit="confirmarPagoTotalSubmit(event)">
+                <input type="hidden" id="pagoTotalCuentaId">
+                <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="color:var(--text-muted);">Cliente:</span>
+                        <strong id="pagoTotalCliente" style="color:var(--text-main);"></strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:var(--text-muted);">Saldo a Cancelar:</span>
+                        <strong id="pagoTotalMonto" style="color:var(--accent);"></strong>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Método de Pago Recibido</label>
+                    <select id="pagoTotalMetodo" required>
+                        <option value="Pago Móvil">Pago Móvil</option>
+                        <option value="Efectivo USD">Efectivo USD ($)</option>
+                        <option value="Efectivo Bs">Efectivo Bs</option>
+                        <option value="Zelle">Zelle</option>
+                        <option value="Transferencia">Transferencia Bancaria</option>
+                        <option value="Punto de Venta">Punto de Venta</option>
+                        <option value="Binance / Cripto">Binance / Cripto</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Número de Referencia (Opcional)</label>
+                    <input type="text" id="pagoTotalReferencia" placeholder="Ej: Ref 123456" autocomplete="off">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalMarcarPagado')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnConfirmarPagoTotal">
+                        <span>Confirmar Pagado</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: CONFIGURAR DATOS DE PAGO MÓVIL ================= -->
+    <div id="modalConfigPago" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalConfigPago')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>⚙️ Mis Datos de Pago Móvil</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalConfigPago')">✕</button>
+            </div>
+            <form id="formConfigPago" onsubmit="guardarConfigPago(event)">
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+                    Estos datos se adjuntarán automáticamente en el mensaje de cobro por WhatsApp para que tus clientes paguen directamente.
+                </p>
+                <div class="input-group">
+                    <label>Banco</label>
+                    <input type="text" id="cfgBanco" placeholder="Ej: Banesco, Banco de Venezuela, Mercantil, etc." autocomplete="off">
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Teléfono Pago Móvil</label>
+                        <input type="tel" id="cfgTelefono" placeholder="Ej: 04121234567" autocomplete="off">
+                    </div>
+                    <div class="input-group">
+                        <label>Cédula / RIF</label>
+                        <input type="text" id="cfgCedula" placeholder="Ej: V-12345678" autocomplete="off">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Nombre del Titular</label>
+                    <input type="text" id="cfgTitular" placeholder="Ej: Tu Nombre o Empresa" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Nota adicional para el cliente (Opcional)</label>
+                    <input type="text" id="cfgNota" placeholder="Ej: Por favor enviar comprobante una vez realizado el pago" autocomplete="off">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfigPago')">Cerrar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;">
+                        <span>Guardar Cambios</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: CONFIRMACIÓN ELEGANTE ================= -->
+    <div id="modalConfirmacion" class="modal-backdrop">
+        <div class="modal-dialog" style="max-width:380px;">
+            <div class="modal-header" style="border-bottom:none; margin-bottom:4px;">
+                <h3 id="confirmTitulo">Confirmar acción</h3>
+            </div>
+            <p id="confirmMensaje" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;"></p>
+            <div class="modal-footer" style="margin-top:0;">
+                <button type="button" class="btn-cancel" id="btnConfirmCancelar">Cancelar</button>
+                <button type="button" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnConfirmAceptar">
+                    <span>Aceptar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SCRIPT TIPO MÓDULO PARA FIREBASE Y LÓGICA ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -596,10 +1129,12 @@
         let directorio = [];
         let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
         let filtroActual = 'pendientes';
+        let textoBusquedaCuentas = '';
+        let textoBusquedaDirectorio = '';
 
         document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
 
-        // Helper para prevenir vulnerabilidades XSS e inyecciones en HTML
+        // ================= HELPERS & SEGURIDAD =================
         function escapeHTML(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -610,12 +1145,142 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Generador seguro de IDs para Firestore basado en el nombre
         function normalizarIdCliente(nombre) {
             return encodeURIComponent(nombre.trim().toLowerCase()).replace(/%/g, "_");
         }
 
-        // ESCUCHADOR 1: DIRECTORIO PERMANENTE DE CLIENTES
+        // ================= SISTEMA DE TOASTS =================
+        window.mostrarToast = function (mensaje, tipo = 'success') {
+            const contenedor = document.getElementById('toastContainer');
+            if (!contenedor) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${tipo}`;
+
+            let icono = '✓';
+            if (tipo === 'error') icono = '✕';
+            if (tipo === 'info') icono = 'ℹ';
+
+            toast.innerHTML = `
+                <span style="font-weight:bold; font-size:1.1rem; line-height:1;">${icono}</span>
+                <span style="flex-grow:1; font-size:0.88rem;">${escapeHTML(mensaje)}</span>
+            `;
+
+            contenedor.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        };
+
+        // ================= SISTEMA DE MODALES Y CONFIRMACIÓN =================
+        window.abrirModal = function (id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.add('show');
+        };
+
+        window.cerrarModal = function (id) {
+            const m = document.getElementById(id);
+            if (m) m.classList.remove('show');
+        };
+
+        window.cerrarModalOnClickAfuera = function (e, id) {
+            if (e.target.id === id) {
+                window.cerrarModal(id);
+            }
+        };
+
+        let accionConfirmacionPendiente = null;
+
+        window.mostrarConfirmacion = function ({ titulo, mensaje, textoConfirmar = 'Confirmar', esPeligroso = false, onConfirm }) {
+            const modal = document.getElementById('modalConfirmacion');
+            document.getElementById('confirmTitulo').textContent = titulo || 'Confirmación';
+            document.getElementById('confirmMensaje').textContent = mensaje || '¿Estás seguro?';
+
+            const btnAceptar = document.getElementById('btnConfirmAceptar');
+            btnAceptar.querySelector('span').textContent = textoConfirmar;
+            if (esPeligroso) {
+                btnAceptar.style.background = 'var(--danger)';
+            } else {
+                btnAceptar.style.background = 'var(--accent)';
+            }
+
+            accionConfirmacionPendiente = onConfirm;
+            modal.classList.add('show');
+        };
+
+        document.getElementById('btnConfirmCancelar').addEventListener('click', () => {
+            document.getElementById('modalConfirmacion').classList.remove('show');
+            accionConfirmacionPendiente = null;
+        });
+
+        document.getElementById('btnConfirmAceptar').addEventListener('click', async () => {
+            document.getElementById('modalConfirmacion').classList.remove('show');
+            if (typeof accionConfirmacionPendiente === 'function') {
+                const fn = accionConfirmacionPendiente;
+                accionConfirmacionPendiente = null;
+                await fn();
+            }
+        });
+
+        // ================= CONFIGURACIÓN DE PAGO MÓVIL =================
+        window.abrirModalConfigPago = function () {
+            const saved = localStorage.getItem('config_pago_movil_v1');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    document.getElementById('cfgBanco').value = data.banco || '';
+                    document.getElementById('cfgTelefono').value = data.telefono || '';
+                    document.getElementById('cfgCedula').value = data.cedula || '';
+                    document.getElementById('cfgTitular').value = data.titular || '';
+                    document.getElementById('cfgNota').value = data.nota || '';
+                } catch (e) { }
+            }
+            window.abrirModal('modalConfigPago');
+        };
+
+        window.guardarConfigPago = function (e) {
+            e.preventDefault();
+            const config = {
+                banco: document.getElementById('cfgBanco').value.trim(),
+                telefono: document.getElementById('cfgTelefono').value.trim(),
+                cedula: document.getElementById('cfgCedula').value.trim(),
+                titular: document.getElementById('cfgTitular').value.trim(),
+                nota: document.getElementById('cfgNota').value.trim()
+            };
+            localStorage.setItem('config_pago_movil_v1', JSON.stringify(config));
+            window.cerrarModal('modalConfigPago');
+            window.mostrarToast('Datos de Pago Móvil guardados con éxito', 'success');
+        };
+
+        // ================= BUSCADOR EN TIEMPO REAL =================
+        window.filtrarEnTiempoReal = function () {
+            textoBusquedaCuentas = (document.getElementById('buscarCuenta').value || '').trim().toLowerCase();
+            const btnClear = document.getElementById('btnLimpiarBusqueda');
+            if (btnClear) {
+                btnClear.style.display = textoBusquedaCuentas ? 'block' : 'none';
+            }
+            renderizarCuentas();
+        };
+
+        window.limpiarBusqueda = function () {
+            const input = document.getElementById('buscarCuenta');
+            if (input) input.value = '';
+            textoBusquedaCuentas = '';
+            const btnClear = document.getElementById('btnLimpiarBusqueda');
+            if (btnClear) btnClear.style.display = 'none';
+            renderizarCuentas();
+        };
+
+        window.filtrarDirectorioEnTiempoReal = function () {
+            textoBusquedaDirectorio = (document.getElementById('buscarDirectorio').value || '').trim().toLowerCase();
+            renderizarDirectorioUI();
+        };
+
+        // ================= ESCUCHADORES FIRESTORE =================
+        // ESCUCHADOR 1: DIRECTORIO DE CLIENTES
         onSnapshot(collection(db, "clientes"), (snapshot) => {
             directorio = [];
             snapshot.forEach((doc) => {
@@ -623,7 +1288,6 @@
                 data.id = doc.id;
                 directorio.push(data);
             });
-            // Ordenar alfabéticamente
             directorio.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
             actualizarDatalist();
             renderizarDirectorioUI();
@@ -642,7 +1306,6 @@
         });
 
         // ================= FUNCIONES DE CLIENTES (DIRECTORIO) =================
-
         function actualizarDatalist() {
             const datalist = document.getElementById('listaDirectorio');
             datalist.innerHTML = '';
@@ -656,13 +1319,19 @@
         function renderizarDirectorioUI() {
             const contenedor = document.getElementById('listaDirectorioUI');
 
-            if (directorio.length === 0) {
-                contenedor.innerHTML = `<div class="empty-state">Tu agenda está vacía.</div>`;
+            const filtrados = directorio.filter(c => {
+                if (!textoBusquedaDirectorio) return true;
+                const matchNombre = (c.nombre || '').toLowerCase().includes(textoBusquedaDirectorio);
+                const matchTel = (c.telefono || '').toLowerCase().includes(textoBusquedaDirectorio);
+                return matchNombre || matchTel;
+            });
+
+            if (filtrados.length === 0) {
+                contenedor.innerHTML = `<div class="empty-state">${textoBusquedaDirectorio ? 'No se encontraron contactos que coincidan con la búsqueda.' : 'Tu agenda está vacía.'}</div>`;
                 return;
             }
 
-            // Construir HTML en una sola pasada para máximo rendimiento
-            const html = directorio.map(c => {
+            const html = filtrados.map(c => {
                 const safeId = escapeHTML(c.id);
                 const safeNombre = escapeHTML(c.nombre);
                 const safeTelefono = escapeHTML(c.telefono);
@@ -686,7 +1355,7 @@
             const telefono = document.getElementById('telefonoNuevo').value.trim();
 
             if (!nombre || !telefono) {
-                alert("Por favor ingresa nombre y teléfono.");
+                window.mostrarToast("Por favor ingresa nombre y teléfono", "error");
                 return;
             }
 
@@ -701,19 +1370,31 @@
                     telefono: telefono
                 }, { merge: true });
                 document.getElementById('formCliente').reset();
+                window.mostrarToast(`Cliente "${nombre}" guardado en directorio`, "success");
             } catch (error) {
-                alert("Error al guardar cliente: " + error.message);
+                window.mostrarToast("Error al guardar cliente: " + error.message, "error");
             }
 
             btn.innerHTML = "<span>Guardar en Directorio</span>";
             btn.disabled = false;
-        }
+        };
 
-        window.eliminarClienteDirectorio = async function (id) {
-            if (confirm('¿Deseas eliminar permanentemente a este cliente de tu agenda? (Sus ventas pasadas no se borrarán)')) {
-                await deleteDoc(doc(db, "clientes", id));
-            }
-        }
+        window.eliminarClienteDirectorio = function (id) {
+            window.mostrarConfirmacion({
+                titulo: '¿Eliminar del Directorio?',
+                mensaje: '¿Deseas eliminar permanentemente a este cliente de tu agenda? (Sus ventas históricas no se borrarán)',
+                textoConfirmar: 'Eliminar',
+                esPeligroso: true,
+                onConfirm: async () => {
+                    try {
+                        await deleteDoc(doc(db, "clientes", id));
+                        window.mostrarToast('Cliente eliminado de la agenda', 'info');
+                    } catch (err) {
+                        window.mostrarToast('Error al eliminar: ' + err.message, 'error');
+                    }
+                }
+            });
+        };
 
         window.autocompletarTelefono = function () {
             const val = document.getElementById('cliente').value.trim().toLowerCase();
@@ -726,15 +1407,15 @@
             if (clienteEncontrado) {
                 telInput.value = clienteEncontrado.telefono || '';
             }
-        }
+        };
 
         // ================= FUNCIONES DE VENTAS (CUENTAS) =================
-
         window.actualizarTasa = function () {
             tasaActual = parseFloat(document.getElementById('tasaBCV').value) || 1;
             localStorage.setItem('tasa_bcv_v4', tasaActual);
             renderizarCuentas();
-        }
+            window.mostrarToast(`Tasa BCV actualizada a ${tasaActual.toFixed(2)} Bs`, 'info');
+        };
 
         window.guardarVenta = async function (e) {
             e.preventDefault();
@@ -746,12 +1427,12 @@
             const fechaHoy = new Date().toLocaleDateString('es-VE');
 
             if (!nombre || !telefono || !concepto) {
-                alert("Por favor completa todos los campos requeridos.");
+                window.mostrarToast("Por favor completa todos los campos requeridos.", "error");
                 return;
             }
 
             if (isNaN(montoUSD) || montoUSD <= 0) {
-                alert("Por favor ingresa un monto válido mayor a 0.");
+                window.mostrarToast("Por favor ingresa un monto válido mayor a 0.", "error");
                 return;
             }
 
@@ -772,108 +1453,360 @@
                     const itemsPrevios = Array.isArray(cuentaActiva.items) ? cuentaActiva.items : [];
                     const nuevosItems = [...itemsPrevios, { concepto, monto: montoUSD, fecha: fechaHoy }];
                     await updateDoc(cuentaRef, { items: nuevosItems, telefono: telefono });
+                    window.mostrarToast(`Ítem añadido a la cuenta activa de ${nombre}`, "success");
                 } else {
                     await addDoc(collection(db, "cuentas"), {
                         cliente: nombre,
                         telefono: telefono,
                         pagado: false,
                         items: [{ concepto, monto: montoUSD, fecha: fechaHoy }],
+                        abonos: [],
                         timestamp: Date.now()
                     });
+                    window.mostrarToast(`Nueva cuenta creada para ${nombre}`, "success");
                 }
                 document.getElementById('formVenta').reset();
                 document.getElementById('cliente').focus();
             } catch (error) {
-                alert("Error de conexión: " + error.message);
+                window.mostrarToast("Error de conexión: " + error.message, "error");
             }
 
             btn.innerHTML = "<span>Añadir a la Cuenta</span>";
             btn.disabled = false;
-        }
+        };
 
-        window.togglePago = async function (id) {
+        // ================= GESTIÓN DE ABONOS =================
+        window.abrirModalAbono = function (id) {
             const c = cuentas.find(item => item.id === id);
-            if (c) {
-                await updateDoc(doc(db, "cuentas", id), { pagado: !c.pagado });
-            }
-        }
+            if (!c) return;
 
-        window.eliminarCuenta = async function (id) {
-            if (confirm('¿Deseas eliminar el registro de esta venta? (Los datos del cliente seguirán guardados en tu módulo de clientes)')) {
-                await deleteDoc(doc(db, "cuentas", id));
-            }
-        }
+            const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+            const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
+            const saldoRestanteBs = (saldoRestante * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-        window.eliminarItemCuenta = async function (id, itemIndex) {
+            document.getElementById('abonoCuentaId').value = id;
+            document.getElementById('abonoClienteNombre').textContent = c.cliente;
+            document.getElementById('abonoSaldoPendiente').textContent = `$${saldoRestante.toFixed(2)} (${saldoRestanteBs} Bs)`;
+
+            const montoInput = document.getElementById('abonoMontoUSD');
+            montoInput.value = '';
+            montoInput.max = saldoRestante.toFixed(2);
+            document.getElementById('abonoEquivalenteBs').textContent = '';
+            document.getElementById('abonoReferencia').value = '';
+
+            window.abrirModal('modalAbono');
+            setTimeout(() => montoInput.focus(), 150);
+        };
+
+        window.actualizarEquivalenteAbono = function () {
+            const monto = parseFloat(document.getElementById('abonoMontoUSD').value) || 0;
+            const bs = (monto * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('abonoEquivalenteBs').textContent = monto > 0 ? `≈ ${bs} Bs a tasa BCV` : '';
+        };
+
+        window.guardarAbono = async function (e) {
+            e.preventDefault();
+            const id = document.getElementById('abonoCuentaId').value;
+            const montoUSD = parseFloat(document.getElementById('abonoMontoUSD').value);
+            const metodo = document.getElementById('abonoMetodo').value;
+            const referencia = document.getElementById('abonoReferencia').value.trim();
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+
+            const c = cuentas.find(item => item.id === id);
+            if (!c) return;
+
+            const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+            const totalAbonadoPrevio = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoRestante = Math.max(0, totalDeuda - totalAbonadoPrevio);
+
+            if (isNaN(montoUSD) || montoUSD <= 0) {
+                window.mostrarToast('Ingresa un monto válido mayor a 0', 'error');
+                return;
+            }
+
+            if (montoUSD > (saldoRestante + 0.01)) {
+                window.mostrarToast(`El abono ($${montoUSD.toFixed(2)}) supera el saldo pendiente ($${saldoRestante.toFixed(2)})`, 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnGuardarAbono');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando...</span>';
+
+            try {
+                const abonosPrevios = Array.isArray(c.abonos) ? c.abonos : [];
+                const nuevoAbono = {
+                    monto: montoUSD,
+                    metodo: metodo,
+                    referencia: referencia,
+                    fecha: fechaHoy,
+                    timestamp: Date.now()
+                };
+                const nuevosAbonos = [...abonosPrevios, nuevoAbono];
+                const nuevoTotalAbonado = nuevosAbonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+
+                const updates = { abonos: nuevosAbonos };
+
+                // Si con este abono se salda la deuda por completo
+                if (nuevoTotalAbonado >= (totalDeuda - 0.009)) {
+                    updates.pagado = true;
+                    updates.metodoPago = metodo;
+                    if (referencia) updates.referencia = referencia;
+                    updates.fechaPago = fechaHoy;
+                    await updateDoc(doc(db, "cuentas", id), updates);
+                    window.cerrarModal('modalAbono');
+                    window.mostrarToast('¡Abono guardado! La cuenta ha quedado totalmente cancelada.', 'success');
+                } else {
+                    await updateDoc(doc(db, "cuentas", id), updates);
+                    window.cerrarModal('modalAbono');
+                    window.mostrarToast(`Abono de $${montoUSD.toFixed(2)} registrado correctamente`, 'success');
+                }
+            } catch (err) {
+                window.mostrarToast('Error al guardar abono: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Guardar Abono</span>';
+            }
+        };
+
+        window.eliminarAbono = function (cuentaId, abonoIndex) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c || !Array.isArray(c.abonos) || !c.abonos[abonoIndex]) return;
+
+            const abono = c.abonos[abonoIndex];
+            window.mostrarConfirmacion({
+                titulo: '¿Eliminar Abono?',
+                mensaje: `¿Deseas eliminar el abono de $${Number(abono.monto).toFixed(2)} (${abono.metodo || 'Abono'})?`,
+                textoConfirmar: 'Eliminar',
+                esPeligroso: true,
+                onConfirm: async () => {
+                    const nuevosAbonos = c.abonos.filter((_, idx) => idx !== abonoIndex);
+                    const updates = { abonos: nuevosAbonos };
+                    const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+                    const nuevoAbonado = nuevosAbonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                    if (nuevoAbonado < (totalDeuda - 0.009)) {
+                        updates.pagado = false;
+                    }
+                    await updateDoc(doc(db, "cuentas", cuentaId), updates);
+                    window.mostrarToast('Abono eliminado correctamente', 'info');
+                }
+            });
+        };
+
+        // ================= MARCAR PAGADO / REABRIR =================
+        window.abrirModalMarcarPagado = function (id) {
+            const c = cuentas.find(item => item.id === id);
+            if (!c) return;
+
+            const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+            const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
+            const saldoRestanteBs = (saldoRestante * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('pagoTotalCuentaId').value = id;
+            document.getElementById('pagoTotalCliente').textContent = c.cliente;
+            document.getElementById('pagoTotalMonto').textContent = `$${saldoRestante.toFixed(2)} (${saldoRestanteBs} Bs)`;
+            document.getElementById('pagoTotalReferencia').value = '';
+
+            window.abrirModal('modalMarcarPagado');
+        };
+
+        window.confirmarPagoTotalSubmit = async function (e) {
+            e.preventDefault();
+            const id = document.getElementById('pagoTotalCuentaId').value;
+            const metodo = document.getElementById('pagoTotalMetodo').value;
+            const referencia = document.getElementById('pagoTotalReferencia').value.trim();
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+
+            const btn = document.getElementById('btnConfirmarPagoTotal');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando...</span>';
+
+            try {
+                await updateDoc(doc(db, "cuentas", id), {
+                    pagado: true,
+                    metodoPago: metodo,
+                    referencia: referencia || null,
+                    fechaPago: fechaHoy
+                });
+                window.cerrarModal('modalMarcarPagado');
+                window.mostrarToast('¡Cuenta marcada como pagada con éxito!', 'success');
+            } catch (err) {
+                window.mostrarToast('Error al actualizar cuenta: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Confirmar Pagado</span>';
+            }
+        };
+
+        window.reabrirCuenta = function (id) {
+            const c = cuentas.find(item => item.id === id);
+            if (!c) return;
+
+            window.mostrarConfirmacion({
+                titulo: '¿Reabrir Cuenta?',
+                mensaje: `¿Deseas volver a colocar la cuenta de ${c.cliente} en estado pendiente?`,
+                textoConfirmar: 'Reabrir',
+                esPeligroso: false,
+                onConfirm: async () => {
+                    try {
+                        await updateDoc(doc(db, "cuentas", id), {
+                            pagado: false
+                        });
+                        window.mostrarToast('Cuenta reabierta como pendiente', 'info');
+                    } catch (err) {
+                        window.mostrarToast('Error: ' + err.message, 'error');
+                    }
+                }
+            });
+        };
+
+        window.eliminarCuenta = function (id) {
+            window.mostrarConfirmacion({
+                titulo: '¿Eliminar Cuenta?',
+                mensaje: '¿Deseas eliminar permanentemente esta cuenta? (Los datos del cliente se mantendrán guardados en tu agenda)',
+                textoConfirmar: 'Eliminar Cuenta',
+                esPeligroso: true,
+                onConfirm: async () => {
+                    try {
+                        await deleteDoc(doc(db, "cuentas", id));
+                        window.mostrarToast('Registro de cuenta eliminado', 'info');
+                    } catch (err) {
+                        window.mostrarToast('Error al eliminar cuenta: ' + err.message, 'error');
+                    }
+                }
+            });
+        };
+
+        window.eliminarItemCuenta = function (id, itemIndex) {
             const c = cuentas.find(item => item.id === id);
             if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
 
             if (c.items.length <= 1) {
-                if (confirm('Este es el único producto de esta cuenta. ¿Deseas eliminar la cuenta completa?')) {
-                    await deleteDoc(doc(db, "cuentas", id));
-                }
+                window.mostrarConfirmacion({
+                    titulo: '¿Eliminar Cuenta Completa?',
+                    mensaje: 'Este es el único producto de esta cuenta. ¿Deseas eliminar la cuenta completa?',
+                    textoConfirmar: 'Eliminar Cuenta',
+                    esPeligroso: true,
+                    onConfirm: async () => {
+                        await deleteDoc(doc(db, "cuentas", id));
+                        window.mostrarToast('Cuenta eliminada', 'info');
+                    }
+                });
                 return;
             }
 
             const itemNombre = c.items[itemIndex].concepto;
-            if (confirm(`¿Deseas eliminar el ítem "${itemNombre}" de esta cuenta?`)) {
-                const nuevosItems = c.items.filter((_, idx) => idx !== itemIndex);
-                await updateDoc(doc(db, "cuentas", id), { items: nuevosItems });
-            }
-        }
+            window.mostrarConfirmacion({
+                titulo: '¿Eliminar Producto?',
+                mensaje: `¿Deseas eliminar el ítem "${itemNombre}" de esta cuenta?`,
+                textoConfirmar: 'Eliminar',
+                esPeligroso: true,
+                onConfirm: async () => {
+                    const nuevosItems = c.items.filter((_, idx) => idx !== itemIndex);
+                    await updateDoc(doc(db, "cuentas", id), { items: nuevosItems });
+                    window.mostrarToast('Producto eliminado de la cuenta', 'info');
+                }
+            });
+        };
 
         window.cambiarFiltro = function (filtro, elemento) {
             filtroActual = filtro;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             elemento.classList.add('active');
             renderizarCuentas();
-        }
+        };
 
+        // ================= WHATSAPP INTEGRADO CON PAGOS =================
         window.abrirWhatsApp = function (id) {
             const c = cuentas.find(item => item.id === id);
             if (!c) return;
 
             let limpio = (c.telefono || '').replace(/\D/g, '');
             if (!limpio) {
-                alert("Este cliente no tiene un teléfono válido registrado.");
+                window.mostrarToast("Este cliente no tiene un teléfono válido registrado.", "error");
                 return;
             }
 
-            // Formateo inteligente para números venezolanos e internacionales
+            // Formato inteligente para números venezolanos e internacionales
             if (limpio.startsWith('0')) {
-                // Ej: 04121234567 -> 584121234567
                 limpio = '58' + limpio.substring(1);
             } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
-                // Sin el 0 inicial: 4121234567 -> 584121234567
                 limpio = '58' + limpio;
             }
 
-            const totalCtaUSD = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
-            const totalCtaBs = (totalCtaUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            let desgloseTexto = (c.items || []).map(i => `▪ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
+            const items = Array.isArray(c.items) ? c.items : [];
+            const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+            const totalDeudaUSD = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const totalAbonadoUSD = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoPendienteUSD = Math.max(0, totalDeudaUSD - totalAbonadoUSD);
+            const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const tasaStr = tasaActual.toFixed(2);
 
-            const mensaje = `Hola ${c.cliente}, un cordial saludo. Te escribo para recordarte el saldo total de tu cuenta: *$${totalCtaUSD.toFixed(2)} (${totalCtaBs} Bs)* a la tasa actual del BCV.\n\n*Detalle de tu cuenta:*\n${desgloseTexto}\n\nMe avisas por favor al realizar el pago para registrar la referencia. ¡Muchas gracias!`;
+            let desgloseProductos = items.map(i => `▪ ${i.concepto}${i.fecha ? ` (${i.fecha})` : ''}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
+
+            let mensaje = `Hola *${c.cliente}*, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:\n\n*Detalle de compras:*\n${desgloseProductos}`;
+
+            if (abonos.length > 0) {
+                const desgloseAbonos = abonos.map(a => `▪ ${a.fecha || ''}: -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
+                mensaje += `\n\nTotal compras: *$${totalDeudaUSD.toFixed(2)}*`;
+                mensaje += `\n\n*Abonos realizados:*\n${desgloseAbonos}`;
+                mensaje += `\nTotal abonado: *-$${totalAbonadoUSD.toFixed(2)}*`;
+                mensaje += `\n\n👉 *SALDO PENDIENTE POR PAGAR: $${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*`;
+                mensaje += `\n_(Calculado a tasa BCV: ${tasaStr} Bs)_`;
+            } else {
+                mensaje += `\n\n👉 *SALDO TOTAL A PAGAR: $${totalDeudaUSD.toFixed(2)} (${saldoPendienteBs} Bs)*`;
+                mensaje += `\n_(Calculado a tasa BCV: ${tasaStr} Bs)_`;
+            }
+
+            // Datos de Pago Móvil configurados
+            const savedConfig = localStorage.getItem('config_pago_movil_v1');
+            if (savedConfig) {
+                try {
+                    const cfg = JSON.parse(savedConfig);
+                    const tieneDatos = cfg.banco || cfg.telefono || cfg.cedula || cfg.titular;
+                    if (tieneDatos) {
+                        mensaje += `\n\n📌 *Datos para Pago Móvil:*`;
+                        if (cfg.banco) mensaje += `\n🏦 *Banco:* ${cfg.banco}`;
+                        if (cfg.telefono) mensaje += `\n📱 *Teléfono:* ${cfg.telefono}`;
+                        if (cfg.cedula) mensaje += `\n🪪 *Cédula/RIF:* ${cfg.cedula}`;
+                        if (cfg.titular) mensaje += `\n👤 *Titular:* ${cfg.titular}`;
+                        if (cfg.nota) mensaje += `\n_${cfg.nota}_`;
+                    }
+                } catch (e) { }
+            }
+
+            mensaje += `\n\nMe avisas por favor al realizar el pago para registrar tu comprobante. ¡Muchas gracias!`;
 
             const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
-        }
+        };
 
+        // ================= RENDERIZADO PRINCIPAL =================
         function renderizarCuentas() {
             const contenedor = document.getElementById('listaCuentas');
 
             let pendientesUSD = 0;
             let pagadosUSD = 0;
 
-            // 1. Calcular totales primero de forma pura y limpia
+            // 1. Cálculos de deuda, abonos y saldo restante
             cuentas.forEach(c => {
                 const items = Array.isArray(c.items) ? c.items : [];
-                const totalCuenta = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
-                c.totalCalculado = totalCuenta;
+                const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+                const totalDeuda = items.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+                const totalAbonado = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
+
+                c.totalDeuda = totalDeuda;
+                c.totalAbonado = totalAbonado;
+                c.saldoRestante = saldoRestante;
 
                 if (c.pagado) {
-                    pagadosUSD += totalCuenta;
+                    pagadosUSD += totalDeuda;
                 } else {
-                    pendientesUSD += totalCuenta;
+                    pendientesUSD += saldoRestante;
+                    pagadosUSD += totalAbonado;
                 }
             });
 
@@ -883,25 +1816,35 @@
             document.getElementById('totalCobradoUSD').textContent = `$${pagadosUSD.toFixed(2)}`;
             document.getElementById('totalCobradoBs').textContent = `${(pagadosUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
 
-            // 3. Filtrar según la pestaña activa
+            // 3. Filtrar por pestaña y por buscador en tiempo real
             const filtradas = cuentas.filter(c => {
-                if (filtroActual === 'pendientes') return !c.pagado;
-                if (filtroActual === 'pagados') return c.pagado;
+                // Filtro por pestaña
+                if (filtroActual === 'pendientes' && c.pagado) return false;
+                if (filtroActual === 'pagados' && !c.pagado) return false;
+
+                // Filtro por buscador
+                if (textoBusquedaCuentas) {
+                    const matchCliente = (c.cliente || '').toLowerCase().includes(textoBusquedaCuentas);
+                    const matchTelefono = (c.telefono || '').toLowerCase().includes(textoBusquedaCuentas);
+                    const matchItems = Array.isArray(c.items) && c.items.some(i => (i.concepto || '').toLowerCase().includes(textoBusquedaCuentas));
+                    if (!matchCliente && !matchTelefono && !matchItems) return false;
+                }
+
                 return true;
             });
 
             if (filtradas.length === 0) {
-                contenedor.innerHTML = `<div class="empty-state">No hay cuentas en esta sección.</div>`;
+                contenedor.innerHTML = `<div class="empty-state">${textoBusquedaCuentas ? 'No se encontraron cuentas que coincidan con la búsqueda.' : 'No hay cuentas en esta sección.'}</div>`;
                 return;
             }
 
-            // 4. Renderizar tarjetas de forma segura contra XSS y de alto rendimiento
+            // 4. Renderizar tarjetas de cuentas
             const html = filtradas.map(c => {
                 const safeId = escapeHTML(c.id);
                 const safeCliente = escapeHTML(c.cliente);
                 const safeTelefono = escapeHTML(c.telefono);
-                const totalBs = (c.totalCalculado * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 const items = Array.isArray(c.items) ? c.items : [];
+                const abonos = Array.isArray(c.abonos) ? c.abonos : [];
 
                 const htmlItems = items.map((item, index) => {
                     const safeConcepto = escapeHTML(item.concepto);
@@ -918,36 +1861,138 @@
                     `;
                 }).join('');
 
+                // Renderizar abonos si existen
+                let htmlAbonos = '';
+                if (abonos.length > 0) {
+                    const abonosLi = abonos.map((a, aIdx) => {
+                        const safeMetodo = escapeHTML(a.metodo || 'Abono');
+                        const safeRef = a.referencia ? ` · Ref: ${escapeHTML(a.referencia)}` : '';
+                        const safeFecha = a.fecha ? ` (${escapeHTML(a.fecha)})` : '';
+                        const montoNum = Number(a.monto) || 0;
+                        return `
+                          <li class="abono-item">
+                            <div>
+                              <span style="color:#38bdf8; font-weight:600;">-$${montoNum.toFixed(2)}</span>
+                              <small style="color:#94a3b8; margin-left:4px;">${safeMetodo}${safeRef}${safeFecha}</small>
+                            </div>
+                            <button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>
+                          </li>
+                        `;
+                    }).join('');
+
+                    htmlAbonos = `
+                      <div class="abonos-breakdown">
+                        <div class="abonos-header">
+                          <span>💳 Abonos Realizados (${abonos.length})</span>
+                          <span>-$${c.totalAbonado.toFixed(2)}</span>
+                        </div>
+                        <ul>${abonosLi}</ul>
+                      </div>
+                    `;
+                }
+
+                // Resumen de montos
+                let htmlMontos = '';
+                if (c.totalAbonado > 0 && !c.pagado) {
+                    const saldoBs = (c.saldoRestante * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    htmlMontos = `
+                      <div class="amounts-summary">
+                        <div class="amounts-row-sub">
+                          <span>Total de compras:</span>
+                          <span>$${c.totalDeuda.toFixed(2)}</span>
+                        </div>
+                        <div class="amounts-row-sub text-success">
+                          <span>Abonos recibidos:</span>
+                          <span>-$${c.totalAbonado.toFixed(2)}</span>
+                        </div>
+                        <div class="amounts-box" style="margin-top:6px; padding-top:6px;">
+                          <span class="label-total">Saldo Pendiente:</span>
+                          <span class="amount-usd text-warning">$${c.saldoRestante.toFixed(2)}</span>
+                          <span class="amount-bs">≈ ${saldoBs} Bs</span>
+                        </div>
+                      </div>
+                    `;
+                } else {
+                    const montoMostrar = c.pagado ? c.totalDeuda : c.saldoRestante;
+                    const totalBs = (montoMostrar * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    htmlMontos = `
+                      <div class="amounts-box">
+                        <span class="label-total">${c.pagado ? 'Total Cancelado:' : 'Total General:'}</span>
+                        <span class="amount-usd ${c.pagado ? 'text-success' : ''}">$${montoMostrar.toFixed(2)}</span>
+                        <span class="amount-bs">≈ ${totalBs} Bs</span>
+                      </div>
+                    `;
+                }
+
+                // Badges de estado y método de pago
+                let badgeHTML = '';
+                if (c.pagado) {
+                    badgeHTML = `
+                      <span class="badge badge-paid">✓ Cancelada</span>
+                      ${c.metodoPago ? `<span class="badge badge-method">💳 ${escapeHTML(c.metodoPago)}${c.referencia ? ` · ${escapeHTML(c.referencia)}` : ''}</span>` : ''}
+                    `;
+                } else if (c.totalAbonado > 0) {
+                    badgeHTML = `
+                      <span class="badge badge-partial">Abonado: $${c.totalAbonado.toFixed(2)}</span>
+                      <span class="badge badge-pending">Resta: $${c.saldoRestante.toFixed(2)}</span>
+                    `;
+                } else {
+                    badgeHTML = `<span class="badge badge-pending">Deuda Abierta</span>`;
+                }
+
+                // Botones de acción según estado
+                let actionsHTML = '';
+                if (!c.pagado) {
+                    actionsHTML = `
+                      <div class="actions-grid">
+                        <button class="btn-wa" onclick="abrirWhatsApp('${safeId}')">
+                          <span>💬 Factura a WhatsApp</span>
+                        </button>
+                        <div class="actions-row">
+                          <button class="btn-abono" onclick="abrirModalAbono('${safeId}')">
+                            <span>➕ Abonar</span>
+                          </button>
+                          <button class="btn-toggle" onclick="abrirModalMarcarPagado('${safeId}')">
+                            <span>✓ Marcar Pagado</span>
+                          </button>
+                          <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
+                        </div>
+                      </div>
+                    `;
+                } else {
+                    actionsHTML = `
+                      <div class="actions-grid">
+                        <div class="actions-row">
+                          <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
+                            <span>↩ Reabrir Cuenta</span>
+                          </button>
+                          <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
+                        </div>
+                      </div>
+                    `;
+                }
+
                 return `
                   <div class="sale-card ${c.pagado ? 'is-paid' : ''}">
                     <div class="card-top">
                       <div>
-                        <div class="client-name">${safeCliente} <span style="font-size:0.8rem; font-weight:normal; color:#94a3b8;">${safeTelefono}</span></div>
+                        <div class="client-name">${safeCliente}</div>
+                        <div style="font-size:0.8rem; color:#94a3b8;">${safeTelefono}</div>
                       </div>
-                      <span class="badge ${c.pagado ? 'badge-paid' : 'badge-pending'}">
-                        ${c.pagado ? '✓ Cancelada' : 'Deuda Abierta'}
-                      </span>
+                      <div class="badges-row">
+                        ${badgeHTML}
+                      </div>
                     </div>
 
                     <div class="items-breakdown">
                       <ul>${htmlItems}</ul>
                     </div>
 
-                    <div class="amounts-box">
-                      <span class="label-total">Total General:</span>
-                      <span class="amount-usd">$${c.totalCalculado.toFixed(2)}</span>
-                      <span class="amount-bs">≈ ${totalBs} Bs</span>
-                    </div>
+                    ${htmlAbonos}
 
-                    <div class="actions-grid">
-                      <button class="btn-wa" onclick="abrirWhatsApp('${safeId}')">
-                        <span>💬 Factura a WhatsApp</span>
-                      </button>
-                      <button class="btn-toggle" onclick="togglePago('${safeId}')">
-                        ${c.pagado ? 'Reabrir Cuenta' : '✓ Marcar Todo Pagado'}
-                      </button>
-                      <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
-                    </div>
+                    ${htmlMontos}
+
+                    ${actionsHTML}
                   </div>
                 `;
             }).join('');
