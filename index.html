@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Cuentas Cobranzas V3.1</title>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('tema_cobros_v1') || 'dark';
+            if (savedTheme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        })();
+    </script>
     <style>
         :root {
             --bg: #0b1120;
@@ -21,6 +27,16 @@
             --blue: #3b82f6;
             --blue-hover: #2563eb;
             --radius: 12px;
+            --input-dark: #090e17;
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-dark: #f1f5f9;
         }
 
         * {
@@ -62,6 +78,7 @@
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            margin-right: 65px;
         }
 
         .btn-settings-pill {
@@ -1059,6 +1076,90 @@
             #printArea .print-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
             #printArea .print-total { font-weight: bold; border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
             @page { margin: 0; }
+            @page { margin: 0; }
+        }
+
+        /* Nav Bottom */
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            width: 30%;
+            border-radius: 8px;
+            padding: 6px 0;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-btn.active {
+            color: var(--accent);
+        }
+
+        .nav-btn-icon {
+            font-size: 1.35rem;
+        }
+
+        .module-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .module-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fab-config {
+            position: fixed;
+            top: 6px;
+            right: 20px;
+            background: #1e293b;
+            color: #f8fafc;
+            border: 2px solid #334155;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .fab-config:hover {
+            background: #334155;
+            transform: scale(1.05) rotate(15deg);
         }
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -1066,20 +1167,31 @@
 
 <body>
 
+    <!-- ================= NAVEGACIÓN INFERIOR ================= -->
+    <nav class="app-nav">
+        <button class="nav-btn active" id="nav-ventas" onclick="mostrarModulo('ventas')">
+            <span class="nav-btn-icon">📦</span>
+            <span>Ventas</span>
+        </button>
+        <button class="nav-btn" id="nav-clientes" onclick="mostrarModulo('clientes')">
+            <span class="nav-btn-icon">👥</span>
+            <span>Directorio</span>
+        </button>
+        <button class="nav-btn" id="nav-productos" onclick="mostrarModulo('productos')">
+            <span class="nav-btn-icon">🛒</span>
+            <span>Catálogo</span>
+        </button>
+    </nav>
+
     <!-- ================= SECCIÓN: VENTAS ================= -->
+    <div id="modulo-ventas" class="module-section active">
+
     <div class="header">
         <h1>📦 Cuentas Abiertas</h1>
         <div class="header-actions">
-            <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()"
-                title="Gestionar múltiples cuentas de Pago Móvil">
-                ⚙️ Datos Pago (<span id="contadorCuentasPago">0</span>)
-            </button>
-            <div class="rate-pill" title="Tasa BCV sincronizada en la nube en tiempo real">
-                <span>Tasa BCV:</span>
-                <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()"
-                    onkeydown="if(event.key==='Enter'){this.blur();}">
-                <span>Bs</span>
-            </div>
+            <span class="badge" style="background:#091c15; color:#34d399; border:1px solid #10b981; font-size:0.85rem; padding:4px 8px;">
+                Tasa BCV: <span id="headerTasaBCV">45.00</span> Bs
+            </span>
         </div>
     </div>
 
@@ -1153,8 +1265,10 @@
         <div class="loading-state">Cargando cuentas en la nube...</div>
     </div>
 
+    </div> <!-- FIN MÓDULO VENTAS -->
+
     <!-- ================= SECCIÓN: MÓDULO DE CLIENTES ================= -->
-    <div class="divider"></div>
+    <div id="modulo-clientes" class="module-section">
 
     <div class="header">
         <h1>👥 Módulo de Clientes</h1>
@@ -1194,8 +1308,10 @@
         <div class="loading-state">Cargando directorio...</div>
     </div>
 
+    </div> <!-- FIN MÓDULO CLIENTES -->
+
     <!-- ================= SECCIÓN: MÓDULO DE PRODUCTOS ================= -->
-    <div class="divider"></div>
+    <div id="modulo-productos" class="module-section">
 
     <div class="header">
         <h1>📦 Catálogo de Productos</h1>
@@ -1228,8 +1344,56 @@
         <div class="loading-state">Cargando catálogo...</div>
     </div>
 
+    </div> <!-- FIN MÓDULO PRODUCTOS -->
+
     <!-- ================= ZONA DE IMPRESIÓN OCULTA ================= -->
     <div id="printArea" style="display:none; padding: 20px;"></div>
+
+    <!-- ================= BOTÓN FLOTANTE Y MODAL DE CONFIGURACIÓN ================= -->
+    <button class="fab-config" onclick="abrirModalConfigGeneral()" title="Configuración General">⚙️</button>
+
+    <div id="modalConfigGeneral" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalConfigGeneral')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>⚙️ Configuración General</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalConfigGeneral')">✕</button>
+            </div>
+            
+            <div class="input-group">
+                <label>Tasa BCV (Se sincroniza en la nube)</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <input type="number" id="tasaBCVModal" step="0.01" min="0.01" style="flex:1;">
+                    <button type="button" class="btn-submit" style="width:auto; padding:10px 14px; margin-top:0;" onclick="actualizarTasaDesdeModal()">Guardar</button>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Tema Visual</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <select id="temaVisualModal" style="flex:1; background:var(--bg); color:var(--text-main); border:1px solid var(--card-border); border-radius:8px; padding:10px;" onchange="actualizarTemaDesdeModal()">
+                        <option value="dark">🌙 Modo Oscuro (Predeterminado)</option>
+                        <option value="light">☀️ Modo Claro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Plantilla del Mensaje de Cobro (WhatsApp)</label>
+                <small style="color:var(--text-muted); display:block; margin-bottom:5px;">Usa <code>{cliente}</code> para insertar el nombre del cliente automáticamente.</small>
+                <textarea id="plantillaWAModal" rows="3" style="width:100%; background:var(--bg); color:var(--text-main); border:1px solid var(--card-border); border-radius:8px; padding:10px; font-family:inherit; resize:vertical;"></textarea>
+                <button type="button" class="btn-submit" style="margin-top:8px; padding:8px 14px; background:#25d366;" onclick="guardarPlantillaWA()">Guardar Plantilla 💬</button>
+            </div>
+
+            <div class="divider" style="margin: 20px 0;"></div>
+
+            <button type="button" class="btn-submit btn-blue" onclick="cerrarModal('modalConfigGeneral'); abrirModalConfigPago();">
+                💳 Administrar Métodos de Pago
+            </button>
+            <button type="button" class="btn-submit" style="margin-top:10px; background:var(--card-border); color:var(--text-main);" onclick="exportarDeudasTXT()">
+                📄 Exportar Deudas Pendientes a TXT
+            </button>
+        </div>
+    </div>
 
     <!-- ================= CONTENEDOR DE TOASTS ================= -->
     <div id="toastContainer"></div>
@@ -1243,7 +1407,7 @@
                 <button type="button" class="modal-close"
                     onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">✕</button>
             </div>
-            <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+            <div style="background:var(--input-dark); padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                     <span style="color:var(--text-muted);">Cliente:</span>
                     <strong id="waModalCliente" style="color:var(--text-main);"></strong>
@@ -1289,7 +1453,7 @@
             <form id="formAbono" onsubmit="guardarAbono(event)">
                 <input type="hidden" id="abonoCuentaId">
                 <div
-                    style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    style="background:var(--input-dark); padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <span style="color:var(--text-muted);">Cliente:</span>
                         <strong id="abonoClienteNombre" style="color:var(--text-main);"></strong>
@@ -1348,7 +1512,7 @@
             <form id="formMarcarPagado" onsubmit="confirmarPagoTotalSubmit(event)">
                 <input type="hidden" id="pagoTotalCuentaId">
                 <div
-                    style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    style="background:var(--input-dark); padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <span style="color:var(--text-muted);">Cliente:</span>
                         <strong id="pagoTotalCliente" style="color:var(--text-main);"></strong>
@@ -1585,8 +1749,8 @@
         let textoBusquedaCuentas = '';
         let textoBusquedaDirectorio = '';
         let cuentaSeleccionadaParaWhatsApp = null;
-
-        document.getElementById('tasaBCV').value = tasaActual.toFixed(2);
+        const headerTasaInit = document.getElementById('headerTasaBCV');
+        if (headerTasaInit) headerTasaInit.textContent = tasaActual.toFixed(2);
 
         // ================= HELPERS & SEGURIDAD =================
         function escapeHTML(str) {
@@ -1598,6 +1762,17 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
         }
+
+        window.mostrarModulo = function(moduloId) {
+            document.querySelectorAll('.module-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('modulo-' + moduloId).classList.add('active');
+            document.getElementById('nav-' + moduloId).classList.add('active');
+            
+            // Hacer scroll hacia arriba suavemente
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        };
 
         function normalizarIdCliente(nombre) {
             return encodeURIComponent(nombre.trim().toLowerCase()).replace(/%/g, "_");
@@ -1917,7 +2092,7 @@
 
             if (cuentasPago.length === 0) {
                 htmlOpciones += `
-                  <div style="background:#090e17; border:1px dashed var(--card-border); border-radius:8px; padding:12px; margin-bottom:10px; font-size:0.83rem; color:var(--text-muted); text-align:center;">
+                  <div style="background:var(--input-dark); border:1px dashed var(--card-border); border-radius:8px; padding:12px; margin-bottom:10px; font-size:0.83rem; color:var(--text-muted); text-align:center;">
                     No tienes cuentas de Pago Móvil guardadas aún.<br>
                     <button type="button" class="btn-mini" style="margin-top:6px; background:var(--blue); color:#fff; border:none; padding:4px 10px;" onclick="window.cerrarModal('modalSeleccionarPagoWhatsApp'); window.abrirModalConfigPago();">
                       ⚙️ Agregar Cuentas de Pago
@@ -2006,7 +2181,10 @@
 
             let desgloseProductos = items.map(i => `▪️ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
 
-            let mensaje = `Hola ${c.cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:\n\nDetalle de compras:\n${desgloseProductos}`;
+            let plantillaGuardada = localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:";
+            let encabezadoMensaje = plantillaGuardada.replace(/{cliente}/g, c.cliente);
+
+            let mensaje = `${encabezadoMensaje}\n\nDetalle de compras:\n${desgloseProductos}`;
 
             if (abonos.length > 0) {
                 const desgloseAbonos = abonos.map(a => `▪️ -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
@@ -2159,10 +2337,15 @@
                 if (!isNaN(nuevaTasa) && nuevaTasa > 0 && Math.abs(nuevaTasa - tasaActual) > 0.0001) {
                     tasaActual = nuevaTasa;
                     localStorage.setItem('tasa_bcv_v4', tasaActual);
-                    const inputTasa = document.getElementById('tasaBCV');
-                    if (inputTasa && document.activeElement !== inputTasa) {
-                        inputTasa.value = tasaActual.toFixed(2);
+                    
+                    const headerTasa = document.getElementById('headerTasaBCV');
+                    if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
+                    
+                    const modalTasa = document.getElementById('tasaBCVModal');
+                    if (modalTasa && document.activeElement !== modalTasa) {
+                        modalTasa.value = tasaActual.toFixed(2);
                     }
+                    
                     renderizarCuentas();
                 }
             } else {
@@ -3269,7 +3452,102 @@
             actualizarDatalistProductos();
             renderizarProductosUI();
         });
+        window.abrirModalConfigGeneral = function() {
+            document.getElementById('tasaBCVModal').value = tasaActual.toFixed(2);
+            document.getElementById('plantillaWAModal').value = localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:";
+            document.getElementById('temaVisualModal').value = localStorage.getItem('tema_cobros_v1') || 'dark';
+            window.abrirModal('modalConfigGeneral');
+        };
+
+        window.actualizarTemaDesdeModal = function() {
+            const t = document.getElementById('temaVisualModal').value;
+            localStorage.setItem('tema_cobros_v1', t);
+            if (t === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        };
+
+        window.actualizarTasaDesdeModal = function() {
+            const v = parseFloat(document.getElementById('tasaBCVModal').value);
+            if (!isNaN(v) && v > 0) {
+                tasaActual = v;
+                localStorage.setItem('tasa_bcv_v4', tasaActual);
+                
+                const headerTasa = document.getElementById('headerTasaBCV');
+                if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
+                
+                // Actualizar en Firebase
+                setDoc(doc(db, "configuracion", "tasa"), { tasa: tasaActual, timestamp: Date.now() }, { merge: true })
+                    .catch(err => console.error("Error actualizando tasa", err));
+                
+                renderizarCuentas();
+                window.mostrarToast("Tasa BCV actualizada en la nube", "success");
+            } else {
+                window.mostrarToast("Ingresa una tasa válida", "error");
+            }
+        };
+
+        window.guardarPlantillaWA = function() {
+            const v = document.getElementById('plantillaWAModal').value;
+            if(v.trim()) {
+                localStorage.setItem('plantilla_wa_v1', v);
+                window.mostrarToast("Plantilla de WhatsApp guardada", "success");
+            }
+        };
+
+        window.exportarDeudasTXT = function() {
+            const deudasPendientes = cuentas.filter(c => !c.pagado);
+            if (deudasPendientes.length === 0) {
+                window.mostrarToast('No hay deudas pendientes para exportar', 'info');
+                return;
+            }
+
+            let txtContent = "REPORTE DE DEUDAS PENDIENTES\n";
+            txtContent += "Fecha: " + new Date().toLocaleDateString('es-VE') + " - Tasa BCV: " + tasaActual.toFixed(2) + " Bs\n";
+            txtContent += "--------------------------------------------------------\n\n";
+
+            let sumaTotalUSD = 0;
+
+            deudasPendientes.forEach((c, index) => {
+                const totalDeudaUSD = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+                const totalAbonadoUSD = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                const saldoPendienteUSD = Math.max(0, totalDeudaUSD - totalAbonadoUSD);
+                const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                
+                // Asegurar que haya un saldo restante real
+                if (saldoPendienteUSD > 0.009) {
+                    sumaTotalUSD += saldoPendienteUSD;
+
+                    txtContent += `${index + 1}. CLIENTE: ${c.cliente || 'Desconocido'} | TEL: ${c.telefono || 'N/A'}\n`;
+                    txtContent += `   Total Deuda: $${totalDeudaUSD.toFixed(2)} | Abonado: $${totalAbonadoUSD.toFixed(2)}\n`;
+                    txtContent += `   >> SALDO PENDIENTE: $${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)\n\n`;
+                }
+            });
+
+            txtContent += "--------------------------------------------------------\n";
+            txtContent += `GRAN TOTAL PENDIENTE: $${sumaTotalUSD.toFixed(2)} (${(sumaTotalUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs)\n`;
+
+            const blob = new Blob([txtContent], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Deudas_Pendientes_" + new Date().toISOString().slice(0,10) + ".txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            window.cerrarModal('modalConfigGeneral');
+            window.mostrarToast('Reporte TXT descargado con éxito', 'success');
+        };
+
+        // Inicializar la vista
+        window.onload = function() {
+            const headerTasa = document.getElementById('headerTasaBCV');
+            if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
+        };
     </script>
 </body>
-
 </html>
