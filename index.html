@@ -187,7 +187,8 @@
             gap: 10px;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             background: #090e17;
             border: 1px solid var(--card-border);
@@ -199,7 +200,8 @@
             transition: border-color 0.2s;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             border-color: var(--accent);
         }
 
@@ -621,7 +623,8 @@
             transition: all 0.2s;
         }
 
-        .btn-abono:hover, .btn-abono:active {
+        .btn-abono:hover,
+        .btn-abono:active {
             background: #2563eb;
             color: #fff;
         }
@@ -743,8 +746,15 @@
         }
 
         @keyframes pulseWarning {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.75; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.75;
+            }
         }
 
         .empty-state {
@@ -1035,12 +1045,23 @@
                 opacity: 0;
                 transform: translateY(-16px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; font-family: monospace; font-size: 14px; }
+            #printArea h3 { margin-bottom: 5px; border-bottom: 1px dashed #000; padding-bottom: 5px; }
+            #printArea .print-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+            #printArea .print-total { font-weight: bold; border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
+            @page { margin: 0; }
+        }
     </style>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -1049,12 +1070,14 @@
     <div class="header">
         <h1>📦 Cuentas Abiertas</h1>
         <div class="header-actions">
-            <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()" title="Gestionar múltiples cuentas de Pago Móvil">
+            <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()"
+                title="Gestionar múltiples cuentas de Pago Móvil">
                 ⚙️ Datos Pago (<span id="contadorCuentasPago">0</span>)
             </button>
             <div class="rate-pill" title="Tasa BCV sincronizada en la nube en tiempo real">
                 <span>Tasa BCV:</span>
-                <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()" onkeydown="if(event.key==='Enter'){this.blur();}">
+                <input type="number" id="tasaBCV" value="45.00" step="0.01" min="0.01" onchange="actualizarTasa()"
+                    onkeydown="if(event.key==='Enter'){this.blur();}">
                 <span>Bs</span>
             </div>
         </div>
@@ -1093,8 +1116,9 @@
                 </div>
             </div>
             <div class="input-group">
-                <label>Detalle / Producto</label>
-                <input type="text" id="concepto" placeholder="Ej: Harina PAN y Café" required autocomplete="off">
+                <label>Detalle / Producto (Selecciona o escribe)</label>
+                <input type="text" id="concepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN y Café" required autocomplete="off" oninput="autocompletarPrecio()">
+                <datalist id="listaProductosDatalist"></datalist>
             </div>
             <button type="submit" class="btn-submit" id="btnSubmit">
                 <span>Añadir a la Cuenta</span>
@@ -1105,16 +1129,23 @@
     <!-- Buscador de Cuentas en Tiempo Real -->
     <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="buscarCuenta" placeholder="Buscar por cliente, teléfono o producto..." oninput="filtrarEnTiempoReal()" autocomplete="off">
-        <button type="button" id="btnLimpiarBusqueda" class="btn-clear-search" onclick="limpiarBusqueda()" style="display:none;" title="Limpiar búsqueda">✕</button>
+        <input type="text" id="buscarCuenta" placeholder="Buscar por cliente, teléfono o producto..."
+            oninput="filtrarEnTiempoReal()" autocomplete="off">
+        <button type="button" id="btnLimpiarBusqueda" class="btn-clear-search" onclick="limpiarBusqueda()"
+            style="display:none;" title="Limpiar búsqueda">✕</button>
     </div>
 
     <div class="list-header">
         <h2>Estados de Cuenta</h2>
-        <div class="filter-tabs">
-            <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
-            <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
-            <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-mini" style="background:#10b981; color:#fff; border:none; padding:6px 10px; font-size:0.8rem;" onclick="exportarExcel()">
+                📥 Exportar Excel
+            </button>
+            <div class="filter-tabs">
+                <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
+                <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
+                <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
+            </div>
         </div>
     </div>
 
@@ -1151,7 +1182,8 @@
     <!-- Buscador de Directorio -->
     <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="buscarDirectorio" placeholder="Buscar contacto en directorio..." oninput="filtrarDirectorioEnTiempoReal()" autocomplete="off">
+        <input type="text" id="buscarDirectorio" placeholder="Buscar contacto en directorio..."
+            oninput="filtrarDirectorioEnTiempoReal()" autocomplete="off">
     </div>
 
     <div class="list-header">
@@ -1162,15 +1194,54 @@
         <div class="loading-state">Cargando directorio...</div>
     </div>
 
+    <!-- ================= SECCIÓN: MÓDULO DE PRODUCTOS ================= -->
+    <div class="divider"></div>
+
+    <div class="header">
+        <h1>📦 Catálogo de Productos</h1>
+    </div>
+
+    <div class="form-card" style="border-color: #10b981;">
+        <h2>➕ Agregar Producto</h2>
+        <form id="formProducto" onsubmit="guardarProductoCatalog(event)">
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="prodNombre" placeholder="Ej: Harina PAN" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Precio Unitario (USD)</label>
+                    <input type="number" id="prodPrecio" step="0.01" min="0.01" placeholder="Ej: 1.20" required autocomplete="off">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" style="background:#10b981;" id="btnSubmitProducto">
+                <span>Guardar en Catálogo</span>
+            </button>
+        </form>
+    </div>
+    
+    <div class="list-header">
+        <h2>Productos Guardados</h2>
+    </div>
+
+    <div class="sales-list" id="listaProductosUI">
+        <div class="loading-state">Cargando catálogo...</div>
+    </div>
+
+    <!-- ================= ZONA DE IMPRESIÓN OCULTA ================= -->
+    <div id="printArea" style="display:none; padding: 20px;"></div>
+
     <!-- ================= CONTENEDOR DE TOASTS ================= -->
     <div id="toastContainer"></div>
 
     <!-- ================= MODAL: SELECCIONAR PAGO PARA WHATSAPP ================= -->
-    <div id="modalSeleccionarPagoWhatsApp" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalSeleccionarPagoWhatsApp')">
+    <div id="modalSeleccionarPagoWhatsApp" class="modal-backdrop"
+        onclick="cerrarModalOnClickAfuera(event, 'modalSeleccionarPagoWhatsApp')">
         <div class="modal-dialog">
             <div class="modal-header">
                 <h3>💬 Enviar Factura a WhatsApp</h3>
-                <button type="button" class="modal-close" onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">✕</button>
+                <button type="button" class="modal-close"
+                    onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">✕</button>
             </div>
             <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
@@ -1181,7 +1252,8 @@
                     <span style="color:var(--text-muted);">Saldo por cobrar:</span>
                     <strong id="waModalMonto" style="color:var(--accent);"></strong>
                 </div>
-                <div id="waModalUltimoEnvioContainer" style="display:none; justify-content:space-between; border-top:1px dashed var(--card-border); padding-top:4px; margin-top:4px;">
+                <div id="waModalUltimoEnvioContainer"
+                    style="display:none; justify-content:space-between; border-top:1px dashed var(--card-border); padding-top:4px; margin-top:4px;">
                     <span style="color:var(--text-muted);">Último aviso enviado:</span>
                     <strong id="waModalUltimoEnvio" style="color:#86efac; font-size:0.8rem;"></strong>
                 </div>
@@ -1196,8 +1268,11 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">Cancelar</button>
-                <button type="button" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px; background:var(--wa-color);" onclick="ejecutarEnvioWhatsApp()">
+                <button type="button" class="btn-cancel"
+                    onclick="cerrarModal('modalSeleccionarPagoWhatsApp')">Cancelar</button>
+                <button type="button" class="btn-submit"
+                    style="margin-top:0; width:auto; padding:10px 18px; background:var(--wa-color);"
+                    onclick="ejecutarEnvioWhatsApp()">
                     <span>Enviar a WhatsApp 💬</span>
                 </button>
             </div>
@@ -1213,7 +1288,8 @@
             </div>
             <form id="formAbono" onsubmit="guardarAbono(event)">
                 <input type="hidden" id="abonoCuentaId">
-                <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                <div
+                    style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <span style="color:var(--text-muted);">Cliente:</span>
                         <strong id="abonoClienteNombre" style="color:var(--text-main);"></strong>
@@ -1226,8 +1302,10 @@
 
                 <div class="input-group">
                     <label>Monto a Abonar en USD ($)</label>
-                    <input type="number" id="abonoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteAbono()">
-                    <small id="abonoEquivalenteBs" style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
+                    <input type="number" id="abonoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required
+                        oninput="actualizarEquivalenteAbono()">
+                    <small id="abonoEquivalenteBs"
+                        style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
                 </div>
 
                 <div class="input-group">
@@ -1251,7 +1329,8 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="cerrarModal('modalAbono')">Cancelar</button>
-                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarAbono">
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;"
+                        id="btnGuardarAbono">
                         <span>Guardar Abono</span>
                     </button>
                 </div>
@@ -1268,7 +1347,8 @@
             </div>
             <form id="formMarcarPagado" onsubmit="confirmarPagoTotalSubmit(event)">
                 <input type="hidden" id="pagoTotalCuentaId">
-                <div style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                <div
+                    style="background:#090e17; padding:10px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <span style="color:var(--text-muted);">Cliente:</span>
                         <strong id="pagoTotalCliente" style="color:var(--text-main);"></strong>
@@ -1299,8 +1379,10 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalMarcarPagado')">Cancelar</button>
-                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnConfirmarPagoTotal">
+                    <button type="button" class="btn-cancel"
+                        onclick="cerrarModal('modalMarcarPagado')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;"
+                        id="btnConfirmarPagoTotal">
                         <span>Confirmar Pagado</span>
                     </button>
                 </div>
@@ -1319,15 +1401,19 @@
             <!-- Vista 1: Lista de Cuentas Guardadas -->
             <div id="seccionListaCuentasPago">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Cuentas registradas:</span>
-                    <button type="button" class="btn-mini" style="background:var(--blue); color:#fff; border:none; padding:5px 12px;" onclick="mostrarFormularioNuevaCuenta()">
+                    <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Cuentas
+                        registradas:</span>
+                    <button type="button" class="btn-mini"
+                        style="background:var(--blue); color:#fff; border:none; padding:5px 12px;"
+                        onclick="mostrarFormularioNuevaCuenta()">
                         ➕ Nueva Cuenta
                     </button>
                 </div>
                 <div id="contenedorCuentasPagoGuardadas" style="max-height:250px; overflow-y:auto; margin-bottom:12px;">
                     <!-- Tarjetas de cuentas generadas dinámicamente -->
                 </div>
-                <div class="modal-footer" style="margin-top:8px; border-top:1px solid var(--card-border); padding-top:10px;">
+                <div class="modal-footer"
+                    style="margin-top:8px; border-top:1px solid var(--card-border); padding-top:10px;">
                     <button type="button" class="btn-cancel" onclick="cerrarModal('modalConfigPago')">Cerrar</button>
                 </div>
             </div>
@@ -1335,15 +1421,17 @@
             <!-- Vista 2: Formulario Agregar/Editar Cuenta -->
             <form id="formConfigPago" onsubmit="guardarCuentaPagoSubmit(event)" style="display:none;">
                 <input type="hidden" id="cfgEditId">
-                <h4 id="cfgFormTitulo" style="font-size:0.95rem; color:#38bdf8; margin-bottom:12px; font-weight:700;">➕ Registrar Cuenta</h4>
-                
+                <h4 id="cfgFormTitulo" style="font-size:0.95rem; color:#38bdf8; margin-bottom:12px; font-weight:700;">➕
+                    Registrar Cuenta</h4>
+
                 <div class="input-group">
                     <label>Nombre / Alias (Ej: Banesco Víctor, BDV Tienda, Mercantil)</label>
                     <input type="text" id="cfgAlias" placeholder="Ej: Banesco Principal" required autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>Banco</label>
-                    <input type="text" id="cfgBanco" placeholder="Ej: Banesco, Banco de Venezuela, Mercantil, etc." required autocomplete="off">
+                    <input type="text" id="cfgBanco" placeholder="Ej: Banesco, Banco de Venezuela, Mercantil, etc."
+                        required autocomplete="off">
                 </div>
                 <div class="input-row">
                     <div class="input-group">
@@ -1361,17 +1449,21 @@
                 </div>
                 <div class="input-group">
                     <label>Nota adicional para el cliente (Opcional)</label>
-                    <input type="text" id="cfgNota" placeholder="Ej: Por favor enviar capture una vez realizado el pago" autocomplete="off">
+                    <input type="text" id="cfgNota" placeholder="Ej: Por favor enviar capture una vez realizado el pago"
+                        autocomplete="off">
                 </div>
                 <div style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                    <input type="checkbox" id="cfgEsPredeterminado" style="width:16px; height:16px; accent-color:var(--accent);">
-                    <label for="cfgEsPredeterminado" style="font-size:0.82rem; color:var(--text-muted); cursor:pointer;">
+                    <input type="checkbox" id="cfgEsPredeterminado"
+                        style="width:16px; height:16px; accent-color:var(--accent);">
+                    <label for="cfgEsPredeterminado"
+                        style="font-size:0.82rem; color:var(--text-muted); cursor:pointer;">
                         Marcar como cuenta predeterminada para WhatsApp
                     </label>
                 </div>
                 <div class="modal-footer" style="margin-top:14px;">
                     <button type="button" class="btn-cancel" onclick="cancelarEdicionCuentaPago()">Cancelar</button>
-                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarCuentaPago">
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;"
+                        id="btnGuardarCuentaPago">
                         <span>Guardar Cuenta</span>
                     </button>
                 </div>
@@ -1395,12 +1487,15 @@
                 </div>
                 <div class="input-group">
                     <label>Monto en USD ($)</label>
-                    <input type="number" id="editItemMontoUSD" step="0.01" min="0.01" required oninput="actualizarEquivalenteEditItem()">
-                    <small id="editItemEquivalenteBs" style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
+                    <input type="number" id="editItemMontoUSD" step="0.01" min="0.01" required
+                        oninput="actualizarEquivalenteEditItem()">
+                    <small id="editItemEquivalenteBs"
+                        style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="cerrarModal('modalEditarItem')">Cancelar</button>
-                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarEdicionItem">
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;"
+                        id="btnGuardarEdicionItem">
                         <span>Guardar Cambios</span>
                     </button>
                 </div>
@@ -1409,7 +1504,8 @@
     </div>
 
     <!-- ================= MODAL: EDITAR CLIENTE Y TELÉFONO ================= -->
-    <div id="modalEditarClienteCuenta" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalEditarClienteCuenta')">
+    <div id="modalEditarClienteCuenta" class="modal-backdrop"
+        onclick="cerrarModalOnClickAfuera(event, 'modalEditarClienteCuenta')">
         <div class="modal-dialog" style="max-width: 420px;">
             <div class="modal-header">
                 <h3>✏️ Editar Datos del Cliente</h3>
@@ -1426,14 +1522,18 @@
                     <input type="tel" id="editClienteTelefono" required autocomplete="off">
                 </div>
                 <div style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                    <input type="checkbox" id="editClienteActualizarDirectorio" checked style="width:16px; height:16px; accent-color:var(--accent);">
-                    <label for="editClienteActualizarDirectorio" style="font-size:0.82rem; color:var(--text-muted); cursor:pointer;">
+                    <input type="checkbox" id="editClienteActualizarDirectorio" checked
+                        style="width:16px; height:16px; accent-color:var(--accent);">
+                    <label for="editClienteActualizarDirectorio"
+                        style="font-size:0.82rem; color:var(--text-muted); cursor:pointer;">
                         Actualizar también en la agenda de contactos
                     </label>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalEditarClienteCuenta')">Cancelar</button>
-                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarEdicionCliente">
+                    <button type="button" class="btn-cancel"
+                        onclick="cerrarModal('modalEditarClienteCuenta')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;"
+                        id="btnGuardarEdicionCliente">
                         <span>Guardar Cambios</span>
                     </button>
                 </div>
@@ -1447,10 +1547,12 @@
             <div class="modal-header" style="border-bottom:none; margin-bottom:4px;">
                 <h3 id="confirmTitulo">Confirmar acción</h3>
             </div>
-            <p id="confirmMensaje" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;"></p>
+            <p id="confirmMensaje"
+                style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;"></p>
             <div class="modal-footer" style="margin-top:0;">
                 <button type="button" class="btn-cancel" id="btnConfirmCancelar">Cancelar</button>
-                <button type="button" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnConfirmAceptar">
+                <button type="button" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;"
+                    id="btnConfirmAceptar">
                     <span>Aceptar</span>
                 </button>
             </div>
@@ -1477,6 +1579,7 @@
         let cuentas = [];
         let directorio = [];
         let cuentasPago = [];
+        let productos = [];
         let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
         let filtroActual = 'pendientes';
         let textoBusquedaCuentas = '';
@@ -2922,6 +3025,7 @@
                           <button class="btn-toggle" onclick="abrirModalMarcarPagado('${safeId}')">
                             <span>✓ Marcar Pagado</span>
                           </button>
+                          <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
                           <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
                         </div>
                       </div>
@@ -2936,6 +3040,7 @@
                           <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
                             <span>↩ Reabrir Cuenta</span>
                           </button>
+                          <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
                           <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
                         </div>
                       </div>
@@ -2972,6 +3077,198 @@
 
             contenedor.innerHTML = html;
         }
+
+        // ================= IMPRIMIR RECIBO =================
+        window.imprimirRecibo = function(cuentaId) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c) return;
+
+            const printArea = document.getElementById('printArea');
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+            
+            let htmlItems = (c.items || []).map(i => `
+                <div class="print-row">
+                    <span>${escapeHTML(i.concepto)}</span>
+                    <span>$${Number(i.monto).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            let htmlAbonos = '';
+            if (c.abonos && c.abonos.length > 0) {
+                htmlAbonos = c.abonos.map(a => `
+                    <div class="print-row" style="color: #555;">
+                        <span>Abono (${escapeHTML(a.metodo || '')})</span>
+                        <span>-$${Number(a.monto).toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+
+            const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const totalDeuda = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+            const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
+            const totalBs = (saldoRestante * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            printArea.innerHTML = `
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h3>Control de Cobranzas</h3>
+                    <div>Recibo de Pago</div>
+                    <div>Fecha: ${fechaHoy}</div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Cliente:</strong> ${escapeHTML(c.cliente)}<br>
+                    <strong>Teléfono:</strong> ${escapeHTML(c.telefono)}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    ${htmlItems}
+                </div>
+                ${htmlAbonos ? `<div style="margin-bottom: 10px; border-top: 1px dashed #000; padding-top: 5px;">${htmlAbonos}</div>` : ''}
+                <div class="print-total">
+                    <div class="print-row">
+                        <span>TOTAL ${c.pagado ? 'PAGADO' : 'PENDIENTE'}</span>
+                        <span>$${c.pagado ? totalDeuda.toFixed(2) : saldoRestante.toFixed(2)}</span>
+                    </div>
+                    <div class="print-row">
+                        <span>Equivalente</span>
+                        <span>${c.pagado ? (totalDeuda * tasaActual).toLocaleString('es-VE') : totalBs} Bs</span>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+                    ¡Gracias por su compra!
+                </div>
+            `;
+            
+            printArea.style.display = 'block';
+            window.print();
+            printArea.style.display = 'none';
+        };
+
+        // ================= EXPORTAR EXCEL =================
+        window.exportarExcel = function() {
+            if (typeof XLSX === 'undefined') {
+                window.mostrarToast('Librería Excel no cargada', 'error');
+                return;
+            }
+
+            const data = cuentas.map(c => {
+                const totalDeuda = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+                const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
+                
+                return {
+                    'Cliente': c.cliente || '',
+                    'Teléfono': c.telefono || '',
+                    'Estado': c.pagado ? 'Pagado' : 'Pendiente',
+                    'Total ($)': totalDeuda.toFixed(2),
+                    'Abonado ($)': totalAbonado.toFixed(2),
+                    'Saldo Pendiente ($)': c.pagado ? '0.00' : saldoRestante.toFixed(2),
+                    'Fecha Último Pago': c.fechaPago || '',
+                    'Detalle': (c.items || []).map(i => i.concepto).join(', ')
+                };
+            });
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Cuentas");
+            XLSX.writeFile(wb, "Reporte_Cobranzas.xlsx");
+        };
+
+        // ================= PRODUCTOS =================
+        window.autocompletarPrecio = function() {
+            const val = document.getElementById('concepto').value.trim().toLowerCase();
+            const precioInput = document.getElementById('montoUSD');
+            if (!val) return;
+            const productoEncontrado = productos.find(p => (p.nombre || '').toLowerCase() === val);
+            if (productoEncontrado) {
+                precioInput.value = productoEncontrado.precio || '';
+            }
+        };
+
+        function actualizarDatalistProductos() {
+            const datalist = document.getElementById('listaProductosDatalist');
+            if (datalist) {
+                datalist.innerHTML = '';
+                productos.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.nombre;
+                    datalist.appendChild(option);
+                });
+            }
+        }
+
+        function renderizarProductosUI() {
+            const contenedor = document.getElementById('listaProductosUI');
+            if (!contenedor) return;
+            if (productos.length === 0) {
+                contenedor.innerHTML = `<div class="empty-state">Tu catálogo está vacío.</div>`;
+                return;
+            }
+            const html = productos.map(p => {
+                const safeId = escapeHTML(p.id);
+                const safeNombre = escapeHTML(p.nombre);
+                const safePrecio = Number(p.precio).toFixed(2);
+                return `
+                  <div class="sale-card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px;">
+                    <div>
+                      <div class="client-name">${safeNombre}</div>
+                      <div style="color:var(--accent); font-weight:600;">$${safePrecio}</div>
+                    </div>
+                    <button class="btn-delete" title="Borrar Producto" onclick="eliminarProductoCatalog('${safeId}')">✕</button>
+                  </div>
+                `;
+            }).join('');
+            contenedor.innerHTML = html;
+        }
+
+        window.guardarProductoCatalog = async function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('prodNombre').value.trim();
+            const precio = parseFloat(document.getElementById('prodPrecio').value);
+            if (!nombre || isNaN(precio)) return;
+
+            const btn = document.getElementById('btnSubmitProducto');
+            btn.innerHTML = "<span>Guardando...</span>";
+            btn.disabled = true;
+
+            try {
+                const idProducto = encodeURIComponent(nombre.trim().toLowerCase()).replace(/%/g, "_");
+                await setDoc(doc(db, "productos", idProducto), { nombre: nombre, precio: precio }, { merge: true });
+                document.getElementById('formProducto').reset();
+                window.mostrarToast(`Producto "${nombre}" guardado`, "success");
+            } catch (error) {
+                window.mostrarToast("Error al guardar producto: " + error.message, "error");
+            }
+            btn.innerHTML = "<span>Guardar en Catálogo</span>";
+            btn.disabled = false;
+        };
+
+        window.eliminarProductoCatalog = function(id) {
+            window.mostrarConfirmacion({
+                titulo: '¿Eliminar Producto?',
+                mensaje: '¿Deseas eliminar este producto de tu catálogo?',
+                textoConfirmar: 'Eliminar',
+                esPeligroso: true,
+                onConfirm: async () => {
+                    try {
+                        await deleteDoc(doc(db, "productos", id));
+                        window.mostrarToast('Producto eliminado del catálogo', 'info');
+                    } catch (err) {
+                        window.mostrarToast('Error al eliminar: ' + err.message, 'error');
+                    }
+                }
+            });
+        };
+
+        onSnapshot(collection(db, "productos"), (snapshot) => {
+            productos = [];
+            snapshot.forEach((doc) => {
+                let data = doc.data();
+                data.id = doc.id;
+                productos.push(data);
+            });
+            productos.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+            actualizarDatalistProductos();
+            renderizarProductosUI();
+        });
     </script>
 </body>
 
