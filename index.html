@@ -2336,7 +2336,7 @@
             }
 
             const etiquetaSaldo = abonos.length > 0 ? 'SALDO PENDIENTE A PAGAR' : 'SALDO TOTAL A PAGAR';
-            mensaje += `\n\n👉 ${etiquetaSaldo}: *$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*\n(Calculado a tasa BCV: ${tasaStr} Bs)`;
+            mensaje += `\n\n👉 ${etiquetaSaldo}: *$${saldoPendienteUSD.toFixed(2)} (${saldoPendienteBs} Bs)*`;
 
             // Obtener opción de pago seleccionada por el usuario
             const radioSeleccionado = document.querySelector('input[name="opcionPagoWA"]:checked');
@@ -3144,7 +3144,7 @@
             let mensaje = `Hola ${c.cliente}, un cordial saludo.\nConfirmamos la recepción de tu abono a tu cuenta:\n\n💳 Monto abonado: *$${montoAbonoUSD.toFixed(2)} (${montoAbonoBs} Bs)*\n📌 Método: ${abono.metodo || 'Abono'}${refTexto}\n📅 Fecha: ${abono.fecha || 'Hoy'}`;
 
             if (saldoRestanteUSD > 0.009) {
-                mensaje += `\n\n👉 SALDO RESTANTE POR PAGAR: *$${saldoRestanteUSD.toFixed(2)} (${saldoRestanteBs} Bs)*\n(Calculado a tasa BCV: ${tasaStr} Bs)`;
+                mensaje += `\n\n👉 SALDO RESTANTE POR PAGAR: *$${saldoRestanteUSD.toFixed(2)} (${saldoRestanteBs} Bs)*`;
             } else {
                 mensaje += `\n\n✅ Estado: *CUENTA TOTALMENTE SALDADA*\n¡Tu cuenta ha quedado cancelada en su totalidad!`;
             }
