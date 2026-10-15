@@ -1316,26 +1316,28 @@
     <div class="form-card">
         <h2>➕ Registrar Venta</h2>
         <form id="formVenta" onsubmit="guardarVenta(event)">
-            <div class="input-group">
-                <label>Nombre del Cliente (Selecciona de la lista si ya existe)</label>
-                <input type="text" id="cliente" list="listaDirectorio" placeholder="Ej: Víctor"
-                    oninput="autocompletarTelefono()" required autocomplete="off">
-                <datalist id="listaDirectorio"></datalist>
-            </div>
             <div class="input-row">
+                <div class="input-group">
+                    <label>Nombre del Cliente (Selecciona de la lista)</label>
+                    <input type="text" id="cliente" list="listaDirectorio" placeholder="Ej: Víctor"
+                        oninput="autocompletarTelefono()" onchange="autocompletarTelefono()" required autocomplete="off">
+                    <datalist id="listaDirectorio"></datalist>
+                </div>
                 <div class="input-group">
                     <label>Teléfono WhatsApp</label>
                     <input type="tel" id="telefono" placeholder="Ej: 04121234567" required autocomplete="off">
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Detalle / Producto (Selecciona o escribe)</label>
+                    <input type="text" id="concepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN y Café" required autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
+                    <datalist id="listaProductosDatalist"></datalist>
                 </div>
                 <div class="input-group">
                     <label>Monto en USD ($)</label>
                     <input type="number" id="montoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required>
                 </div>
-            </div>
-            <div class="input-group">
-                <label>Detalle / Producto (Selecciona o escribe)</label>
-                <input type="text" id="concepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN y Café" required autocomplete="off" oninput="autocompletarPrecio()">
-                <datalist id="listaProductosDatalist"></datalist>
             </div>
             <button type="submit" class="btn-submit" id="btnSubmit">
                 <span>Añadir a la Cuenta</span>
@@ -1473,14 +1475,16 @@
             </div>
             <form id="formAgregarItemRapido" onsubmit="guardarItemRapido(event)">
                 <input type="hidden" id="rapidoCuentaId">
-                <div class="input-group">
-                    <label>Producto o Detalle (Selecciona o escribe)</label>
-                    <input type="text" id="rapidoConcepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN" required autocomplete="off" oninput="autocompletarPrecioItemRapido()">
-                </div>
-                <div class="input-group">
-                    <label>Monto en USD ($)</label>
-                    <input type="number" id="rapidoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteBsItemRapido()">
-                    <small id="rapidoEquivalenteBs" style="display:block; margin-top:4px; color:var(--text-muted); font-size:0.8rem;">≈ 0,00 Bs</small>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Producto o Detalle (Selecciona o escribe)</label>
+                        <input type="text" id="rapidoConcepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN" required autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
+                    </div>
+                    <div class="input-group">
+                        <label>Monto en USD ($)</label>
+                        <input type="number" id="rapidoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteBsItemRapido()">
+                        <small id="rapidoEquivalenteBs" style="display:block; margin-top:4px; color:var(--text-muted); font-size:0.8rem;">≈ 0,00 Bs</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="cerrarModal('modalAgregarItemRapido')">Cancelar</button>
@@ -3663,8 +3667,8 @@
             const precioInput = document.getElementById('montoUSD');
             if (!val) return;
             const productoEncontrado = productos.find(p => (p.nombre || '').toLowerCase() === val);
-            if (productoEncontrado) {
-                precioInput.value = productoEncontrado.precio || '';
+            if (productoEncontrado && productoEncontrado.precio) {
+                precioInput.value = Number(productoEncontrado.precio).toFixed(2);
             }
         };
 
@@ -4003,7 +4007,7 @@
             if (!val) return;
             const prod = productos.find(p => (p.nombre || '').toLowerCase() === val);
             if (prod && prod.precio) {
-                precioInput.value = prod.precio;
+                precioInput.value = Number(prod.precio).toFixed(2);
                 window.actualizarEquivalenteBsItemRapido();
             }
         };
