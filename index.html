@@ -2323,7 +2323,7 @@
             const saldoPendienteBs = (saldoPendienteUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             const tasaStr = tasaActual.toFixed(2);
 
-            let desgloseProductos = items.map(i => `▪️ ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
+            let desgloseProductos = items.map(i => `🔹 ${i.concepto}: $${(Number(i.monto) || 0).toFixed(2)}`).join('\n');
 
             let plantillaGuardada = localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:";
             let encabezadoMensaje = plantillaGuardada.replace(/{cliente}/g, c.cliente);
@@ -2331,7 +2331,7 @@
             let mensaje = `${encabezadoMensaje}\n\nDetalle de compras:\n${desgloseProductos}`;
 
             if (abonos.length > 0) {
-                const desgloseAbonos = abonos.map(a => `▪️ -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
+                const desgloseAbonos = abonos.map(a => `🔹 -$${(Number(a.monto) || 0).toFixed(2)} (${a.metodo || 'Abono'}${a.referencia ? ` - Ref ${a.referencia}` : ''})`).join('\n');
                 mensaje += `\n\nAbonos realizados:\n${desgloseAbonos}`;
             }
 
@@ -2348,7 +2348,7 @@
                     mensaje += `\n\n📌 Datos para Pago Móvil:`;
                     if (cuentaElegida.banco) mensaje += `\n🏦 Banco: ${cuentaElegida.banco}`;
                     if (cuentaElegida.telefono) mensaje += `\n📱 Teléfono: ${cuentaElegida.telefono}`;
-                    if (cuentaElegida.cedula) mensaje += `\n🪪 Cédula/RIF: ${cuentaElegida.cedula}`;
+                    if (cuentaElegida.cedula) mensaje += `\n📄 Cédula/RIF: ${cuentaElegida.cedula}`;
                     if (cuentaElegida.titular) mensaje += `\n👤 Titular: ${cuentaElegida.titular}`;
                     if (cuentaElegida.nota) mensaje += `\n_${cuentaElegida.nota}_`;
                 }
@@ -2368,7 +2368,12 @@
             }).catch(err => console.error("Error al registrar fecha WhatsApp:", err));
 
             window.cerrarModal('modalSeleccionarPagoWhatsApp');
-            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(mensaje).catch(() => {});
+            }
+
+            const url = `https://api.whatsapp.com/send?phone=${limpio}&text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
         };
 
@@ -2593,7 +2598,7 @@
             } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
                 limpio = '58' + limpio;
             }
-            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(`Hola ${nombre}, un cordial saludo.`)}`;
+            const url = `https://api.whatsapp.com/send?phone=${limpio}&text=${encodeURIComponent(`Hola ${nombre}, un cordial saludo.`)}`;
             window.open(url, '_blank');
         };
 
@@ -3151,7 +3156,10 @@
 
             mensaje += `\n\n¡Muchas gracias por tu pago!`;
 
-            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(mensaje).catch(() => {});
+            }
+            const url = `https://api.whatsapp.com/send?phone=${limpio}&text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
         };
 
@@ -3180,7 +3188,10 @@
 
             let mensaje = `Hola ${c.cliente}, un cordial saludo.\nConfirmamos que tu cuenta ha quedado totalmente cancelada:\n\n💳 Monto total cancelado: *$${totalDeudaUSD.toFixed(2)} (${totalDeudaBs} Bs)*\n📌 Método: ${metodoInfo}\n📅 Fecha de pago: ${c.fechaPago || fechaHoy}\n\n✅ Estado: *CUENTA TOTALMENTE SALDADA*\n\n¡Muchas gracias por tu puntualidad y preferencia!`;
 
-            const url = `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(mensaje).catch(() => {});
+            }
+            const url = `https://api.whatsapp.com/send?phone=${limpio}&text=${encodeURIComponent(mensaje)}`;
             window.open(url, '_blank');
         };
 
