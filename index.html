@@ -1261,6 +1261,40 @@
         :root[data-theme="light"] .btn-item-add:hover {
             background: #059669;
         }
+
+        /* ================= VISTA DE ESCRITORIO (PC / LAPTOP) ================= */
+        @media (min-width: 768px) {
+            body {
+                padding: 24px 20px;
+                padding-bottom: 100px;
+            }
+
+            .module-section {
+                max-width: 1040px;
+                margin: 0 auto;
+            }
+
+            .sales-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                align-items: start;
+            }
+
+            .sales-list .empty-state,
+            .sales-list .loading-state {
+                grid-column: 1 / -1;
+            }
+
+            .app-nav {
+                max-width: 520px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 16px 16px 0 0;
+                border-left: 1px solid var(--card-border);
+                border-right: 1px solid var(--card-border);
+            }
+        }
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
