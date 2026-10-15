@@ -1849,6 +1849,34 @@
         </div>
     </div>
 
+    <!-- ================= MODAL: EDITAR PRODUCTO DEL CATÁLOGO ================= -->
+    <div id="modalEditarProductoCatalogo" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalEditarProductoCatalogo')">
+        <div class="modal-dialog" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3>✏️ Editar Producto del Catálogo</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalEditarProductoCatalogo')">✕</button>
+            </div>
+            <form id="formEditarProductoCatalogo" onsubmit="guardarEdicionProductoCatalogoSubmit(event)">
+                <input type="hidden" id="editProdOriginalId">
+                <div class="input-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="editProdNombre" required autocomplete="off" placeholder="Ej: Harina PAN">
+                </div>
+                <div class="input-group">
+                    <label>Precio Unitario (USD)</label>
+                    <input type="number" id="editProdPrecio" step="0.01" min="0.01" required autocomplete="off" placeholder="Ej: 1.50" oninput="actualizarEquivalenteEditProd()">
+                    <small id="editProdEquivalenteBs" style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalEditarProductoCatalogo')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px; background:#10b981;" id="btnGuardarEdicionProd">
+                        <span>Guardar Cambios</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ================= MODAL: CONFIRMACIÓN ELEGANTE ================= -->
     <div id="modalConfirmacion" class="modal-backdrop">
         <div class="modal-dialog" style="max-width:380px;">
@@ -3663,18 +3691,86 @@
                 const safeId = escapeHTML(p.id);
                 const safeNombre = escapeHTML(p.nombre);
                 const safePrecio = Number(p.precio).toFixed(2);
+                const precioBs = (Number(p.precio) * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 return `
                   <div class="sale-card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px;">
                     <div>
                       <div class="client-name">${safeNombre}</div>
-                      <div style="color:var(--accent); font-weight:600;">$${safePrecio}</div>
+                      <div style="color:var(--accent); font-weight:600; font-size:0.92rem;">
+                        $${safePrecio} <small style="color:var(--text-muted); font-weight:normal; margin-left:4px;">(≈ ${precioBs} Bs)</small>
+                      </div>
                     </div>
-                    <button class="btn-delete" title="Borrar Producto" onclick="eliminarProductoCatalog('${safeId}')">✕</button>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <button type="button" class="btn-item-edit" title="Editar producto" onclick="abrirModalEditarProductoCatalogo('${safeId}')">✏️</button>
+                      <button type="button" class="btn-delete" title="Borrar Producto" onclick="eliminarProductoCatalog('${safeId}')">✕</button>
+                    </div>
                   </div>
                 `;
             }).join('');
             contenedor.innerHTML = html;
         }
+
+        window.actualizarEquivalenteEditProd = function() {
+            const val = parseFloat(document.getElementById('editProdPrecio').value) || 0;
+            const small = document.getElementById('editProdEquivalenteBs');
+            if (small) {
+                small.textContent = val > 0 ? `≈ ${(val * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs (Tasa: ${tasaActual.toFixed(2)})` : '';
+            }
+        };
+
+        window.abrirModalEditarProductoCatalogo = function(id) {
+            const prod = productos.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('editProdOriginalId').value = prod.id;
+            document.getElementById('editProdNombre').value = prod.nombre || '';
+            document.getElementById('editProdPrecio').value = Number(prod.precio).toFixed(2);
+            window.actualizarEquivalenteEditProd();
+
+            window.abrirModal('modalEditarProductoCatalogo');
+            setTimeout(() => {
+                const inputNombre = document.getElementById('editProdNombre');
+                if (inputNombre) {
+                    inputNombre.focus();
+                    inputNombre.select();
+                }
+            }, 100);
+        };
+
+        window.guardarEdicionProductoCatalogoSubmit = async function(e) {
+            e.preventDefault();
+            const originalId = document.getElementById('editProdOriginalId').value;
+            const nuevoNombre = document.getElementById('editProdNombre').value.trim();
+            const nuevoPrecio = parseFloat(document.getElementById('editProdPrecio').value);
+
+            if (!nuevoNombre || isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
+                window.mostrarToast('Por favor ingresa un nombre y un precio válido', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnGuardarEdicionProd');
+            btn.innerHTML = '<span>Guardando...</span>';
+            btn.disabled = true;
+
+            try {
+                const nuevoId = encodeURIComponent(nuevoNombre.trim().toLowerCase()).replace(/%/g, "_");
+
+                if (nuevoId !== originalId) {
+                    await setDoc(doc(db, "productos", nuevoId), { nombre: nuevoNombre, precio: nuevoPrecio });
+                    await deleteDoc(doc(db, "productos", originalId));
+                } else {
+                    await setDoc(doc(db, "productos", originalId), { nombre: nuevoNombre, precio: nuevoPrecio }, { merge: true });
+                }
+
+                window.cerrarModal('modalEditarProductoCatalogo');
+                window.mostrarToast(`Producto "${nuevoNombre}" actualizado con éxito`, 'success');
+            } catch (err) {
+                window.mostrarToast('Error al actualizar producto: ' + err.message, 'error');
+            }
+
+            btn.innerHTML = '<span>Guardar Cambios</span>';
+            btn.disabled = false;
+        };
 
         window.guardarProductoCatalog = async function(e) {
             e.preventDefault();
