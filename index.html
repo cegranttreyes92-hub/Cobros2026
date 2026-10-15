@@ -427,6 +427,22 @@
             text-transform: none;
         }
 
+        .badge-wa-alert {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-size: 0.68rem;
+            text-transform: none;
+        }
+
+        .badge-wa-none {
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-size: 0.68rem;
+            text-transform: none;
+        }
+
         /* Desglose de Productos */
         .items-breakdown {
             background: var(--input-dark);
@@ -1350,7 +1366,7 @@
             </button>
             <div class="filter-tabs">
                 <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
-                <button class="tab-btn" onclick="cambiarFiltro('notificados', this)" title="Cuentas notificadas por WhatsApp en los últimos 5 días">💬 Notificados (5d)</button>
+                <button class="tab-btn" onclick="cambiarFiltro('sin_notificar', this)" title="Cuentas pendientes sin notificar o con más de 5 días sin aviso por WhatsApp">💬 Sin Notificar (+5d)</button>
                 <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
                 <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
             </div>
@@ -3234,9 +3250,11 @@
                 // Filtro por pestaña
                 if (filtroActual === 'pendientes' && c.pagado) return false;
                 if (filtroActual === 'pagados' && !c.pagado) return false;
-                if (filtroActual === 'notificados') {
+                if (filtroActual === 'sin_notificar') {
+                    if (c.pagado) return false;
                     const diasNotif = calcularDiasUltimaNotificacionWA(c);
-                    if (diasNotif === null || diasNotif > 5) return false;
+                    // Si ya fue notificado en los últimos 5 días (0 a 5 días), excluir
+                    if (diasNotif !== null && diasNotif <= 5) return false;
                 }
 
                 // Filtro por buscador
@@ -3268,8 +3286,8 @@
                 let msgVacio = 'No hay cuentas en esta sección.';
                 if (textoBusquedaCuentas) {
                     msgVacio = 'No se encontraron cuentas que coincidan con la búsqueda.';
-                } else if (filtroActual === 'notificados') {
-                    msgVacio = 'No has notificado a ningún cliente por WhatsApp en los últimos 5 días.';
+                } else if (filtroActual === 'sin_notificar') {
+                    msgVacio = '¡Al día! Todas tus cuentas pendientes han sido notificadas por WhatsApp en los últimos 5 días.';
                 } else if (filtroActual === 'pendientes') {
                     msgVacio = '¡Excelente! No tienes cuentas pendientes por cobrar.';
                 }
@@ -3313,12 +3331,18 @@
                     }
                 }
 
-                // Badge de última notificación por WhatsApp (últimos 5 días)
+                // Badge de estado de notificación por WhatsApp
                 const diasNotif = calcularDiasUltimaNotificacionWA(c);
                 let badgeNotifWAHTML = '';
                 if (diasNotif !== null && diasNotif <= 5) {
                     const textoAviso = diasNotif === 0 ? 'Hoy' : (diasNotif === 1 ? 'Ayer' : `Hace ${diasNotif}d`);
                     badgeNotifWAHTML = `<span class="badge badge-wa-notified" title="Aviso enviado por WhatsApp ${diasNotif === 0 ? 'hoy' : (diasNotif === 1 ? 'ayer' : `hace ${diasNotif} días`)}">💬 Avisado ${textoAviso}</span>`;
+                } else if (!c.pagado) {
+                    if (diasNotif === null) {
+                        badgeNotifWAHTML = `<span class="badge badge-wa-none" title="Aún no se ha enviado aviso por WhatsApp a este cliente">💬 Sin aviso WA</span>`;
+                    } else {
+                        badgeNotifWAHTML = `<span class="badge badge-wa-alert" title="Hace ${diasNotif} días que no se envía aviso por WhatsApp">💬 Sin aviso (${diasNotif}d)</span>`;
+                    }
                 }
 
                 const htmlItems = items.map((item, index) => {
