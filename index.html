@@ -1263,7 +1263,7 @@
         }
 
         /* ================= VISTA DE ESCRITORIO (PC / LAPTOP) ================= */
-        @media (min-width: 768px) {
+        @media (min-width: 769px) {
             body {
                 padding: 24px 20px;
                 padding-bottom: 100px;
@@ -1278,12 +1278,35 @@
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
-                align-items: start;
+                align-items: stretch;
             }
 
             .sales-list .empty-state,
             .sales-list .loading-state {
                 grid-column: 1 / -1;
+            }
+
+            .sale-card {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .items-breakdown {
+                max-height: 165px;
+                overflow-y: auto;
+                scrollbar-width: thin;
+            }
+
+            .abonos-breakdown {
+                max-height: 110px;
+                overflow-y: auto;
+                scrollbar-width: thin;
+            }
+
+            .amounts-summary,
+            .amounts-box {
+                margin-top: auto;
             }
 
             .app-nav {
@@ -1293,6 +1316,31 @@
                 border-radius: 16px 16px 0 0;
                 border-left: 1px solid var(--card-border);
                 border-right: 1px solid var(--card-border);
+            }
+        }
+
+        /* ================= VISTA MÓVIL (TELÉFONOS) ================= */
+        @media (max-width: 768px) {
+            .sales-list {
+                display: flex;
+                flex-direction: column;
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .sale-card {
+                height: auto;
+            }
+
+            .items-breakdown,
+            .abonos-breakdown {
+                max-height: none;
+                overflow-y: visible;
+            }
+
+            .amounts-summary,
+            .amounts-box {
+                margin-top: 10px;
             }
         }
     </style>
