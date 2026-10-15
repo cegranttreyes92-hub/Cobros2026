@@ -419,6 +419,14 @@
             text-transform: none;
         }
 
+        .badge-wa-notified {
+            background: rgba(37, 211, 102, 0.15);
+            color: #25d366;
+            border: 1px solid rgba(37, 211, 102, 0.35);
+            font-size: 0.68rem;
+            text-transform: none;
+        }
+
         /* Desglose de Productos */
         .items-breakdown {
             background: var(--input-dark);
@@ -1342,6 +1350,7 @@
             </button>
             <div class="filter-tabs">
                 <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
+                <button class="tab-btn" onclick="cambiarFiltro('notificados', this)" title="Cuentas notificadas por WhatsApp en los últimos 5 días">💬 Notificados (5d)</button>
                 <button class="tab-btn" onclick="cambiarFiltro('pagados', this)">Pagados</button>
                 <button class="tab-btn" onclick="cambiarFiltro('todos', this)">Todos</button>
             </div>
@@ -2338,7 +2347,8 @@
             const fechaHoraRegistro = `${fechaStr} - ${horaStr}`;
 
             updateDoc(doc(db, "cuentas", c.id), {
-                ultimaNotificacionWA: fechaHoraRegistro
+                ultimaNotificacionWA: fechaHoraRegistro,
+                timestampNotificacionWA: Date.now()
             }).catch(err => console.error("Error al registrar fecha WhatsApp:", err));
 
             window.cerrarModal('modalSeleccionarPagoWhatsApp');
@@ -3165,6 +3175,27 @@
             renderizarCuentas();
         };
 
+        // Función auxiliar para calcular días desde la última notificación por WhatsApp
+        function calcularDiasUltimaNotificacionWA(c) {
+            if (!c.ultimaNotificacionWA && !c.timestampNotificacionWA) return null;
+            let notifTime = 0;
+            if (c.timestampNotificacionWA) {
+                notifTime = Number(c.timestampNotificacionWA);
+            } else if (c.ultimaNotificacionWA) {
+                const partesFecha = c.ultimaNotificacionWA.split('-')[0].trim().split('/');
+                if (partesFecha.length === 3) {
+                    const d = parseInt(partesFecha[0], 10);
+                    const m = parseInt(partesFecha[1], 10) - 1;
+                    const y = parseInt(partesFecha[2], 10);
+                    const dt = new Date(y, m, d);
+                    if (!isNaN(dt.getTime())) notifTime = dt.getTime();
+                }
+            }
+            if (!notifTime) return null;
+            const diffDias = Math.floor((Date.now() - notifTime) / (1000 * 60 * 60 * 24));
+            return diffDias >= 0 ? diffDias : 0;
+        }
+
         // ================= RENDERIZADO PRINCIPAL =================
         function renderizarCuentas() {
             const contenedor = document.getElementById('listaCuentas');
@@ -3203,6 +3234,10 @@
                 // Filtro por pestaña
                 if (filtroActual === 'pendientes' && c.pagado) return false;
                 if (filtroActual === 'pagados' && !c.pagado) return false;
+                if (filtroActual === 'notificados') {
+                    const diasNotif = calcularDiasUltimaNotificacionWA(c);
+                    if (diasNotif === null || diasNotif > 5) return false;
+                }
 
                 // Filtro por buscador
                 if (textoBusquedaCuentas) {
@@ -3230,7 +3265,15 @@
             }
 
             if (filtradas.length === 0) {
-                contenedor.innerHTML = `<div class="empty-state">${textoBusquedaCuentas ? 'No se encontraron cuentas que coincidan con la búsqueda.' : 'No hay cuentas en esta sección.'}</div>`;
+                let msgVacio = 'No hay cuentas en esta sección.';
+                if (textoBusquedaCuentas) {
+                    msgVacio = 'No se encontraron cuentas que coincidan con la búsqueda.';
+                } else if (filtroActual === 'notificados') {
+                    msgVacio = 'No has notificado a ningún cliente por WhatsApp en los últimos 5 días.';
+                } else if (filtroActual === 'pendientes') {
+                    msgVacio = '¡Excelente! No tienes cuentas pendientes por cobrar.';
+                }
+                contenedor.innerHTML = `<div class="empty-state">${msgVacio}</div>`;
                 return;
             }
 
@@ -3268,6 +3311,14 @@
                     } else {
                         badgeAntiguedadHTML = `<span class="badge badge-age-danger" title="¡Alerta! Cuenta con más de 30 días de morosidad (${diasAntiguedad} días)">🚨 Hace ${diasAntiguedad} días</span>`;
                     }
+                }
+
+                // Badge de última notificación por WhatsApp (últimos 5 días)
+                const diasNotif = calcularDiasUltimaNotificacionWA(c);
+                let badgeNotifWAHTML = '';
+                if (diasNotif !== null && diasNotif <= 5) {
+                    const textoAviso = diasNotif === 0 ? 'Hoy' : (diasNotif === 1 ? 'Ayer' : `Hace ${diasNotif}d`);
+                    badgeNotifWAHTML = `<span class="badge badge-wa-notified" title="Aviso enviado por WhatsApp ${diasNotif === 0 ? 'hoy' : (diasNotif === 1 ? 'ayer' : `hace ${diasNotif} días`)}">💬 Avisado ${textoAviso}</span>`;
                 }
 
                 const htmlItems = items.map((item, index) => {
@@ -3360,16 +3411,19 @@
                     badgeHTML = `
                       <span class="badge badge-paid">✓ Cancelada</span>
                       ${c.metodoPago ? `<span class="badge badge-method">💳 ${escapeHTML(c.metodoPago)}${c.referencia ? ` · ${escapeHTML(c.referencia)}` : ''}</span>` : ''}
+                      ${badgeNotifWAHTML}
                     `;
                 } else if (c.totalAbonado > 0) {
                     badgeHTML = `
                       ${badgeAntiguedadHTML}
+                      ${badgeNotifWAHTML}
                       <span class="badge badge-partial">Abonado: $${c.totalAbonado.toFixed(2)}</span>
                       <span class="badge badge-pending">Resta: $${c.saldoRestante.toFixed(2)}</span>
                     `;
                 } else {
                     badgeHTML = `
                       ${badgeAntiguedadHTML}
+                      ${badgeNotifWAHTML}
                       <span class="badge badge-pending">Deuda Abierta</span>
                     `;
                 }
