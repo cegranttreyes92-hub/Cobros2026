@@ -647,6 +647,7 @@
             gap: 2px;
             text-decoration: none;
             width: 100%;
+            min-height: 48px;
             transition: all 0.2s;
         }
 
@@ -681,41 +682,43 @@
         }
 
         .btn-qr {
-            background: #1e1b4b;
-            color: #a5b4fc;
-            border: 1px solid #3730a3;
+            background: #064e3b;
+            color: #34d399;
+            border: 1px solid #059669;
             padding: 8px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 2px;
             text-decoration: none;
             width: 100%;
+            min-height: 48px;
             transition: all 0.2s;
         }
 
         .btn-qr:hover,
         .btn-qr:active {
-            background: #312e81;
+            background: #047857;
             color: #fff;
-            border-color: #6366f1;
+            border-color: #10b981;
         }
 
         :root[data-theme="light"] .btn-qr {
-            background: #eef2ff;
-            color: #4338ca;
-            border-color: #c7d2fe;
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
         }
 
         :root[data-theme="light"] .btn-qr:hover,
         :root[data-theme="light"] .btn-qr:active {
-            background: #e0e7ff;
-            color: #3730a3;
-            border-color: #818cf8;
+            background: #10b981;
+            color: #ffffff;
+            border-color: #059669;
         }
 
         .btn-abono {
@@ -1757,45 +1760,44 @@
     <div id="modalCobroQR" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalCobroQR')">
         <div class="modal-dialog">
             <div class="modal-header">
-                <h3>📱 Cobro Presencial con QR</h3>
+                <h3>📱 Cobro Presencial (QR)</h3>
                 <button type="button" class="modal-close" onclick="cerrarModal('modalCobroQR')">✕</button>
             </div>
 
-            <!-- Resumen de Cliente y Saldo Pendiente -->
-            <div style="background:var(--input-dark); padding:10px 12px; border-radius:8px; margin-bottom:12px; font-size:0.88rem; border:1px solid var(--card-border);">
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <span style="color:var(--text-muted);">Cliente:</span>
-                    <strong id="qrModalCliente" style="color:var(--text-main);"></strong>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:var(--text-muted);">Saldo por cobrar:</span>
-                    <strong id="qrModalMonto" style="color:var(--accent); font-size:1.05rem;"></strong>
-                </div>
+            <!-- Identificación del cliente -->
+            <div style="text-align:center; margin-top:4px;">
+                <span id="qrModalCliente" style="font-weight:600; color:var(--text-main); font-size:1rem;"></span>
             </div>
+
+            <!-- Letrero GIGANTE para el cliente -->
+            <h2 id="qrMontoGigante" style="color:var(--accent); text-align:center; font-size:1.8rem; margin:10px 0; font-weight:800; letter-spacing:0.5px;">0,00 Bs</h2>
 
             <!-- Selector de cuenta de Pago Móvil -->
             <div class="input-group" style="margin-bottom:12px;">
                 <label style="font-weight:600; color:var(--text-main); margin-bottom:4px; display:block;">Seleccionar Cuenta de Pago Móvil:</label>
-                <select id="qrCuentaPagoSelect" onchange="actualizarPantallaQR()">
+                <select id="qrCuentaPagoSelect" onchange="actualizarPantallaQR()" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--card-border); background:var(--input-dark); color:var(--text-main); font-size:0.95rem;">
                     <!-- Opciones dinámicas -->
                 </select>
             </div>
 
-            <!-- Contenedor QR -->
-            <div id="contenedorQR" style="display:flex; justify-content:center; align-items:center; margin: 15px 0; background:white; padding:15px; border-radius:10px; min-height:220px; box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+            <!-- Contenedor central para la imagen -->
+            <div style="text-align:center; margin:15px 0; background:white; padding:10px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                <img id="qrImagenMostrada" style="max-width:100%; max-height:250px; border-radius:8px; display:none;" alt="QR Banco" />
+                <p id="qrSinImagen" style="color:var(--danger); display:none; padding:20px 0; margin:0; font-weight:600;">No has subido un QR para esta cuenta.</p>
+            </div>
 
-            <!-- Tarjeta visual destacada debajo del QR (para cobros manuales) -->
-            <div id="qrDatosCuentaCard" style="background:var(--input-dark); border:1px solid var(--card-border); padding:12px 14px; border-radius:8px; margin-bottom:14px;">
+            <!-- Tarjeta visual con los datos en texto -->
+            <div id="qrDatosCuentaCard" style="background:var(--input-dark); border:1px solid var(--card-border); padding:14px 16px; border-radius:10px; margin-bottom:14px;">
                 <div id="qrDatosCuentaContenido">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                        <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); font-weight:600;">Datos para Pago Móvil Manual</span>
-                        <span id="qrCuentaBancoBadge" class="badge badge-paid" style="font-size:0.7rem; padding:2px 6px;"></span>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                        <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); font-weight:600;">Datos para Pago Móvil</span>
+                        <span id="qrCuentaBancoBadge" class="badge badge-paid" style="font-size:0.75rem; padding:3px 8px;"></span>
                     </div>
-                    <div style="font-size:1.02rem; line-height:1.65; color:var(--text-main);">
-                        <div>🏦 <strong>Banco:</strong> <span id="qrDatoBanco" style="color:var(--accent); font-weight:700;"></span> <span id="qrDatoCodigoBanco" style="color:var(--text-muted); font-size:0.85rem; font-weight:600;"></span></div>
+                    <div style="font-size:1.05rem; line-height:1.7; color:var(--text-main);">
+                        <div>🏦 <strong>Banco:</strong> <span id="qrDatoBanco" style="color:var(--accent); font-weight:700;"></span></div>
                         <div>📱 <strong>Teléfono:</strong> <span id="qrDatoTelefono" style="letter-spacing:0.5px; font-weight:700;"></span></div>
                         <div>🪪 <strong>Cédula:</strong> <span id="qrDatoCedula" style="letter-spacing:0.5px; font-weight:700;"></span></div>
-                        <div id="qrDatoTitularRow" style="font-size:0.88rem; color:var(--text-muted); margin-top:2px;">👤 <strong>Titular:</strong> <span id="qrDatoTitular"></span></div>
+                        <div id="qrDatoTitularRow" style="font-size:0.9rem; color:var(--text-muted); margin-top:2px;">👤 <strong>Titular:</strong> <span id="qrDatoTitular"></span></div>
                     </div>
                 </div>
                 <div id="qrSinCuentasAviso" style="display:none; text-align:center; padding:12px; color:var(--warning); font-size:0.9rem;">
@@ -1986,6 +1988,11 @@
                     <label>Nota adicional para el cliente (Opcional)</label>
                     <input type="text" id="cfgNota" placeholder="Ej: Por favor enviar capture una vez realizado el pago"
                         autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Subir imagen del QR del Banco (Opcional)</label>
+                    <input type="file" id="cfgQR" accept="image/*" onchange="procesarImagenQRSeleccionada(event)" style="font-size:0.85rem;">
+                    <img id="cfgQRPreview" style="max-width:150px; display:none; margin-top:10px; border-radius:8px; border:1px solid var(--card-border);" alt="Vista previa QR">
                 </div>
                 <div style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                     <input type="checkbox" id="cfgEsPredeterminado"
@@ -2298,6 +2305,7 @@
                     <div class="cuenta-pago-info">
                       <div class="cuenta-pago-header">
                         <span>${safeAlias}</span>
+                        ${p.qrImagen ? `<span class="badge" style="background:#064e3b; color:#34d399; font-size:0.65rem; padding:2px 6px;">📷 Con QR</span>` : ''}
                         ${isDefault ? `<span class="badge badge-paid" style="font-size:0.65rem; padding:2px 6px;">⭐ Predeterminada</span>` : ''}
                       </div>
                       <div class="cuenta-pago-details">
@@ -2319,7 +2327,62 @@
             contenedor.innerHTML = html;
         }
 
+        let imagenQRBase64Temp = null;
+
+        window.procesarImagenQRSeleccionada = function (e) {
+            const file = e.target.files && e.target.files[0];
+            const preview = document.getElementById('cfgQRPreview');
+            if (!file) {
+                imagenQRBase64Temp = null;
+                if (preview) {
+                    preview.src = '';
+                    preview.style.display = 'none';
+                }
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 800;
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    imagenQRBase64Temp = canvas.toDataURL('image/jpeg', 0.85);
+                    if (preview) {
+                        preview.src = imagenQRBase64Temp;
+                        preview.style.display = 'block';
+                    }
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
         window.mostrarFormularioNuevaCuenta = function () {
+            imagenQRBase64Temp = null;
+            const inputQR = document.getElementById('cfgQR');
+            if (inputQR) inputQR.value = '';
+            const preview = document.getElementById('cfgQRPreview');
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+
             document.getElementById('cfgEditId').value = '';
             document.getElementById('cfgFormTitulo').textContent = '➕ Agregar Cuenta de Pago Móvil';
             document.getElementById('formConfigPago').reset();
@@ -2331,6 +2394,15 @@
         };
 
         window.cancelarEdicionCuentaPago = function () {
+            imagenQRBase64Temp = null;
+            const inputQR = document.getElementById('cfgQR');
+            if (inputQR) inputQR.value = '';
+            const preview = document.getElementById('cfgQRPreview');
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+
             document.getElementById('formConfigPago').reset();
             document.getElementById('formConfigPago').style.display = 'none';
             document.getElementById('seccionListaCuentasPago').style.display = 'block';
@@ -2357,6 +2429,15 @@
             btn.innerHTML = '<span>Guardando en Firebase...</span>';
 
             try {
+                // Determinar imagen QR: si subió una nueva, usar imagenQRBase64Temp; si no, conservar la existente
+                let qrImagenFinal = null;
+                if (imagenQRBase64Temp) {
+                    qrImagenFinal = imagenQRBase64Temp;
+                } else if (editId) {
+                    const cuentaExistente = cuentasPago.find(item => item.id === editId);
+                    qrImagenFinal = (cuentaExistente && cuentaExistente.qrImagen) ? cuentaExistente.qrImagen : null;
+                }
+
                 // Si esta cuenta será predeterminada, desmarcamos las demás
                 if (esPredeterminado) {
                     const updatesOtras = cuentasPago
@@ -2365,29 +2446,33 @@
                     await Promise.all(updatesOtras);
                 }
 
+                const docData = {
+                    alias,
+                    banco,
+                    telefono,
+                    cedula,
+                    titular,
+                    nota,
+                    qrImagen: qrImagenFinal,
+                    esPredeterminado: esPredeterminado || (editId ? false : cuentasPago.length === 0)
+                };
+
                 if (editId) {
-                    await updateDoc(doc(db, "cuentas_pago", editId), {
-                        alias,
-                        banco,
-                        telefono,
-                        cedula,
-                        titular,
-                        nota,
-                        esPredeterminado: esPredeterminado || cuentasPago.length <= 1
-                    });
+                    await updateDoc(doc(db, "cuentas_pago", editId), docData);
                     window.mostrarToast('Cuenta actualizada en Firebase', 'success');
                 } else {
-                    await addDoc(collection(db, "cuentas_pago"), {
-                        alias,
-                        banco,
-                        telefono,
-                        cedula,
-                        titular,
-                        nota,
-                        esPredeterminado: esPredeterminado || cuentasPago.length === 0,
-                        timestamp: Date.now()
-                    });
+                    docData.timestamp = Date.now();
+                    await addDoc(collection(db, "cuentas_pago"), docData);
                     window.mostrarToast(`Cuenta "${alias}" guardada en Firebase`, 'success');
+                }
+
+                imagenQRBase64Temp = null;
+                const inputQR = document.getElementById('cfgQR');
+                if (inputQR) inputQR.value = '';
+                const preview = document.getElementById('cfgQRPreview');
+                if (preview) {
+                    preview.src = '';
+                    preview.style.display = 'none';
                 }
 
                 document.getElementById('formConfigPago').reset();
@@ -2404,6 +2489,21 @@
         window.editarCuentaPago = function (id) {
             const p = cuentasPago.find(item => item.id === id);
             if (!p) return;
+
+            imagenQRBase64Temp = null;
+            const inputQR = document.getElementById('cfgQR');
+            if (inputQR) inputQR.value = '';
+
+            const preview = document.getElementById('cfgQRPreview');
+            if (preview) {
+                if (p.qrImagen) {
+                    preview.src = p.qrImagen;
+                    preview.style.display = 'block';
+                } else {
+                    preview.src = '';
+                    preview.style.display = 'none';
+                }
+            }
 
             document.getElementById('cfgEditId').value = p.id;
             document.getElementById('cfgFormTitulo').textContent = `✏️ Editar Cuenta: ${p.alias}`;
@@ -3013,22 +3113,6 @@
         let saldoPendienteCobroQR = 0;
         let saldoPendienteCobroQRBs = 0;
 
-        const codigosBancos = {
-            "Banco de Venezuela": "0102",
-            "Venezuela": "0102",
-            "BDV": "0102",
-            "Banesco": "0134",
-            "Mercantil": "0105",
-            "Provincial": "0108",
-            "BBVA": "0108",
-            "Bancamiga": "0172",
-            "BNC": "0191",
-            "Banco Nacional de Credito": "0191",
-            "Nacional de Credito": "0191",
-            "Tesoro": "0163",
-            "Bancaribe": "0114"
-        };
-
         window.abrirModalCobroQR = function(cuentaId) {
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c) {
@@ -3039,15 +3123,20 @@
             cuentaIdParaCobroQR = cuentaId;
             const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
             const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
-            saldoPendienteCobroQR = Math.max(0, totalDeuda - totalAbonado);
-            saldoPendienteCobroQRBs = saldoPendienteCobroQR * tasaActual;
-            const montoBsFormateado = saldoPendienteCobroQRBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const saldoPendienteUSD = Math.max(0, totalDeuda - totalAbonado);
+            const saldoPendienteBs = saldoPendienteUSD * tasaActual;
+            saldoPendienteCobroQR = saldoPendienteUSD;
+            saldoPendienteCobroQRBs = saldoPendienteBs;
+
+            const montoBsFormateado = saldoPendienteBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             const clienteEl = document.getElementById('qrModalCliente');
             if (clienteEl) clienteEl.textContent = c.cliente;
 
-            const montoEl = document.getElementById('qrModalMonto');
-            if (montoEl) montoEl.textContent = `$${saldoPendienteCobroQR.toFixed(2)} (${montoBsFormateado} Bs)`;
+            const montoGiganteEl = document.getElementById('qrMontoGigante');
+            if (montoGiganteEl) {
+                montoGiganteEl.textContent = `$${saldoPendienteUSD.toFixed(2)} ≈ ${montoBsFormateado} Bs`;
+            }
 
             const select = document.getElementById('qrCuentaPagoSelect');
             if (select) {
@@ -3058,7 +3147,7 @@
                     cuentasPago.forEach(p => {
                         const opt = document.createElement('option');
                         opt.value = p.id;
-                        opt.textContent = `${p.alias || p.banco} - ${p.banco} (${p.telefono})${p.esPredeterminado ? ' ⭐' : ''}`;
+                        opt.textContent = `${p.alias || p.banco} - ${p.banco} (${p.telefono})${p.qrImagen ? ' 📷' : ''}${p.esPredeterminado ? ' ⭐' : ''}`;
                         if (p.esPredeterminado) opt.selected = true;
                         select.appendChild(opt);
                     });
@@ -3074,49 +3163,55 @@
         };
 
         window.actualizarPantallaQR = function() {
-            const contenedor = document.getElementById('contenedorQR');
-            if (!contenedor) return;
-            contenedor.innerHTML = '';
-
             const select = document.getElementById('qrCuentaPagoSelect');
             const valorSeleccionado = select ? select.value : '';
             const cuentaElegida = cuentasPago.find(p => p.id === valorSeleccionado) || cuentasPago[0];
+
+            const imgQR = document.getElementById('qrImagenMostrada');
+            const sinImagen = document.getElementById('qrSinImagen');
 
             const contenidoCard = document.getElementById('qrDatosCuentaContenido');
             const avisoSinCuentas = document.getElementById('qrSinCuentasAviso');
 
             if (!cuentaElegida) {
+                if (imgQR) {
+                    imgQR.src = '';
+                    imgQR.style.display = 'none';
+                }
+                if (sinImagen) {
+                    sinImagen.style.display = 'block';
+                    sinImagen.textContent = 'No hay cuentas registradas.';
+                }
                 if (contenidoCard) contenidoCard.style.display = 'none';
                 if (avisoSinCuentas) avisoSinCuentas.style.display = 'block';
-                contenedor.innerHTML = '<span style="color:#64748b; font-size:0.85rem;">Agrega una cuenta en Configuración para generar el QR</span>';
                 return;
             }
 
             if (contenidoCard) contenidoCard.style.display = 'block';
             if (avisoSinCuentas) avisoSinCuentas.style.display = 'none';
 
-            // Obtener código de banco de la lista o extraer los primeros 4 dígitos si los ingresaron
-            let codBanco = "0000";
-            const bancoStr = (cuentaElegida.banco || '').trim();
-            const aliasStr = (cuentaElegida.alias || '').trim();
-            const matchDigitos = (bancoStr + ' ' + aliasStr).match(/\b(01\d{2})\b/);
-            if (matchDigitos) {
-                codBanco = matchDigitos[1];
+            // Mostrar u ocultar la imagen QR estática del banco
+            if (cuentaElegida.qrImagen) {
+                if (imgQR) {
+                    imgQR.src = cuentaElegida.qrImagen;
+                    imgQR.style.display = 'block';
+                    imgQR.style.margin = '0 auto';
+                }
+                if (sinImagen) sinImagen.style.display = 'none';
             } else {
-                for (let b in codigosBancos) {
-                    if (bancoStr.toLowerCase().includes(b.toLowerCase()) || aliasStr.toLowerCase().includes(b.toLowerCase())) {
-                        codBanco = codigosBancos[b];
-                        break;
-                    }
+                if (imgQR) {
+                    imgQR.src = '';
+                    imgQR.style.display = 'none';
+                }
+                if (sinImagen) {
+                    sinImagen.style.display = 'block';
+                    sinImagen.textContent = 'No has subido un QR para esta cuenta.';
                 }
             }
 
-            // Actualizar tarjeta con datos del banco seleccionado (para cobros manuales)
+            // Actualizar textos inferiores con los datos de esa cuenta (para lectura manual)
             const bancoEl = document.getElementById('qrDatoBanco');
             if (bancoEl) bancoEl.textContent = cuentaElegida.banco || '';
-
-            const codigoEl = document.getElementById('qrDatoCodigoBanco');
-            if (codigoEl) codigoEl.textContent = codBanco !== "0000" ? `(${codBanco})` : '';
 
             const telEl = document.getElementById('qrDatoTelefono');
             if (telEl) telEl.textContent = cuentaElegida.telefono || '';
@@ -3129,23 +3224,6 @@
 
             const badgeEl = document.getElementById('qrCuentaBancoBadge');
             if (badgeEl) badgeEl.textContent = cuentaElegida.alias || cuentaElegida.banco || 'Pago Móvil';
-
-            // Formato estructurado estándar venezolano para BDVApp y bancos del acuerdo
-            const montoBs = saldoPendienteCobroQRBs.toFixed(2);
-            const datosQR = `banco=${codBanco}&telefono=${cuentaElegida.telefono}&cedula=${cuentaElegida.cedula}&monto=${montoBs}`;
-
-            if (typeof QRCode !== 'undefined') {
-                new QRCode(document.getElementById("contenedorQR"), {
-                    text: datosQR,
-                    width: 200,
-                    height: 200,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            } else {
-                contenedor.innerHTML = '<span style="color:#ef4444; font-size:0.85rem;">Error: No se encontró la librería QRCode</span>';
-            }
         };
 
         window.registrarAbonoDesdeQR = function() {
@@ -3878,12 +3956,13 @@
                     actionsHTML = `
                       <div class="actions-grid">
                         <div class="actions-row-top">
-                          <button class="btn-wa" onclick="abrirModalSeleccionarPago('${safeId}')">
+                          <button class="btn-wa" onclick="abrirModalSeleccionarPago('${safeId}')" title="Enviar factura por WhatsApp">
                             <span class="wa-btn-title">💬 Factura a WhatsApp</span>
-                            ${c.ultimaNotificacionWA ? `<span class="wa-btn-subtitle">🕒 Último aviso: ${escapeHTML(c.ultimaNotificacionWA)}</span>` : ''}
+                            ${c.ultimaNotificacionWA ? `<span class="wa-btn-subtitle">🕒 Último aviso: ${escapeHTML(c.ultimaNotificacionWA)}</span>` : '<span class="wa-btn-subtitle" style="opacity:0.6;">Enviar cobro</span>'}
                           </button>
-                          <button class="btn-qr" onclick="abrirModalCobroQR('${safeId}')" title="Cobro en persona con QR Pago Móvil">
-                            <span class="wa-btn-title">📱 Cobro en Persona (QR)</span>
+                          <button class="btn-qr" onclick="abrirModalCobroQR('${safeId}')" title="Cobro presencial con QR">
+                            <span class="wa-btn-title">📱 Cobro Presencial (QR)</span>
+                            <span class="wa-btn-subtitle" style="color:#6ee7b7; opacity:0.85;">Mostrar QR Banco</span>
                           </button>
                         </div>
                         <div class="actions-row">
