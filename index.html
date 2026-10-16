@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Cuentas Cobranzas V3.1</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b1120">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cobros">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <script>
         (function() {
             const savedTheme = localStorage.getItem('tema_cobros_v1') || 'dark';
@@ -202,6 +208,21 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+        }
+
+        .input-row-producto {
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) 85px minmax(0, 1.2fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .input-row-producto {
+                grid-template-columns: minmax(0, 1fr) 80px;
+            }
+            .input-row-producto .input-group-monto {
+                grid-column: span 2;
+            }
         }
 
         input,
@@ -1410,13 +1431,17 @@
                     <input type="tel" id="telefono" placeholder="Ej: 04121234567" required autocomplete="off">
                 </div>
             </div>
-            <div class="input-row">
+            <div class="input-row-producto">
                 <div class="input-group">
                     <label>Detalle / Producto (Selecciona o escribe)</label>
                     <input type="text" id="concepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN y Café" required autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
                     <datalist id="listaProductosDatalist"></datalist>
                 </div>
                 <div class="input-group">
+                    <label>Cant.</label>
+                    <input type="number" id="cantidadVenta" min="1" value="1" style="text-align:center;" required autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
+                </div>
+                <div class="input-group input-group-monto">
                     <label>Monto en USD ($)</label>
                     <input type="number" id="montoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required>
                 </div>
@@ -1557,12 +1582,16 @@
             </div>
             <form id="formAgregarItemRapido" onsubmit="guardarItemRapido(event)">
                 <input type="hidden" id="rapidoCuentaId">
-                <div class="input-row">
+                <div class="input-row-producto">
                     <div class="input-group">
                         <label>Producto o Detalle (Selecciona o escribe)</label>
                         <input type="text" id="rapidoConcepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN" required autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
                     </div>
                     <div class="input-group">
+                        <label>Cant.</label>
+                        <input type="number" id="rapidoCantidad" min="1" value="1" style="text-align:center;" required autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
+                    </div>
+                    <div class="input-group input-group-monto">
                         <label>Monto en USD ($)</label>
                         <input type="number" id="rapidoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteBsItemRapido()">
                         <small id="rapidoEquivalenteBs" style="display:block; margin-top:4px; color:var(--text-muted); font-size:0.8rem;">≈ 0,00 Bs</small>
@@ -2809,7 +2838,11 @@
             const nombre = document.getElementById('cliente').value.trim();
             const telefono = document.getElementById('telefono').value.trim();
             const montoUSD = parseFloat(document.getElementById('montoUSD').value);
-            const concepto = document.getElementById('concepto').value.trim();
+            let concepto = document.getElementById('concepto').value.trim();
+            const cantVenta = parseInt(document.getElementById('cantidadVenta')?.value) || 1;
+            if (cantVenta > 1 && !concepto.startsWith(`${cantVenta}x `)) {
+                concepto = `${cantVenta}x ${concepto}`;
+            }
             const fechaHoy = new Date().toLocaleDateString('es-VE');
 
             if (!nombre || !telefono || !concepto) {
@@ -2852,6 +2885,8 @@
                     window.mostrarToast(`Nueva cuenta creada para ${nombre}`, "success");
                 }
                 document.getElementById('formVenta').reset();
+                const cantInput = document.getElementById('cantidadVenta');
+                if (cantInput) cantInput.value = '1';
                 document.getElementById('cliente').focus();
             } catch (error) {
                 window.mostrarToast("Error de conexión: " + error.message, "error");
@@ -3745,12 +3780,15 @@
 
         // ================= PRODUCTOS =================
         window.autocompletarPrecio = function() {
-            const val = document.getElementById('concepto').value.trim().toLowerCase();
+            const val = (document.getElementById('concepto').value || '').trim().toLowerCase();
+            const cantInput = document.getElementById('cantidadVenta');
+            const cant = Math.max(1, parseInt(cantInput?.value) || 1);
             const precioInput = document.getElementById('montoUSD');
             if (!val) return;
             const productoEncontrado = productos.find(p => (p.nombre || '').toLowerCase() === val);
             if (productoEncontrado && productoEncontrado.precio) {
-                precioInput.value = Number(productoEncontrado.precio).toFixed(2);
+                const precioBase = Number(productoEncontrado.precio) || 0;
+                precioInput.value = (precioBase * cant).toFixed(2);
             }
         };
 
@@ -4074,6 +4112,8 @@
             document.getElementById('rapidoCuentaId').value = c.id;
             document.getElementById('rapidoClienteNombre').textContent = c.cliente;
             document.getElementById('rapidoConcepto').value = '';
+            const rapidoCant = document.getElementById('rapidoCantidad');
+            if (rapidoCant) rapidoCant.value = '1';
             document.getElementById('rapidoMontoUSD').value = '';
             document.getElementById('rapidoEquivalenteBs').textContent = '≈ 0,00 Bs';
             window.abrirModal('modalAgregarItemRapido');
@@ -4085,11 +4125,14 @@
 
         window.autocompletarPrecioItemRapido = function() {
             const val = (document.getElementById('rapidoConcepto').value || '').trim().toLowerCase();
+            const cantInput = document.getElementById('rapidoCantidad');
+            const cant = Math.max(1, parseInt(cantInput?.value) || 1);
             const precioInput = document.getElementById('rapidoMontoUSD');
             if (!val) return;
             const prod = productos.find(p => (p.nombre || '').toLowerCase() === val);
             if (prod && prod.precio) {
-                precioInput.value = Number(prod.precio).toFixed(2);
+                const precioBase = Number(prod.precio) || 0;
+                precioInput.value = (precioBase * cant).toFixed(2);
                 window.actualizarEquivalenteBsItemRapido();
             }
         };
@@ -4110,8 +4153,13 @@
                 return;
             }
 
-            const concepto = document.getElementById('rapidoConcepto').value.trim();
+            let concepto = document.getElementById('rapidoConcepto').value.trim();
             const monto = parseFloat(document.getElementById('rapidoMontoUSD').value);
+            const cantRapida = parseInt(document.getElementById('rapidoCantidad')?.value) || 1;
+
+            if (cantRapida > 1 && !concepto.startsWith(`${cantRapida}x `)) {
+                concepto = `${cantRapida}x ${concepto}`;
+            }
 
             if (!concepto || isNaN(monto) || monto <= 0) {
                 window.mostrarToast("Ingresa un producto y monto válido", "error");
@@ -4140,6 +4188,8 @@
                     pagado: false
                 });
 
+                const rapidoCant = document.getElementById('rapidoCantidad');
+                if (rapidoCant) rapidoCant.value = '1';
                 window.cerrarModal('modalAgregarItemRapido');
                 window.mostrarToast(`Ítem "${concepto}" añadido a la cuenta de ${c.cliente}`, "success");
             } catch (err) {
@@ -4156,6 +4206,17 @@
             const headerTasa = document.getElementById('headerTasaBCV');
             if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
         };
+    </script>
+
+    <!-- ================= REGISTRO SERVICE WORKER PWA ================= -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado:', reg.scope))
+                    .catch(err => console.log('Error al registrar Service Worker:', err));
+            });
+        }
     </script>
 </body>
 </html>
