@@ -7,6 +7,7 @@
     <title>Control Cuentas Cobranzas V3.1</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b1120">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Cobros">
@@ -2768,6 +2769,8 @@
             directorio.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
             actualizarDatalist();
             renderizarDirectorioUI();
+        }, (error) => {
+            console.error("Error en escucha de clientes:", error);
         });
 
         // ESCUCHADOR 2: LISTA DE VENTAS Y CUENTAS
@@ -2781,6 +2784,8 @@
             cuentas.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             renderizarCuentas();
             renderizarDirectorioUI();
+        }, (error) => {
+            console.error("Error en escucha de cuentas:", error);
         });
 
         // ESCUCHADOR 3: CUENTAS DE PAGO MÓVIL EN FIRESTORE
@@ -4289,6 +4294,8 @@
             productos.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
             actualizarDatalistProductos();
             renderizarProductosUI();
+        }, (error) => {
+            console.error("Error en escucha de productos:", error);
         });
         window.abrirModalConfigGeneral = function() {
             document.getElementById('tasaBCVModal').value = tasaActual.toFixed(2);
