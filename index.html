@@ -1200,6 +1200,305 @@
             animation: shake 0.4s ease;
         }
 
+        /* Pantalla de Selección de Usuario */
+        .user-select-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99998;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .user-select-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 380px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 26px 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeInScale 0.25s ease;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .user-select-icon {
+            font-size: 2.5rem;
+            margin-bottom: 6px;
+            line-height: 1;
+        }
+
+        .user-select-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .user-select-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .user-cards-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .user-card-btn {
+            background: var(--input-dark);
+            border: 1.5px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .user-card-btn:hover {
+            border-color: var(--accent);
+            background: var(--card-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .user-card-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            background: #1e3a8a;
+            color: #93c5fd;
+            border: 1px solid #3b82f6;
+            flex-shrink: 0;
+        }
+
+        .user-avatar-circle.morenita {
+            background: #581c87;
+            color: #d8b4fe;
+            border-color: #a855f7;
+        }
+
+        .user-avatar-circle.custom {
+            background: #0f766e;
+            color: #5eead4;
+            border-color: #14b8a6;
+        }
+
+        .user-card-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .user-role-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .user-role-tag.admin {
+            background: #0c2d48;
+            color: #38bdf8;
+            border: 1px solid #0284c7;
+        }
+
+        .user-role-tag.usuario {
+            background: #3b0764;
+            color: #c084fc;
+            border: 1px solid #9333ea;
+        }
+
+        /* Pill de Usuario Activo en el Header */
+        .btn-user-pill {
+            background: var(--input-dark);
+            border: 1px solid var(--accent);
+            color: var(--text-main);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-user-pill:hover {
+            border-color: var(--accent-hover);
+            background: var(--card-bg);
+        }
+
+        .user-role-badge {
+            font-size: 0.7rem;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        /* Etiquetas de Responsabilidad en Clientes y Cuentas */
+        .badge-responsable {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.73rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .badge-resp-cegrantt {
+            background: #0c2d48;
+            color: #38bdf8;
+            border: 1px solid #0284c7;
+        }
+
+        .badge-resp-morenita {
+            background: #3b0764;
+            color: #c084fc;
+            border: 1px solid #9333ea;
+        }
+
+        .badge-resp-default {
+            background: #064e3b;
+            color: #6ee7b7;
+            border: 1px solid #059669;
+        }
+
+        /* Barra de Filtro de Responsables en Directorio */
+        .responsables-filter-bar {
+            margin: 8px 0 14px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-pills-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .pill-filter-resp {
+            background: var(--input-dark);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pill-filter-resp:hover {
+            border-color: var(--accent);
+            color: var(--text-main);
+        }
+
+        .pill-filter-resp.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Gestión de Usuarios en Configuración */
+        .user-mgmt-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            gap: 10px;
+        }
+
+        .user-mgmt-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .user-mgmt-name {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.88rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-mgmt-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-mgmt-action {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            transition: all 0.15s;
+        }
+
+        .btn-mgmt-action:hover {
+            border-color: var(--accent);
+        }
+
+        .btn-mgmt-action.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
         /* Gestión de Múltiples Cuentas de Pago Móvil */
         .cuenta-pago-card {
             background: var(--input-dark);
@@ -1646,6 +1945,18 @@
             </div>
         </div>
     </div>
+
+    <!-- ================= PANTALLA DE SELECCIÓN DE USUARIO ================= -->
+    <div id="userSelectScreen" class="user-select-overlay" style="display: none;">
+        <div class="user-select-container">
+            <div class="user-select-icon">👥</div>
+            <h2 class="user-select-title">¿Quién utilizará el sistema?</h2>
+            <p class="user-select-subtitle">Selecciona tu perfil de trabajo para continuar</p>
+            <div class="user-cards-grid" id="userCardsGrid">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+    </div>
     <script>
         (function() {
             let pinBuffer = '';
@@ -1671,6 +1982,12 @@
                         updateDots();
                         const lock = document.getElementById('lockScreen');
                         if (lock) lock.style.display = 'none';
+
+                        // Si no hay usuario activo seleccionado para esta sesión, mostrar selector
+                        const userGuardado = sessionStorage.getItem('usuario_activo_id_v1');
+                        if (!userGuardado && typeof window.abrirSelectorUsuario === 'function') {
+                            window.abrirSelectorUsuario();
+                        }
                     } else {
                         const err = document.getElementById('lockErrorMsg');
                         if (err) err.classList.add('visible');
@@ -1697,10 +2014,13 @@
             };
             window.bloquearApp = function() {
                 sessionStorage.removeItem('sesion_desbloqueada_v1');
+                sessionStorage.removeItem('usuario_activo_id_v1');
                 pinBuffer = '';
                 updateDots();
                 const err = document.getElementById('lockErrorMsg');
                 if (err) err.classList.remove('visible');
+                const selScreen = document.getElementById('userSelectScreen');
+                if (selScreen) selScreen.style.display = 'none';
                 const lock = document.getElementById('lockScreen');
                 if (lock) lock.style.display = 'flex';
             };
@@ -1744,6 +2064,11 @@
     <div class="header">
         <h1>📦 Cuentas Abiertas</h1>
         <div class="header-actions">
+            <button type="button" class="btn-settings-pill btn-user-pill" id="btnPerfilActivoHeader" onclick="abrirSelectorUsuario()" title="Perfil activo - Clic para cambiar de usuario">
+                <span id="headerUsuarioIcono">👤</span>
+                <span id="headerUsuarioActivoNombre">Cargando...</span>
+                <span id="headerUsuarioRolBadge" class="user-role-badge">...</span>
+            </button>
             <button type="button" class="btn-settings-pill" onclick="bloquearApp()" title="Bloquear pantalla con PIN">
                 🔒 Bloquear
             </button>
@@ -1864,7 +2189,14 @@
                     <input type="tel" id="telefonoNuevo" placeholder="Ej: 04241234567" required autocomplete="off">
                 </div>
             </div>
-            <button type="submit" class="btn-submit btn-blue" id="btnSubmitCliente">
+            <div class="input-group" id="grupoResponsableNuevoCliente" style="margin-top:10px;">
+                <label>Responsable del Cliente</label>
+                <select id="nuevoClienteResponsable"></select>
+                <small id="nuevoClienteResponsableHelp" style="color:var(--text-muted); font-size:0.75rem; display:block; margin-top:2px;">
+                    Asignado automáticamente a tu perfil.
+                </small>
+            </div>
+            <button type="submit" class="btn-submit btn-blue" id="btnSubmitCliente" style="margin-top:12px;">
                 <span>Guardar en Directorio</span>
             </button>
         </form>
@@ -1875,6 +2207,14 @@
         <span class="search-icon">🔍</span>
         <input type="text" id="buscarDirectorio" placeholder="Buscar contacto en directorio..."
             oninput="filtrarDirectorioEnTiempoReal()" autocomplete="off">
+    </div>
+
+    <!-- Filtro de Clientes por Responsable -->
+    <div class="responsables-filter-bar" id="filtroResponsablesDirectorioContainer">
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Filtrar por Responsable:</label>
+        <div class="filter-pills-row" id="pillsFiltroResponsablesDirectorio">
+            <!-- Píldoras generadas dinámicamente -->
+        </div>
     </div>
 
     <div class="list-header">
@@ -2009,6 +2349,25 @@
                 </div>
             </div>
 
+            <!-- Sección de Gestión de Usuarios (Solo Administrador) -->
+            <div id="seccionGestionUsuarios" class="input-group" style="margin-top: 15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <label style="margin-bottom:0; font-weight:700;">👥 Usuarios y Responsables</label>
+                    <button type="button" class="btn-submit" style="width:auto; padding:6px 12px; font-size:0.78rem; margin-top:0; background:var(--accent);" onclick="abrirModalRegistrarUsuario()">
+                        ➕ Nuevo Usuario
+                    </button>
+                </div>
+                <small style="color:var(--text-muted); display:block; margin-bottom:8px;">
+                    Administra quién puede usar la app y asignar clientes (Solo Administrador).
+                </small>
+                <div id="listaUsuariosConfig" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
+                    <!-- Lista de usuarios renderizada dinámicamente -->
+                </div>
+                <button type="button" class="btn-submit" style="margin-top:8px; padding:7px 12px; font-size:0.8rem; background:var(--input-dark); border:1px solid var(--card-border); color:var(--text-main);" onclick="migrarRegistrosSinResponsable()">
+                    🔄 Asignar Responsable a Registros Anteriores
+                </button>
+            </div>
+
             <div class="divider" style="margin: 20px 0;"></div>
 
             <button type="button" class="btn-submit btn-blue" onclick="cerrarModal('modalConfigGeneral'); abrirModalConfigPago();">
@@ -2024,6 +2383,36 @@
                 📂 Restaurar Copia de Seguridad (.JSON)
             </button>
             <input type="file" id="inputRestaurarJSON" accept=".json" style="display:none" onchange="restaurarBackupJSON(event)">
+        </div>
+    </div>
+
+    <!-- ================= MODAL: CREAR / EDITAR USUARIO ================= -->
+    <div id="modalGestionUsuario" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalGestionUsuario')">
+        <div class="modal-dialog" style="max-width: 380px;">
+            <div class="modal-header">
+                <h3 id="modalGestionUsuarioTitulo">➕ Registrar Usuario</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalGestionUsuario')">✕</button>
+            </div>
+            <form id="formGestionUsuario" onsubmit="guardarUsuarioSubmit(event)">
+                <input type="hidden" id="usuarioEditId">
+                <div class="input-group">
+                    <label>Nombre Visible</label>
+                    <input type="text" id="usuarioEditNombre" placeholder="Ej: Morenita" required autocomplete="off">
+                </div>
+                <div class="input-group" style="margin-top:10px;">
+                    <label>Rol en el Sistema</label>
+                    <select id="usuarioEditRol">
+                        <option value="usuario">👤 Usuaria (Solo sus propios clientes)</option>
+                        <option value="admin">👑 Administrador (Acceso total)</option>
+                    </select>
+                </div>
+                <div class="modal-footer" style="margin-top:16px;">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalGestionUsuario')">Cancelar</button>
+                    <button type="submit" class="btn-submit" id="btnGuardarUsuario" style="margin-top:0; width:auto; padding:10px 18px;">
+                        <span>Guardar Usuario</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -2382,7 +2771,12 @@
                     <label>Teléfono WhatsApp</label>
                     <input type="tel" id="editClienteTelefono" required autocomplete="off">
                 </div>
-                <div style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                <div class="input-group" id="editClienteGrupoResponsable" style="margin-top:10px;">
+                    <label>Responsable Asignado</label>
+                    <select id="editClienteResponsable"></select>
+                    <small id="editClienteResponsableHelp" style="color:var(--text-muted); font-size:0.75rem; display:block; margin-top:2px;"></small>
+                </div>
+                <div style="margin-top:10px; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                     <input type="checkbox" id="editClienteActualizarDirectorio" checked
                         style="width:16px; height:16px; accent-color:var(--accent);">
                     <label for="editClienteActualizarDirectorio"
@@ -2469,6 +2863,9 @@
         let directorio = [];
         let cuentasPago = [];
         let productos = [];
+        let usuariosApp = [];
+        let usuarioActivo = null;
+        let filtroResponsableDirectorio = 'todos';
         let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
         let filtroActual = 'pendientes';
         let textoBusquedaCuentas = '';
@@ -3214,6 +3611,460 @@
             console.error("Error en escucha de seguridad:", error);
         });
 
+        // ESCUCHADOR 6: USUARIOS DE LA APLICACIÓN (SINCRONIZACIÓN EN TIEMPO REAL)
+        let seHaInicializadoUsuarios = false;
+        onSnapshot(collection(db, "usuarios_app"), async (snapshot) => {
+            usuariosApp = [];
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                data.id = docSnap.id;
+                usuariosApp.push(data);
+            });
+
+            // Seeding inicial si la colección está vacía
+            if (usuariosApp.length === 0 && !seHaInicializadoUsuarios) {
+                seHaInicializadoUsuarios = true;
+                const usuariosIniciales = [
+                    { id: "usr_cegrantt", nombre: "Cegrantt R", rol: "admin", activo: true, fechaCreacion: new Date().toISOString() },
+                    { id: "usr_morenita", nombre: "Morenita", rol: "usuario", activo: true, fechaCreacion: new Date().toISOString() }
+                ];
+                try {
+                    for (const u of usuariosIniciales) {
+                        const datos = { ...u };
+                        delete datos.id;
+                        await setDoc(doc(db, "usuarios_app", u.id), datos);
+                    }
+                } catch (e) {
+                    console.error("Error al sembrar usuarios iniciales:", e);
+                }
+                return;
+            }
+
+            // Ordenar: Administradores primero, luego alfabéticamente
+            usuariosApp.sort((a, b) => {
+                if (a.rol === 'admin' && b.rol !== 'admin') return -1;
+                if (a.rol !== 'admin' && b.rol === 'admin') return 1;
+                return (a.nombre || '').localeCompare(b.nombre || '');
+            });
+
+            // Resolver usuario activo desde sessionStorage
+            const guardadoId = sessionStorage.getItem('usuario_activo_id_v1');
+            if (guardadoId) {
+                const uEncontrado = usuariosApp.find(u => u.id === guardadoId && u.activo !== false);
+                if (uEncontrado) {
+                    usuarioActivo = uEncontrado;
+                } else {
+                    usuarioActivo = usuariosApp.find(u => u.activo !== false) || null;
+                    if (usuarioActivo) {
+                        sessionStorage.setItem('usuario_activo_id_v1', usuarioActivo.id);
+                    }
+                }
+            } else {
+                if (sessionStorage.getItem('sesion_desbloqueada_v1') === 'true') {
+                    window.abrirSelectorUsuario();
+                }
+            }
+
+            actualizarUIUsuarioActivo();
+            renderizarSelectorUsuarios();
+            renderizarPillsFiltroResponsables();
+            renderizarListaUsuariosConfig();
+            actualizarSelectsResponsables();
+            renderizarCuentas();
+            renderizarDirectorioUI();
+        }, (error) => {
+            console.error("Error en escucha de usuarios_app:", error);
+        });
+
+        // ================= PERMISOS Y RESPONSABLES =================
+        window.esAdmin = function() {
+            return usuarioActivo && usuarioActivo.rol === 'admin';
+        };
+
+        window.puedeAdministrarCliente = function(contacto) {
+            if (!usuarioActivo) return false;
+            if (window.esAdmin()) return true;
+            const respId = contacto?.responsableId || 'usr_cegrantt';
+            return respId === usuarioActivo.id;
+        };
+
+        window.puedeAdministrarCuenta = function(c) {
+            if (!usuarioActivo) return false;
+            if (window.esAdmin()) return true;
+            let respId = c?.responsableId;
+            if (!respId && c?.cliente) {
+                const cl = directorio.find(d => d.nombre && d.nombre.trim().toLowerCase() === c.cliente.trim().toLowerCase());
+                if (cl && cl.responsableId) respId = cl.responsableId;
+            }
+            if (!respId) respId = 'usr_cegrantt';
+            return respId === usuarioActivo.id;
+        };
+
+        window.obtenerBadgeResponsableHTML = function(responsableId) {
+            const id = responsableId || 'usr_cegrantt';
+            const user = usuariosApp.find(u => u.id === id);
+            const nombre = user ? user.nombre : (id === 'usr_cegrantt' ? 'Cegrantt R' : 'Morenita');
+            let claseColor = 'badge-resp-default';
+            if (id === 'usr_cegrantt' || nombre.toLowerCase().includes('cegrantt')) {
+                claseColor = 'badge-resp-cegrantt';
+            } else if (id === 'usr_morenita' || nombre.toLowerCase().includes('morenita')) {
+                claseColor = 'badge-resp-morenita';
+            }
+            return `<span class="badge-responsable ${claseColor}" title="Responsable: ${escapeHTML(nombre)}">👤 De ${escapeHTML(nombre)}</span>`;
+        };
+
+        window.abrirSelectorUsuario = function() {
+            const overlay = document.getElementById('userSelectScreen');
+            if (!overlay) return;
+            renderizarSelectorUsuarios();
+            overlay.style.display = 'flex';
+        };
+
+        window.seleccionarUsuarioActivo = function(usuarioId) {
+            const user = usuariosApp.find(u => u.id === usuarioId && u.activo !== false);
+            if (!user) {
+                window.mostrarToast("Usuario no encontrado o inactivo", "error");
+                return;
+            }
+            usuarioActivo = user;
+            sessionStorage.setItem('usuario_activo_id_v1', user.id);
+
+            const overlay = document.getElementById('userSelectScreen');
+            if (overlay) overlay.style.display = 'none';
+
+            // Cerrar cualquier modal abierto para prevenir operaciones cruzadas
+            document.querySelectorAll('.modal-backdrop.show').forEach(m => m.classList.remove('show'));
+
+            actualizarUIUsuarioActivo();
+            renderizarPillsFiltroResponsables();
+            actualizarSelectsResponsables();
+            renderizarCuentas();
+            renderizarDirectorioUI();
+
+            window.mostrarToast(`Sesión activa: ${user.nombre} (${user.rol === 'admin' ? 'Administrador' : 'Usuaria'})`, "info");
+        };
+
+        function actualizarUIUsuarioActivo() {
+            const lblNombre = document.getElementById('headerUsuarioActivoNombre');
+            const lblRol = document.getElementById('headerUsuarioRolBadge');
+            const icon = document.getElementById('headerUsuarioIcono');
+
+            if (!usuarioActivo) {
+                if (lblNombre) lblNombre.textContent = "Seleccionar";
+                if (lblRol) lblRol.textContent = "...";
+                return;
+            }
+
+            if (lblNombre) lblNombre.textContent = usuarioActivo.nombre;
+            if (lblRol) {
+                lblRol.textContent = usuarioActivo.rol === 'admin' ? 'Admin' : 'Usuaria';
+                lblRol.className = usuarioActivo.rol === 'admin' ? 'user-role-badge' : 'user-role-badge user-role-user';
+            }
+            if (icon) {
+                icon.textContent = usuarioActivo.rol === 'admin' ? '👑' : '👤';
+            }
+
+            const secUsuarios = document.getElementById('seccionGestionUsuarios');
+            if (secUsuarios) {
+                secUsuarios.style.display = window.esAdmin() ? 'block' : 'none';
+            }
+        }
+
+        function renderizarSelectorUsuarios() {
+            const cont = document.getElementById('userCardsGrid');
+            if (!cont) return;
+
+            const usuariosActivos = usuariosApp.filter(u => u.activo !== false);
+            if (usuariosActivos.length === 0) {
+                cont.innerHTML = `<div style="color:var(--text-muted); text-align:center;">No hay usuarios activos registrados.</div>`;
+                return;
+            }
+
+            cont.innerHTML = usuariosActivos.map(u => {
+                const esAdmin = u.rol === 'admin';
+                let avatarClass = '';
+                if (u.id === 'usr_morenita' || u.nombre.toLowerCase().includes('morenita')) {
+                    avatarClass = 'morenita';
+                } else if (!esAdmin) {
+                    avatarClass = 'custom';
+                }
+                const inicial = (u.nombre || 'U').charAt(0).toUpperCase();
+
+                return `
+                    <button type="button" class="user-card-btn" onclick="seleccionarUsuarioActivo('${escapeHTML(u.id)}')">
+                        <div class="user-card-left">
+                            <div class="user-avatar-circle ${avatarClass}">
+                                ${inicial}
+                            </div>
+                            <div class="user-card-info">
+                                <h4>${escapeHTML(u.nombre)}</h4>
+                                <span class="user-role-tag ${esAdmin ? 'admin' : 'usuario'}">
+                                    ${esAdmin ? '👑 Administrador' : '👤 Usuaria'}
+                                </span>
+                            </div>
+                        </div>
+                        <span style="font-size:1.2rem; color:var(--text-muted);">➔</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderizarPillsFiltroResponsables() {
+            const cont = document.getElementById('pillsFiltroResponsablesDirectorio');
+            if (!cont) return;
+
+            const activos = usuariosApp.filter(u => u.activo !== false);
+            let html = `
+                <button type="button" class="pill-filter-resp ${filtroResponsableDirectorio === 'todos' ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('todos')">
+                    Todos
+                </button>
+                <button type="button" class="pill-filter-resp ${filtroResponsableDirectorio === 'mis_clientes' ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('mis_clientes')">
+                    ⭐ Mis Clientes
+                </button>
+            `;
+
+            activos.forEach(u => {
+                const isActivo = filtroResponsableDirectorio === u.id;
+                html += `
+                    <button type="button" class="pill-filter-resp ${isActivo ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('${escapeHTML(u.id)}')">
+                        👤 ${escapeHTML(u.nombre)}
+                    </button>
+                `;
+            });
+
+            cont.innerHTML = html;
+        }
+
+        window.filtrarPorResponsableDirectorio = function(respKey) {
+            filtroResponsableDirectorio = respKey;
+            renderizarPillsFiltroResponsables();
+            renderizarDirectorioUI();
+        };
+
+        function actualizarSelectsResponsables() {
+            const selNuevo = document.getElementById('nuevoClienteResponsable');
+            const helpNuevo = document.getElementById('nuevoClienteResponsableHelp');
+            const activos = usuariosApp.filter(u => u.activo !== false);
+
+            if (selNuevo) {
+                selNuevo.innerHTML = activos.map(u => {
+                    const sel = (usuarioActivo && u.id === usuarioActivo.id) ? 'selected' : '';
+                    return `<option value="${escapeHTML(u.id)}" ${sel}>${escapeHTML(u.nombre)} (${u.rol === 'admin' ? 'Administrador' : 'Usuaria'})</option>`;
+                }).join('');
+
+                if (window.esAdmin()) {
+                    selNuevo.disabled = false;
+                    if (helpNuevo) helpNuevo.textContent = "Como Administrador, puedes asignar este cliente a cualquier usuario.";
+                } else {
+                    selNuevo.disabled = true;
+                    if (usuarioActivo) selNuevo.value = usuarioActivo.id;
+                    if (helpNuevo) helpNuevo.textContent = "Asignado automáticamente a tu perfil.";
+                }
+            }
+        }
+
+        function renderizarListaUsuariosConfig() {
+            const cont = document.getElementById('listaUsuariosConfig');
+            if (!cont) return;
+
+            if (usuariosApp.length === 0) {
+                cont.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted);">Cargando usuarios...</div>`;
+                return;
+            }
+
+            cont.innerHTML = usuariosApp.map(u => {
+                const safeId = escapeHTML(u.id);
+                const safeNombre = escapeHTML(u.nombre);
+                const esAdmin = u.rol === 'admin';
+                const esActivo = u.activo !== false;
+                const esMismoUsuario = usuarioActivo && usuarioActivo.id === u.id;
+
+                return `
+                    <div class="user-mgmt-item">
+                        <div class="user-mgmt-left">
+                            <span style="font-size:1.1rem;">${esAdmin ? '👑' : '👤'}</span>
+                            <div>
+                                <span class="user-mgmt-name">${safeNombre}</span>
+                                <div style="display:flex; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="user-role-tag ${esAdmin ? 'admin' : 'usuario'}">${esAdmin ? 'Admin' : 'Usuario'}</span>
+                                    <span style="font-size:0.7rem; color:${esActivo ? 'var(--accent)' : 'var(--danger)'};">● ${esActivo ? 'Activo' : 'Inactivo'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-mgmt-actions">
+                            <button type="button" class="btn-mgmt-action" onclick="abrirModalEditarUsuario('${safeId}')" title="Editar Nombre y Rol">✏️</button>
+                            ${!esMismoUsuario && !(esAdmin && usuariosApp.filter(x => x.rol === 'admin' && x.activo !== false).length <= 1) ? `
+                                <button type="button" class="btn-mgmt-action ${esActivo ? 'danger' : ''}" onclick="toggleActivoUsuario('${safeId}')" title="${esActivo ? 'Desactivar Usuario' : 'Activar Usuario'}">
+                                    ${esActivo ? 'Desactivar' : 'Activar'}
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.abrirModalRegistrarUsuario = function() {
+            if (!window.esAdmin()) {
+                window.mostrarToast("Acceso denegado: solo el administrador puede gestionar usuarios", "error");
+                return;
+            }
+            document.getElementById('modalGestionUsuarioTitulo').textContent = "➕ Registrar Usuario";
+            document.getElementById('usuarioEditId').value = "";
+            document.getElementById('usuarioEditNombre').value = "";
+            document.getElementById('usuarioEditRol').value = "usuario";
+            window.abrirModal('modalGestionUsuario');
+        };
+
+        window.abrirModalEditarUsuario = function(userId) {
+            if (!window.esAdmin()) {
+                window.mostrarToast("Acceso denegado: solo el administrador puede gestionar usuarios", "error");
+                return;
+            }
+            const u = usuariosApp.find(item => item.id === userId);
+            if (!u) return;
+
+            document.getElementById('modalGestionUsuarioTitulo').textContent = `✏️ Editar Usuario: ${u.nombre}`;
+            document.getElementById('usuarioEditId').value = u.id;
+            document.getElementById('usuarioEditNombre').value = u.nombre || '';
+            document.getElementById('usuarioEditRol').value = u.rol || 'usuario';
+            window.abrirModal('modalGestionUsuario');
+        };
+
+        window.guardarUsuarioSubmit = async function(e) {
+            e.preventDefault();
+            if (!window.esAdmin()) {
+                window.mostrarToast("Acceso denegado: solo el administrador puede gestionar usuarios", "error");
+                return;
+            }
+
+            const id = document.getElementById('usuarioEditId').value;
+            const nombre = document.getElementById('usuarioEditNombre').value.trim();
+            const rol = document.getElementById('usuarioEditRol').value;
+
+            if (!nombre) {
+                window.mostrarToast("Por favor ingresa un nombre válido", "error");
+                return;
+            }
+
+            if (id) {
+                const uActual = usuariosApp.find(x => x.id === id);
+                if (uActual && uActual.rol === 'admin' && rol !== 'admin') {
+                    const adminsActivos = usuariosApp.filter(x => x.rol === 'admin' && x.id !== id && x.activo !== false);
+                    if (adminsActivos.length === 0) {
+                        window.mostrarToast("El sistema debe contar con al menos un administrador activo", "error");
+                        return;
+                    }
+                }
+            }
+
+            const btn = document.getElementById('btnGuardarUsuario');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando...</span>';
+
+            try {
+                if (id) {
+                    await updateDoc(doc(db, "usuarios_app", id), {
+                        nombre: nombre,
+                        rol: rol
+                    });
+                    window.mostrarToast(`Usuario "${nombre}" actualizado`, "success");
+                } else {
+                    const nuevoId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+                    await setDoc(doc(db, "usuarios_app", nuevoId), {
+                        nombre: nombre,
+                        rol: rol,
+                        activo: true,
+                        fechaCreacion: new Date().toISOString()
+                    });
+                    window.mostrarToast(`Usuario "${nombre}" registrado con éxito`, "success");
+                }
+                window.cerrarModal('modalGestionUsuario');
+            } catch (err) {
+                console.error("Error al guardar usuario:", err);
+                window.mostrarToast("Error al guardar usuario: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Guardar Usuario</span>';
+            }
+        };
+
+        window.toggleActivoUsuario = async function(userId) {
+            if (!window.esAdmin()) {
+                window.mostrarToast("Acceso denegado: solo el administrador puede cambiar estado", "error");
+                return;
+            }
+            const u = usuariosApp.find(item => item.id === userId);
+            if (!u) return;
+
+            if (usuarioActivo && usuarioActivo.id === userId) {
+                window.mostrarToast("No puedes desactivar tu propio usuario activo", "error");
+                return;
+            }
+
+            if (u.rol === 'admin' && u.activo !== false) {
+                const otrosAdmins = usuariosApp.filter(x => x.rol === 'admin' && x.id !== userId && x.activo !== false);
+                if (otrosAdmins.length === 0) {
+                    window.mostrarToast("No puedes desactivar al único administrador activo", "error");
+                    return;
+                }
+            }
+
+            const nuevoEstado = (u.activo === false);
+            try {
+                await updateDoc(doc(db, "usuarios_app", userId), {
+                    activo: nuevoEstado
+                });
+                window.mostrarToast(`Usuario "${u.nombre}" ${nuevoEstado ? 'activado' : 'desactivado'}`, "info");
+            } catch (err) {
+                window.mostrarToast("Error al cambiar estado: " + err.message, "error");
+            }
+        };
+
+        window.migrarRegistrosSinResponsable = async function() {
+            if (!window.esAdmin()) {
+                window.mostrarToast("Solo el administrador puede realizar esta acción", "error");
+                return;
+            }
+
+            const clientesSin = directorio.filter(c => !c.responsableId);
+            const cuentasSin = cuentas.filter(c => !c.responsableId);
+
+            if (clientesSin.length === 0 && cuentasSin.length === 0) {
+                window.mostrarToast("Todos los registros ya tienen un responsable asignado", "info");
+                return;
+            }
+
+            window.mostrarConfirmacion({
+                titulo: "Asignar Responsable a Registros Anteriores",
+                mensaje: `Se encontraron ${clientesSin.length} clientes y ${cuentasSin.length} cuentas sin responsable. ¿Deseas asignarlos a Cegrantt R como responsable inicial? (No afectará a registros que ya tengan responsable)`,
+                textoConfirmar: "Asignar a Cegrantt R",
+                onConfirm: async () => {
+                    window.mostrarToast("Asignando responsables...", "info");
+                    try {
+                        const promesas = [];
+                        for (const c of clientesSin) {
+                            promesas.push(updateDoc(doc(db, "clientes", c.id), {
+                                responsableId: "usr_cegrantt",
+                                responsableNombre: "Cegrantt R"
+                            }));
+                        }
+                        for (const a of cuentasSin) {
+                            promesas.push(updateDoc(doc(db, "cuentas", a.id), {
+                                responsableId: "usr_cegrantt",
+                                responsableNombre: "Cegrantt R"
+                            }));
+                        }
+                        await Promise.all(promesas);
+                        window.mostrarToast("Registros asignados con éxito", "success");
+                    } catch (err) {
+                        console.error("Error en migración:", err);
+                        window.mostrarToast("Error asignando registros: " + err.message, "error");
+                    }
+                }
+            });
+        };
+
         // ================= FUNCIONES DE CLIENTES (DIRECTORIO) =================
         function actualizarDatalist() {
             const datalist = document.getElementById('listaDirectorio');
@@ -3230,6 +4081,15 @@
             if (!contenedor) return;
 
             const filtrados = directorio.filter(c => {
+                // Filtro por Responsable
+                if (filtroResponsableDirectorio === 'mis_clientes') {
+                    const respId = c.responsableId || 'usr_cegrantt';
+                    if (respId !== usuarioActivo?.id) return false;
+                } else if (filtroResponsableDirectorio !== 'todos') {
+                    const respId = c.responsableId || 'usr_cegrantt';
+                    if (respId !== filtroResponsableDirectorio) return false;
+                }
+
                 if (!textoBusquedaDirectorio) return true;
                 const matchNombre = (c.nombre || '').toLowerCase().includes(textoBusquedaDirectorio);
                 const matchTel = (c.telefono || '').toLowerCase().includes(textoBusquedaDirectorio);
@@ -3237,7 +4097,7 @@
             });
 
             if (filtrados.length === 0) {
-                contenedor.innerHTML = `<div class="empty-state">${textoBusquedaDirectorio ? 'No se encontraron contactos que coincidan con la búsqueda.' : 'Tu agenda está vacía.'}</div>`;
+                contenedor.innerHTML = `<div class="empty-state">${textoBusquedaDirectorio ? 'No se encontraron contactos que coincidan con la búsqueda.' : 'No hay clientes para este filtro.'}</div>`;
                 return;
             }
 
@@ -3245,6 +4105,8 @@
                 const safeId = escapeHTML(contacto.id);
                 const safeNombre = escapeHTML(contacto.nombre);
                 const safeTelefono = escapeHTML(contacto.telefono);
+                const badgeRespHTML = window.obtenerBadgeResponsableHTML(contacto.responsableId);
+                const puedeAdmin = window.puedeAdministrarCliente(contacto);
 
                 // Cruzar con el array cuentas para ver si tiene deudas abiertas
                 const deudasContacto = cuentas.filter(c => {
@@ -3274,6 +4136,7 @@
                     <div style="flex:1;">
                       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span class="client-name">${safeNombre}</span>
+                        ${badgeRespHTML}
                         ${badgeDeudaHTML}
                       </div>
                       <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">${safeTelefono}</div>
@@ -3282,7 +4145,9 @@
                       <button type="button" class="btn-item-receipt" style="padding:6px 10px; font-size:0.8rem; border-radius:8px;" onclick="abrirWhatsAppDirectorio('${safeTelefono}', '${safeNombre}')" title="Abrir chat de WhatsApp">
                         💬 WhatsApp
                       </button>
-                      <button class="btn-delete" title="Borrar Cliente" onclick="eliminarClienteDirectorio('${safeId}')">✕</button>
+                      ${puedeAdmin ? `
+                        <button class="btn-delete" title="Borrar Cliente" onclick="eliminarClienteDirectorio('${safeId}')">✕</button>
+                      ` : ''}
                     </div>
                   </div>
                 `;
@@ -3316,6 +4181,15 @@
                 return;
             }
 
+            // Asignación de responsable: si es admin usa el select, si no es admin usa su perfil
+            let respId = usuarioActivo?.id || 'usr_cegrantt';
+            if (window.esAdmin()) {
+                const sel = document.getElementById('nuevoClienteResponsable');
+                if (sel && sel.value) respId = sel.value;
+            }
+            const uResp = usuariosApp.find(u => u.id === respId) || usuarioActivo;
+            const respNombre = uResp ? uResp.nombre : (respId === 'usr_cegrantt' ? 'Cegrantt R' : 'Morenita');
+
             const btn = document.getElementById('btnSubmitCliente');
             btn.innerHTML = "<span>Guardando...</span>";
             btn.disabled = true;
@@ -3324,10 +4198,13 @@
                 const idCliente = normalizarIdCliente(nombre);
                 await setDoc(doc(db, "clientes", idCliente), {
                     nombre: nombre,
-                    telefono: telefono
+                    telefono: telefono,
+                    responsableId: respId,
+                    responsableNombre: respNombre
                 }, { merge: true });
                 document.getElementById('formCliente').reset();
-                window.mostrarToast(`Cliente "${nombre}" guardado en directorio`, "success");
+                actualizarSelectsResponsables();
+                window.mostrarToast(`Cliente "${nombre}" guardado (Responsable: ${respNombre})`, "success");
             } catch (error) {
                 window.mostrarToast("Error al guardar cliente: " + error.message, "error");
             }
@@ -3337,6 +4214,12 @@
         };
 
         window.eliminarClienteDirectorio = function (id) {
+            const contacto = directorio.find(d => d.id === id);
+            if (contacto && !window.puedeAdministrarCliente(contacto)) {
+                window.mostrarToast("No tienes permiso para eliminar este cliente de la agenda", "error");
+                return;
+            }
+
             window.mostrarConfirmacion({
                 titulo: '¿Eliminar del Directorio?',
                 mensaje: '¿Deseas eliminar permanentemente a este cliente de tu agenda? (Sus ventas históricas no se borrarán)',
@@ -3418,6 +4301,23 @@
 
             const cuentaActiva = cuentas.find(c => (c.cliente || '').toLowerCase() === nombre.toLowerCase() && !c.pagado);
 
+            // Validar permisos si ya existe una cuenta activa
+            if (cuentaActiva && !window.puedeAdministrarCuenta(cuentaActiva)) {
+                window.mostrarToast(`Esta cuenta pertenece a otro usuario (${cuentaActiva.responsableNombre || 'otro responsable'}). No tienes permiso para agregarle compras.`, "error");
+                return;
+            }
+
+            // Determinar responsable de este cliente
+            const clienteExistente = directorio.find(c => (c.nombre || '').toLowerCase() === nombre.toLowerCase());
+            let respId = clienteExistente?.responsableId;
+            let respNombre = clienteExistente?.responsableNombre;
+
+            if (!respId) {
+                respId = usuarioActivo?.id || 'usr_cegrantt';
+                const uObj = usuariosApp.find(u => u.id === respId) || usuarioActivo;
+                respNombre = uObj?.nombre || 'Cegrantt R';
+            }
+
             const btn = document.getElementById('btnSubmit');
             btn.innerHTML = "<span>Guardando...</span>";
             btn.disabled = true;
@@ -3425,25 +4325,37 @@
             try {
                 // Guardar/Actualizar en directorio automáticamente con merge
                 const idCliente = normalizarIdCliente(nombre);
-                await setDoc(doc(db, "clientes", idCliente), { nombre: nombre, telefono: telefono }, { merge: true });
+                const datosCliente = { nombre: nombre, telefono: telefono };
+                if (!clienteExistente || !clienteExistente.responsableId) {
+                    datosCliente.responsableId = respId;
+                    datosCliente.responsableNombre = respNombre;
+                }
+                await setDoc(doc(db, "clientes", idCliente), datosCliente, { merge: true });
 
                 // Procesar Venta
                 if (cuentaActiva) {
                     const cuentaRef = doc(db, "cuentas", cuentaActiva.id);
                     const itemsPrevios = Array.isArray(cuentaActiva.items) ? cuentaActiva.items : [];
                     const nuevosItems = [...itemsPrevios, { concepto, monto: montoUSD, fecha: fechaHoy }];
-                    await updateDoc(cuentaRef, { items: nuevosItems, telefono: telefono });
+                    const updatesCuenta = { items: nuevosItems, telefono: telefono };
+                    if (!cuentaActiva.responsableId) {
+                        updatesCuenta.responsableId = respId;
+                        updatesCuenta.responsableNombre = respNombre;
+                    }
+                    await updateDoc(cuentaRef, updatesCuenta);
                     window.mostrarToast(`Ítem añadido a la cuenta activa de ${nombre}`, "success");
                 } else {
                     await addDoc(collection(db, "cuentas"), {
                         cliente: nombre,
                         telefono: telefono,
+                        responsableId: respId,
+                        responsableNombre: respNombre,
                         pagado: false,
                         items: [{ concepto, monto: montoUSD, fecha: fechaHoy }],
                         abonos: [],
                         timestamp: Date.now()
                     });
-                    window.mostrarToast(`Nueva cuenta creada para ${nombre}`, "success");
+                    window.mostrarToast(`Nueva cuenta creada para ${nombre} (Responsable: ${respNombre})`, "success");
                 }
                 document.getElementById('formVenta').reset();
                 const cantInput = document.getElementById('cantidadVenta');
@@ -3588,6 +4500,11 @@
             const c = cuentas.find(item => item.id === id);
             if (!c) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para registrar abonos en esta cuenta", "error");
+                return;
+            }
+
             const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
             const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
             const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
@@ -3623,6 +4540,11 @@
 
             const c = cuentas.find(item => item.id === id);
             if (!c) return;
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para registrar abonos en esta cuenta", "error");
+                return;
+            }
 
             const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
             const totalAbonadoPrevio = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
@@ -3682,6 +4604,11 @@
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c || !Array.isArray(c.abonos) || !c.abonos[abonoIndex]) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para eliminar abonos de esta cuenta", "error");
+                return;
+            }
+
             const abono = c.abonos[abonoIndex];
             window.mostrarConfirmacion({
                 titulo: '¿Eliminar Abono?',
@@ -3707,6 +4634,11 @@
             const c = cuentas.find(item => item.id === id);
             if (!c) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para marcar esta cuenta como pagada", "error");
+                return;
+            }
+
             const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
             const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
             const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
@@ -3726,6 +4658,12 @@
             const metodo = document.getElementById('pagoTotalMetodo').value;
             const referencia = document.getElementById('pagoTotalReferencia').value.trim();
             const fechaHoy = new Date().toLocaleDateString('es-VE');
+
+            const c = cuentas.find(item => item.id === id);
+            if (!c || !window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para modificar esta cuenta", "error");
+                return;
+            }
 
             const btn = document.getElementById('btnConfirmarPagoTotal');
             btn.disabled = true;
@@ -3752,6 +4690,11 @@
             const c = cuentas.find(item => item.id === id);
             if (!c) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para reabrir esta cuenta", "error");
+                return;
+            }
+
             window.mostrarConfirmacion({
                 titulo: '¿Reabrir Cuenta?',
                 mensaje: `¿Deseas volver a colocar la cuenta de ${c.cliente} en estado pendiente?`,
@@ -3771,6 +4714,14 @@
         };
 
         window.eliminarCuenta = function (id) {
+            const c = cuentas.find(item => item.id === id);
+            if (!c) return;
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para eliminar esta cuenta", "error");
+                return;
+            }
+
             window.mostrarConfirmacion({
                 titulo: '¿Eliminar Cuenta?',
                 mensaje: '¿Deseas eliminar permanentemente esta cuenta? (Los datos del cliente se mantendrán guardados en tu agenda)',
@@ -3790,6 +4741,11 @@
         window.eliminarItemCuenta = function (id, itemIndex) {
             const c = cuentas.find(item => item.id === id);
             if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para eliminar productos de esta cuenta", "error");
+                return;
+            }
 
             if (c.items.length <= 1) {
                 window.mostrarConfirmacion({
@@ -3832,6 +4788,11 @@
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para editar productos de esta cuenta", "error");
+                return;
+            }
+
             const item = c.items[itemIndex];
             document.getElementById('editItemCuentaId').value = cuentaId;
             document.getElementById('editItemIndex').value = itemIndex;
@@ -3863,6 +4824,11 @@
 
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c || !Array.isArray(c.items) || !c.items[itemIndex]) return;
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para modificar esta cuenta", "error");
+                return;
+            }
 
             const btn = document.getElementById('btnGuardarEdicionItem');
             btn.disabled = true;
@@ -3901,10 +4867,35 @@
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para editar este cliente", "error");
+                return;
+            }
+
             document.getElementById('editClienteCuentaId').value = cuentaId;
             document.getElementById('editClienteNombre').value = c.cliente || '';
             document.getElementById('editClienteTelefono').value = c.telefono || '';
             document.getElementById('editClienteActualizarDirectorio').checked = true;
+
+            // Rellenar selector de responsable
+            const selResp = document.getElementById('editClienteResponsable');
+            const helpResp = document.getElementById('editClienteResponsableHelp');
+            const activos = usuariosApp.filter(u => u.activo !== false);
+            const currentRespId = c.responsableId || 'usr_cegrantt';
+
+            if (selResp) {
+                selResp.innerHTML = activos.map(u => {
+                    return `<option value="${escapeHTML(u.id)}" ${u.id === currentRespId ? 'selected' : ''}>${escapeHTML(u.nombre)} (${u.rol === 'admin' ? 'Administrador' : 'Usuaria'})</option>`;
+                }).join('');
+
+                if (window.esAdmin()) {
+                    selResp.disabled = false;
+                    if (helpResp) helpResp.textContent = "Puedes cambiar el responsable de este cliente y de todas sus cuentas.";
+                } else {
+                    selResp.disabled = true;
+                    if (helpResp) helpResp.textContent = "Solo el administrador puede reasignar el responsable.";
+                }
+            }
 
             window.abrirModal('modalEditarClienteCuenta');
             setTimeout(() => document.getElementById('editClienteNombre').focus(), 150);
@@ -3925,21 +4916,55 @@
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c) return;
 
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para editar este cliente", "error");
+                return;
+            }
+
+            let respId = c.responsableId || 'usr_cegrantt';
+            let respNombre = c.responsableNombre || 'Cegrantt R';
+            if (window.esAdmin()) {
+                const sel = document.getElementById('editClienteResponsable');
+                if (sel && sel.value) {
+                    respId = sel.value;
+                    const uObj = usuariosApp.find(u => u.id === respId);
+                    respNombre = uObj ? uObj.nombre : (respId === 'usr_cegrantt' ? 'Cegrantt R' : 'Morenita');
+                }
+            }
+
             const btn = document.getElementById('btnGuardarEdicionCliente');
             btn.disabled = true;
             btn.innerHTML = '<span>Guardando...</span>';
 
             try {
+                // Actualizar la cuenta actual
                 await updateDoc(doc(db, "cuentas", cuentaId), {
                     cliente: nuevoNombre,
-                    telefono: nuevoTelefono
+                    telefono: nuevoTelefono,
+                    responsableId: respId,
+                    responsableNombre: respNombre
                 });
+
+                // Si es admin y cambió el responsable o nombre, sincronizar las demás cuentas del mismo cliente
+                if (window.esAdmin()) {
+                    const otrasCuentasCliente = cuentas.filter(item => item.id !== cuentaId && item.cliente && item.cliente.trim().toLowerCase() === c.cliente.trim().toLowerCase());
+                    for (const oc of otrasCuentasCliente) {
+                        await updateDoc(doc(db, "cuentas", oc.id), {
+                            cliente: nuevoNombre,
+                            telefono: nuevoTelefono,
+                            responsableId: respId,
+                            responsableNombre: respNombre
+                        });
+                    }
+                }
 
                 if (actualizarDirectorio) {
                     const idCliente = normalizarIdCliente(nuevoNombre);
                     await setDoc(doc(db, "clientes", idCliente), {
                         nombre: nuevoNombre,
-                        telefono: nuevoTelefono
+                        telefono: nuevoTelefono,
+                        responsableId: respId,
+                        responsableNombre: respNombre
                     }, { merge: true });
                 }
 
@@ -4149,6 +5174,8 @@
                 const safeTelefono = escapeHTML(c.telefono);
                 const items = Array.isArray(c.items) ? c.items : [];
                 const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+                const puedeAdmin = window.puedeAdministrarCuenta(c);
+                const badgeRespHTML = window.obtenerBadgeResponsableHTML(c.responsableId);
 
                 // Cálculo de días de antigüedad
                 let diasAntiguedad = 0;
@@ -4201,7 +5228,7 @@
                         <span class="item-concept">${safeConcepto} ${safeFecha ? `<small style="color:#64748b;">(${safeFecha})</small>` : ''}</span>
                         <div class="item-actions">
                           <span class="item-price">$${montoNum.toFixed(2)}</span>
-                          ${!c.pagado ? `
+                          ${!c.pagado && puedeAdmin ? `
                             <button type="button" class="btn-item-edit" title="Editar producto o precio" onclick="abrirModalEditarItem('${safeId}', ${index})">✏️</button>
                             <button type="button" class="btn-item-delete" title="Eliminar ítem" onclick="eliminarItemCuenta('${safeId}', ${index})">✕</button>
                           ` : ''}
@@ -4226,7 +5253,7 @@
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
                               <button type="button" class="btn-item-receipt" title="Enviar comprobante de este abono por WhatsApp" onclick="enviarReciboAbono('${safeId}', ${aIdx})">🧾 Recibo</button>
-                              <button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>
+                              ${puedeAdmin ? `<button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>` : ''}
                             </div>
                           </li>
                         `;
@@ -4299,7 +5326,7 @@
                     `;
                 }
 
-                // Botones de acción según estado
+                // Botones de acción según estado y permisos
                 let actionsHTML = '';
                 if (!c.pagado) {
                     actionsHTML = `
@@ -4314,19 +5341,28 @@
                             <span class="wa-btn-subtitle" style="color:#6ee7b7; opacity:0.85;">Mostrar QR Banco</span>
                           </button>
                         </div>
-                        <div class="actions-row">
-                          <button class="btn-item-add" onclick="abrirModalAgregarItemRapido('${safeId}')" title="Añadir nuevo producto o ítem a esta cuenta">
-                            <span>➕ Ítem</span>
-                          </button>
-                          <button class="btn-abono" onclick="abrirModalAbono('${safeId}')">
-                            <span>➕ Abonar</span>
-                          </button>
-                          <button class="btn-toggle" onclick="abrirModalMarcarPagado('${safeId}')">
-                            <span>✓ Marcar Pagado</span>
-                          </button>
-                          <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
-                          <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
-                        </div>
+                        ${puedeAdmin ? `
+                          <div class="actions-row">
+                            <button class="btn-item-add" onclick="abrirModalAgregarItemRapido('${safeId}')" title="Añadir nuevo producto o ítem a esta cuenta">
+                              <span>➕ Ítem</span>
+                            </button>
+                            <button class="btn-abono" onclick="abrirModalAbono('${safeId}')">
+                              <span>➕ Abonar</span>
+                            </button>
+                            <button class="btn-toggle" onclick="abrirModalMarcarPagado('${safeId}')">
+                              <span>✓ Marcar Pagado</span>
+                            </button>
+                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
+                          </div>
+                        ` : `
+                          <div class="actions-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                            <span style="font-size:0.78rem; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px dashed #64748b; padding:6px 12px; border-radius:8px; flex:1; text-align:center;">
+                              🔒 Solo lectura · Asignado a <strong>${escapeHTML(c.responsableNombre || 'otro responsable')}</strong>
+                            </span>
+                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                          </div>
+                        `}
                       </div>
                     `;
                 } else {
@@ -4335,13 +5371,22 @@
                         <button class="btn-wa" style="background:#0f3320; border-color:#165e38;" onclick="enviarReciboCancelado('${safeId}')">
                           <span class="wa-btn-title">🧾 Enviar Recibo de Cuenta Cancelada</span>
                         </button>
-                        <div class="actions-row">
-                          <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
-                            <span>↩ Reabrir Cuenta</span>
-                          </button>
-                          <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
-                          <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
-                        </div>
+                        ${puedeAdmin ? `
+                          <div class="actions-row">
+                            <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
+                              <span>↩ Reabrir Cuenta</span>
+                            </button>
+                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
+                          </div>
+                        ` : `
+                          <div class="actions-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                            <span style="font-size:0.78rem; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px dashed #64748b; padding:6px 12px; border-radius:8px; flex:1; text-align:center;">
+                              🔒 Solo lectura · Asignado a <strong>${escapeHTML(c.responsableNombre || 'otro responsable')}</strong>
+                            </span>
+                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                          </div>
+                        `}
                       </div>
                     `;
                 }
@@ -4350,10 +5395,13 @@
                   <div class="sale-card ${c.pagado ? 'is-paid' : ''}">
                     <div class="card-top">
                       <div>
-                        <div class="client-name">${safeCliente}</div>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                          <span class="client-name">${safeCliente}</span>
+                          ${badgeRespHTML}
+                        </div>
                         <div style="font-size:0.8rem; color:#94a3b8; display:flex; align-items:center; gap:6px; margin-top:2px;">
                           <span>📱 ${safeTelefono}</span>
-                          <button type="button" class="btn-inline-edit" title="Editar nombre o teléfono del cliente" onclick="abrirModalEditarClienteCuenta('${safeId}')">✏️ Editar</button>
+                          ${puedeAdmin ? `<button type="button" class="btn-inline-edit" title="Editar nombre o teléfono del cliente" onclick="abrirModalEditarClienteCuenta('${safeId}')">✏️ Editar</button>` : ''}
                         </div>
                       </div>
                       <div class="badges-row">
@@ -4721,6 +5769,20 @@
             document.getElementById('temaVisualModal').value = localStorage.getItem('tema_cobros_v1') || 'dark';
             const inpPin = document.getElementById('nuevoPinSeguridad');
             if (inpPin) inpPin.value = localStorage.getItem('pin_cobros_v1') || '1234';
+
+            // Sección de gestión de usuarios: visible exclusivamente para el perfil administrador
+            const secUsuarios = document.getElementById('seccionGestionUsuarios');
+            if (secUsuarios) {
+                if (window.esAdmin()) {
+                    secUsuarios.style.display = 'block';
+                    if (typeof window.renderizarListaUsuariosConfig === 'function') {
+                        window.renderizarListaUsuariosConfig();
+                    }
+                } else {
+                    secUsuarios.style.display = 'none';
+                }
+            }
+
             window.abrirModal('modalConfigGeneral');
         };
 
@@ -4832,14 +5894,15 @@
         // ================= COPIA DE SEGURIDAD Y RESTAURACIÓN (.JSON) =================
         window.descargarBackupJSON = function() {
             const backup = {
-                version: "3.1",
+                version: "3.2",
                 fechaExportacion: new Date().toISOString(),
                 tasaBCV: tasaActual,
                 plantillaWA: localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:",
                 cuentas: cuentas,
                 clientes: directorio,
                 productos: productos,
-                cuentas_pago: cuentasPago
+                cuentas_pago: cuentasPago,
+                usuarios_app: usuariosApp
             };
 
             const jsonString = JSON.stringify(backup, null, 2);
@@ -4875,10 +5938,15 @@
                     const numClientes = Array.isArray(backup.clientes) ? backup.clientes.length : 0;
                     const numProductos = Array.isArray(backup.productos) ? backup.productos.length : 0;
                     const numMetodos = Array.isArray(backup.cuentas_pago) ? backup.cuentas_pago.length : 0;
+                    const numUsuarios = Array.isArray(backup.usuarios_app) ? backup.usuarios_app.length : 0;
+
+                    let msgConfirm = `Se restaurarán ${numCuentas} cuentas, ${numClientes} clientes, ${numProductos} productos y ${numMetodos} métodos de pago`;
+                    if (numUsuarios > 0) msgConfirm += ` y ${numUsuarios} perfiles de usuario`;
+                    msgConfirm += ` en Firebase. ¿Deseas continuar?`;
 
                     window.mostrarConfirmacion({
                         titulo: "Restaurar Copia de Seguridad",
-                        mensaje: `Se restaurarán ${numCuentas} cuentas, ${numClientes} clientes, ${numProductos} productos y ${numMetodos} métodos de pago en Firebase. ¿Deseas continuar?`,
+                        mensaje: msgConfirm,
                         textoConfirmar: "Restaurar Todo",
                         esPeligroso: true,
                         onConfirm: async () => {
@@ -4886,23 +5954,42 @@
                             try {
                                 const promesas = [];
 
-                                // 1. Restaurar Cuentas
+                                // 0. Restaurar Usuarios de la App
+                                if (Array.isArray(backup.usuarios_app)) {
+                                    for (const u of backup.usuarios_app) {
+                                        if (u && u.id) {
+                                            const datosSinId = { ...u };
+                                            delete datosSinId.id;
+                                            promesas.push(setDoc(doc(db, "usuarios_app", u.id), datosSinId, { merge: true }));
+                                        }
+                                    }
+                                }
+
+                                // 1. Restaurar Cuentas (asegurando responsable por defecto si falta)
                                 if (Array.isArray(backup.cuentas)) {
                                     for (const c of backup.cuentas) {
                                         if (c && c.id) {
                                             const datosSinId = { ...c };
                                             delete datosSinId.id;
+                                            if (!datosSinId.responsableId) {
+                                                datosSinId.responsableId = 'usr_cegrantt';
+                                                datosSinId.responsableNombre = 'Cegrantt R';
+                                            }
                                             promesas.push(setDoc(doc(db, "cuentas", c.id), datosSinId, { merge: true }));
                                         }
                                     }
                                 }
 
-                                // 2. Restaurar Clientes
+                                // 2. Restaurar Clientes (asegurando responsable por defecto si falta)
                                 if (Array.isArray(backup.clientes)) {
                                     for (const cl of backup.clientes) {
                                         if (cl && cl.id) {
                                             const datosSinId = { ...cl };
                                             delete datosSinId.id;
+                                            if (!datosSinId.responsableId) {
+                                                datosSinId.responsableId = 'usr_cegrantt';
+                                                datosSinId.responsableNombre = 'Cegrantt R';
+                                            }
                                             promesas.push(setDoc(doc(db, "clientes", cl.id), datosSinId, { merge: true }));
                                         }
                                     }
@@ -5041,6 +6128,12 @@
         window.abrirModalAgregarItemRapido = function(cuentaId) {
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c) return;
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para agregar ítems a esta cuenta", "error");
+                return;
+            }
+
             cuentaParaItemRapido = c;
             document.getElementById('rapidoCuentaId').value = c.id;
             document.getElementById('rapidoClienteNombre').textContent = c.cliente;
@@ -5083,6 +6176,11 @@
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c) {
                 window.mostrarToast("Cuenta no encontrada", "error");
+                return;
+            }
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para modificar esta cuenta", "error");
                 return;
             }
 
