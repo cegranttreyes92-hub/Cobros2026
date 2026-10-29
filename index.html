@@ -226,6 +226,53 @@
             }
         }
 
+        /* Chips Rápidos de Productos */
+        .chips-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            max-height: 85px;
+            overflow-y: auto;
+            padding: 2px 0;
+        }
+
+        .chips-container::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .chips-container::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 4px;
+        }
+
+        .chip-prod {
+            background: var(--input-dark);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .chip-prod:hover {
+            background: var(--card-bg);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .chip-prod:active {
+            transform: scale(0.96);
+        }
+
         input,
         select {
             width: 100%;
@@ -1011,6 +1058,148 @@
             background: #475569;
         }
 
+        /* Pantalla de Bloqueo con PIN (Lock Screen) */
+        .lock-screen-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .lock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 330px;
+            width: 100%;
+        }
+
+        .lock-icon-shield {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            line-height: 1;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .lock-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .lock-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .pin-dots {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .pin-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--card-border);
+            background: transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pin-dot.filled {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            transform: scale(1.15);
+        }
+
+        .pin-error-msg {
+            color: var(--danger);
+            font-size: 0.88rem;
+            font-weight: 600;
+            min-height: 22px;
+            margin-bottom: 18px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            text-align: center;
+        }
+
+        .pin-error-msg.visible {
+            opacity: 1;
+        }
+
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 270px;
+        }
+
+        .pin-key {
+            aspect-ratio: 1;
+            max-width: 72px;
+            max-height: 72px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            font-size: 1.55rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            width: 100%;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .pin-key:hover {
+            background: var(--input-dark);
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+        }
+
+        .pin-key:active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+            transform: scale(0.92);
+        }
+
+        .pin-key-backspace {
+            font-size: 1.4rem;
+        }
+
+        .pin-key-dummy {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+        }
+
         /* Gestión de Múltiples Cuentas de Pago Móvil */
         .cuenta-pago-card {
             background: var(--input-dark);
@@ -1425,6 +1614,114 @@
 
 <body>
 
+    <!-- ================= PANTALLA DE BLOQUEO CON PIN ================= -->
+    <div id="lockScreen" class="lock-screen-overlay">
+        <div class="lock-container">
+            <div class="lock-icon-shield">🔒</div>
+            <h2 class="lock-title">Control de Cobranzas</h2>
+            <p class="lock-subtitle">Ingresa tu PIN de 4 dígitos</p>
+
+            <div class="pin-dots" id="pinDots">
+                <span class="pin-dot" id="pinDot0"></span>
+                <span class="pin-dot" id="pinDot1"></span>
+                <span class="pin-dot" id="pinDot2"></span>
+                <span class="pin-dot" id="pinDot3"></span>
+            </div>
+
+            <div id="lockErrorMsg" class="pin-error-msg">PIN incorrecto</div>
+
+            <div class="pin-keypad">
+                <button type="button" class="pin-key" onclick="teclearPin('1')">1</button>
+                <button type="button" class="pin-key" onclick="teclearPin('2')">2</button>
+                <button type="button" class="pin-key" onclick="teclearPin('3')">3</button>
+                <button type="button" class="pin-key" onclick="teclearPin('4')">4</button>
+                <button type="button" class="pin-key" onclick="teclearPin('5')">5</button>
+                <button type="button" class="pin-key" onclick="teclearPin('6')">6</button>
+                <button type="button" class="pin-key" onclick="teclearPin('7')">7</button>
+                <button type="button" class="pin-key" onclick="teclearPin('8')">8</button>
+                <button type="button" class="pin-key" onclick="teclearPin('9')">9</button>
+                <div class="pin-key-dummy"></div>
+                <button type="button" class="pin-key" onclick="teclearPin('0')">0</button>
+                <button type="button" class="pin-key pin-key-backspace" onclick="borrarPin()" aria-label="Borrar">⌫</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            let pinBuffer = '';
+            function getPIN() {
+                return localStorage.getItem('pin_cobros_v1') || '1234';
+            }
+            function updateDots() {
+                for (let i = 0; i < 4; i++) {
+                    const dot = document.getElementById('pinDot' + i);
+                    if (dot) dot.classList.toggle('filled', i < pinBuffer.length);
+                }
+            }
+            window.teclearPin = function(digito) {
+                if (pinBuffer.length >= 4) return;
+                pinBuffer += String(digito);
+                updateDots();
+                if (pinBuffer.length === 4) {
+                    if (pinBuffer === getPIN()) {
+                        sessionStorage.setItem('sesion_desbloqueada_v1', 'true');
+                        const err = document.getElementById('lockErrorMsg');
+                        if (err) err.classList.remove('visible');
+                        pinBuffer = '';
+                        updateDots();
+                        const lock = document.getElementById('lockScreen');
+                        if (lock) lock.style.display = 'none';
+                    } else {
+                        const err = document.getElementById('lockErrorMsg');
+                        if (err) err.classList.add('visible');
+                        const dots = document.getElementById('pinDots');
+                        if (dots) {
+                            dots.classList.remove('shake');
+                            void dots.offsetWidth;
+                            dots.classList.add('shake');
+                        }
+                        setTimeout(() => {
+                            pinBuffer = '';
+                            updateDots();
+                        }, 400);
+                    }
+                }
+            };
+            window.borrarPin = function() {
+                if (pinBuffer.length > 0) {
+                    pinBuffer = pinBuffer.slice(0, -1);
+                    updateDots();
+                    const err = document.getElementById('lockErrorMsg');
+                    if (err) err.classList.remove('visible');
+                }
+            };
+            window.bloquearApp = function() {
+                sessionStorage.removeItem('sesion_desbloqueada_v1');
+                pinBuffer = '';
+                updateDots();
+                const err = document.getElementById('lockErrorMsg');
+                if (err) err.classList.remove('visible');
+                const lock = document.getElementById('lockScreen');
+                if (lock) lock.style.display = 'flex';
+            };
+            window.addEventListener('keydown', function(e) {
+                const lockScreen = document.getElementById('lockScreen');
+                if (!lockScreen || lockScreen.style.display === 'none') return;
+                if (e.key >= '0' && e.key <= '9') {
+                    e.preventDefault();
+                    teclearPin(e.key);
+                } else if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    borrarPin();
+                }
+            });
+            if (sessionStorage.getItem('sesion_desbloqueada_v1') === 'true') {
+                const lock = document.getElementById('lockScreen');
+                if (lock) lock.style.display = 'none';
+            }
+        })();
+    </script>
+
     <!-- ================= NAVEGACIÓN INFERIOR ================= -->
     <nav class="app-nav">
         <button class="nav-btn active" id="nav-ventas" onclick="mostrarModulo('ventas')">
@@ -1447,6 +1744,9 @@
     <div class="header">
         <h1>📦 Cuentas Abiertas</h1>
         <div class="header-actions">
+            <button type="button" class="btn-settings-pill" onclick="bloquearApp()" title="Bloquear pantalla con PIN">
+                🔒 Bloquear
+            </button>
             <button type="button" class="btn-settings-pill" onclick="abrirModalConfigPago()"
                 title="Gestionar múltiples cuentas de Pago Móvil">
                 ⚙️ Datos Pago (<span id="contadorCuentasPago">0</span>)
@@ -1501,6 +1801,7 @@
                     <input type="number" id="montoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required>
                 </div>
             </div>
+            <div id="chipsProductosVenta" class="chips-container"></div>
             <button type="submit" class="btn-submit" id="btnSubmit">
                 <span>Añadir a la Cuenta</span>
             </button>
@@ -1652,6 +1953,7 @@
                         <small id="rapidoEquivalenteBs" style="display:block; margin-top:4px; color:var(--text-muted); font-size:0.8rem;">≈ 0,00 Bs</small>
                     </div>
                 </div>
+                <div id="chipsProductosRapido" class="chips-container"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="cerrarModal('modalAgregarItemRapido')">Cancelar</button>
                     <button type="submit" class="btn-submit btn-blue" id="btnGuardarItemRapido" style="margin-top:0; width:auto; padding:10px 18px;">
@@ -1698,6 +2000,15 @@
                 <button type="button" class="btn-submit" style="margin-top:8px; padding:8px 14px; background:#25d366;" onclick="guardarPlantillaWA()">Guardar Plantilla 💬</button>
             </div>
 
+            <div class="input-group" style="margin-top: 15px;">
+                <label>🔐 Seguridad (PIN de Acceso)</label>
+                <small style="color:var(--text-muted); display:block; margin-bottom:5px;">PIN de 4 dígitos para proteger la app al iniciar o bloquear.</small>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="password" id="nuevoPinSeguridad" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="1234" style="flex:1; min-width:90px; text-align:center; font-size:1.15rem; letter-spacing:4px; font-weight:bold;">
+                    <button type="button" class="btn-submit" style="width:auto; padding:10px 14px; margin-top:0;" onclick="guardarNuevoPIN()">Cambiar PIN</button>
+                </div>
+            </div>
+
             <div class="divider" style="margin: 20px 0;"></div>
 
             <button type="button" class="btn-submit btn-blue" onclick="cerrarModal('modalConfigGeneral'); abrirModalConfigPago();">
@@ -1706,6 +2017,13 @@
             <button type="button" class="btn-submit" style="margin-top:10px; background:var(--card-border); color:var(--text-main);" onclick="exportarDeudasTXT()">
                 📄 Exportar Deudas Pendientes a TXT
             </button>
+            <button type="button" class="btn-submit" style="margin-top:10px; background:#059669; color:#ffffff;" onclick="descargarBackupJSON()">
+                ☁️ Descargar Copia de Seguridad (.JSON)
+            </button>
+            <button type="button" class="btn-submit" style="margin-top:10px; background:#4f46e5; color:#ffffff;" onclick="document.getElementById('inputRestaurarJSON').click()">
+                📂 Restaurar Copia de Seguridad (.JSON)
+            </button>
+            <input type="file" id="inputRestaurarJSON" accept=".json" style="display:none" onchange="restaurarBackupJSON(event)">
         </div>
     </div>
 
@@ -2156,6 +2474,9 @@
         let textoBusquedaCuentas = '';
         let textoBusquedaDirectorio = '';
         let cuentaSeleccionadaParaWhatsApp = null;
+        if (!localStorage.getItem('pin_cobros_v1')) {
+            localStorage.setItem('pin_cobros_v1', '1234');
+        }
         const headerTasaInit = document.getElementById('headerTasaBCV');
         if (headerTasaInit) headerTasaInit.textContent = tasaActual.toFixed(2);
 
@@ -2868,6 +3189,29 @@
             }
         }, (error) => {
             console.error("Error en escucha de tasa BCV:", error);
+        });
+
+        // ESCUCHADOR 5: PIN DE SEGURIDAD EN FIRESTORE (SINCRONIZACIÓN EN TIEMPO REAL)
+        onSnapshot(doc(db, "configuracion", "seguridad"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const pinNube = data && data.pin ? String(data.pin).trim() : "";
+                if (pinNube && pinNube.length === 4) {
+                    localStorage.setItem('pin_cobros_v1', pinNube);
+                    const inp = document.getElementById('nuevoPinSeguridad');
+                    if (inp && document.activeElement !== inp) {
+                        inp.value = pinNube;
+                    }
+                }
+            } else {
+                const pinLocal = localStorage.getItem('pin_cobros_v1') || "1234";
+                setDoc(doc(db, "configuracion", "seguridad"), {
+                    pin: pinLocal,
+                    timestamp: Date.now()
+                }, { merge: true }).catch(err => console.error("Error al inicializar seguridad en Firebase:", err));
+            }
+        }, (error) => {
+            console.error("Error en escucha de seguridad:", error);
         });
 
         // ================= FUNCIONES DE CLIENTES (DIRECTORIO) =================
@@ -4141,6 +4485,79 @@
             }
         };
 
+        // Chips Rápidos del Catálogo de Productos
+        window.renderizarChipsProductos = function() {
+            const contVenta = document.getElementById('chipsProductosVenta');
+            const contRapido = document.getElementById('chipsProductosRapido');
+            if (!contVenta && !contRapido) return;
+
+            if (!productos || productos.length === 0) {
+                if (contVenta) contVenta.innerHTML = '';
+                if (contRapido) contRapido.innerHTML = '';
+                return;
+            }
+
+            const htmlChips = productos.map(p => {
+                const precio = Number(p.precio || 0).toFixed(2);
+                const safeNombre = escapeHTML(p.nombre);
+                return `<button type="button" class="chip-prod" data-nombre="${safeNombre}">➕ ${safeNombre} ($${precio})</button>`;
+            }).join('');
+
+            if (contVenta) {
+                contVenta.innerHTML = htmlChips;
+                contVenta.querySelectorAll('.chip-prod').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        window.seleccionarChipProductoVenta(btn.dataset.nombre);
+                    });
+                });
+            }
+
+            if (contRapido) {
+                contRapido.innerHTML = htmlChips;
+                contRapido.querySelectorAll('.chip-prod').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        window.seleccionarChipProductoRapido(btn.dataset.nombre);
+                    });
+                });
+            }
+        };
+
+        window.seleccionarChipProductoVenta = function(nombreProd) {
+            const conceptoInput = document.getElementById('concepto');
+            const cantInput = document.getElementById('cantidadVenta');
+            if (!conceptoInput || !cantInput) return;
+
+            const actual = (conceptoInput.value || '').trim();
+            if (actual.toLowerCase() === nombreProd.trim().toLowerCase()) {
+                const cant = parseInt(cantInput.value) || 1;
+                cantInput.value = cant + 1;
+            } else {
+                conceptoInput.value = nombreProd;
+                cantInput.value = 1;
+            }
+            if (typeof window.autocompletarPrecio === 'function') {
+                window.autocompletarPrecio();
+            }
+        };
+
+        window.seleccionarChipProductoRapido = function(nombreProd) {
+            const conceptoInput = document.getElementById('rapidoConcepto');
+            const cantInput = document.getElementById('rapidoCantidad');
+            if (!conceptoInput || !cantInput) return;
+
+            const actual = (conceptoInput.value || '').trim();
+            if (actual.toLowerCase() === nombreProd.trim().toLowerCase()) {
+                const cant = parseInt(cantInput.value) || 1;
+                cantInput.value = cant + 1;
+            } else {
+                conceptoInput.value = nombreProd;
+                cantInput.value = 1;
+            }
+            if (typeof window.autocompletarPrecioItemRapido === 'function') {
+                window.autocompletarPrecioItemRapido();
+            }
+        };
+
         function actualizarDatalistProductos() {
             const datalist = document.getElementById('listaProductosDatalist');
             if (datalist) {
@@ -4294,6 +4711,7 @@
             productos.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
             actualizarDatalistProductos();
             renderizarProductosUI();
+            renderizarChipsProductos();
         }, (error) => {
             console.error("Error en escucha de productos:", error);
         });
@@ -4301,6 +4719,8 @@
             document.getElementById('tasaBCVModal').value = tasaActual.toFixed(2);
             document.getElementById('plantillaWAModal').value = localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:";
             document.getElementById('temaVisualModal').value = localStorage.getItem('tema_cobros_v1') || 'dark';
+            const inpPin = document.getElementById('nuevoPinSeguridad');
+            if (inpPin) inpPin.value = localStorage.getItem('pin_cobros_v1') || '1234';
             window.abrirModal('modalConfigGeneral');
         };
 
@@ -4386,6 +4806,168 @@
 
             window.cerrarModal('modalConfigGeneral');
             window.mostrarToast('Reporte TXT descargado con éxito', 'success');
+        };
+
+        // ================= GESTIÓN DE SEGURIDAD (PIN) =================
+        window.guardarNuevoPIN = async function() {
+            const input = document.getElementById('nuevoPinSeguridad');
+            const nuevoPin = (input?.value || '').trim();
+            if (!/^\d{4}$/.test(nuevoPin)) {
+                window.mostrarToast("El PIN debe tener exactamente 4 dígitos numéricos", "error");
+                return;
+            }
+            localStorage.setItem('pin_cobros_v1', nuevoPin);
+            try {
+                await setDoc(doc(db, "configuracion", "seguridad"), {
+                    pin: nuevoPin,
+                    timestamp: Date.now()
+                }, { merge: true });
+                window.mostrarToast("PIN de seguridad actualizado con éxito", "success");
+            } catch (err) {
+                console.error("Error al actualizar PIN en Firebase:", err);
+                window.mostrarToast("PIN actualizado localmente (Error en nube: " + err.message + ")", "info");
+            }
+        };
+
+        // ================= COPIA DE SEGURIDAD Y RESTAURACIÓN (.JSON) =================
+        window.descargarBackupJSON = function() {
+            const backup = {
+                version: "3.1",
+                fechaExportacion: new Date().toISOString(),
+                tasaBCV: tasaActual,
+                plantillaWA: localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:",
+                cuentas: cuentas,
+                clientes: directorio,
+                productos: productos,
+                cuentas_pago: cuentasPago
+            };
+
+            const jsonString = JSON.stringify(backup, null, 2);
+            const blob = new Blob([jsonString], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            const fechaStr = new Date().toISOString().slice(0, 10);
+            link.download = `Backup_Cobranzas_${fechaStr}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            window.mostrarToast("Copia de seguridad descargada con éxito", "success");
+        };
+
+        window.restaurarBackupJSON = function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                event.target.value = '';
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    if (!backup || typeof backup !== 'object' || (!backup.cuentas && !backup.clientes && !backup.productos && !backup.cuentas_pago)) {
+                        window.mostrarToast("El archivo seleccionado no es una copia de seguridad válida.", "error");
+                        return;
+                    }
+
+                    const numCuentas = Array.isArray(backup.cuentas) ? backup.cuentas.length : 0;
+                    const numClientes = Array.isArray(backup.clientes) ? backup.clientes.length : 0;
+                    const numProductos = Array.isArray(backup.productos) ? backup.productos.length : 0;
+                    const numMetodos = Array.isArray(backup.cuentas_pago) ? backup.cuentas_pago.length : 0;
+
+                    window.mostrarConfirmacion({
+                        titulo: "Restaurar Copia de Seguridad",
+                        mensaje: `Se restaurarán ${numCuentas} cuentas, ${numClientes} clientes, ${numProductos} productos y ${numMetodos} métodos de pago en Firebase. ¿Deseas continuar?`,
+                        textoConfirmar: "Restaurar Todo",
+                        esPeligroso: true,
+                        onConfirm: async () => {
+                            window.mostrarToast("Restaurando datos en Firebase...", "info");
+                            try {
+                                const promesas = [];
+
+                                // 1. Restaurar Cuentas
+                                if (Array.isArray(backup.cuentas)) {
+                                    for (const c of backup.cuentas) {
+                                        if (c && c.id) {
+                                            const datosSinId = { ...c };
+                                            delete datosSinId.id;
+                                            promesas.push(setDoc(doc(db, "cuentas", c.id), datosSinId, { merge: true }));
+                                        }
+                                    }
+                                }
+
+                                // 2. Restaurar Clientes
+                                if (Array.isArray(backup.clientes)) {
+                                    for (const cl of backup.clientes) {
+                                        if (cl && cl.id) {
+                                            const datosSinId = { ...cl };
+                                            delete datosSinId.id;
+                                            promesas.push(setDoc(doc(db, "clientes", cl.id), datosSinId, { merge: true }));
+                                        }
+                                    }
+                                }
+
+                                // 3. Restaurar Productos
+                                if (Array.isArray(backup.productos)) {
+                                    for (const p of backup.productos) {
+                                        if (p && p.id) {
+                                            const datosSinId = { ...p };
+                                            delete datosSinId.id;
+                                            promesas.push(setDoc(doc(db, "productos", p.id), datosSinId, { merge: true }));
+                                        }
+                                    }
+                                }
+
+                                // 4. Restaurar Cuentas de Pago (incluyendo QR en Base64)
+                                if (Array.isArray(backup.cuentas_pago)) {
+                                    for (const cp of backup.cuentas_pago) {
+                                        if (cp && cp.id) {
+                                            const datosSinId = { ...cp };
+                                            delete datosSinId.id;
+                                            promesas.push(setDoc(doc(db, "cuentas_pago", cp.id), datosSinId, { merge: true }));
+                                        }
+                                    }
+                                }
+
+                                // 5. Restaurar Tasa BCV
+                                if (backup.tasaBCV && !isNaN(parseFloat(backup.tasaBCV))) {
+                                    tasaActual = parseFloat(backup.tasaBCV);
+                                    localStorage.setItem('tasa_bcv_v4', tasaActual);
+                                    const headerTasa = document.getElementById('headerTasaBCV');
+                                    if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
+                                    const modalTasa = document.getElementById('tasaBCVModal');
+                                    if (modalTasa) modalTasa.value = tasaActual.toFixed(2);
+                                    promesas.push(setDoc(doc(db, "configuracion", "tasa"), { tasa: tasaActual, timestamp: Date.now() }, { merge: true }));
+                                }
+
+                                // 6. Restaurar Plantilla WA
+                                if (backup.plantillaWA) {
+                                    localStorage.setItem('plantilla_wa_v1', backup.plantillaWA);
+                                    const txtWA = document.getElementById('plantillaWAModal');
+                                    if (txtWA) txtWA.value = backup.plantillaWA;
+                                }
+
+                                await Promise.all(promesas);
+
+                                window.cerrarModal('modalConfigGeneral');
+                                window.mostrarToast("Copia de seguridad restaurada con éxito", "success");
+                            } catch (errRestauracion) {
+                                console.error("Error al restaurar respaldo:", errRestauracion);
+                                window.mostrarToast("Error al restaurar: " + errRestauracion.message, "error");
+                            }
+                        }
+                    });
+                } catch (parseErr) {
+                    console.error("Error al leer archivo JSON:", parseErr);
+                    window.mostrarToast("El archivo seleccionado no tiene un formato JSON válido.", "error");
+                }
+            };
+            reader.onerror = function() {
+                event.target.value = '';
+                window.mostrarToast("Error al leer el archivo de respaldo.", "error");
+            };
+            reader.readAsText(file);
         };
 
         // ================= GESTIÓN DE TASA BCV OFICIAL BAJO DEMANDA =================
@@ -4556,6 +5138,9 @@
         window.onload = function() {
             const headerTasa = document.getElementById('headerTasaBCV');
             if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
+            if (typeof renderizarChipsProductos === 'function') {
+                renderizarChipsProductos();
+            }
         };
     </script>
 
