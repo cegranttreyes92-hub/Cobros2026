@@ -2859,11 +2859,25 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        const USUARIOS_DEFAULT_APP = [
+            { id: "usr_cegrantt", nombre: "Cegrantt R", rol: "admin", activo: true, fechaCreacion: new Date().toISOString() },
+            { id: "usr_morenita", nombre: "Morenita", rol: "usuario", activo: true, fechaCreacion: new Date().toISOString() }
+        ];
+
         let cuentas = [];
         let directorio = [];
         let cuentasPago = [];
         let productos = [];
-        let usuariosApp = [];
+        let usuariosApp = (function() {
+            try {
+                const guardados = localStorage.getItem('usuarios_app_cache_v1');
+                if (guardados) {
+                    const parsed = JSON.parse(guardados);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch(e) {}
+            return [...USUARIOS_DEFAULT_APP];
+        })();
         let usuarioActivo = null;
         let filtroResponsableDirectorio = 'todos';
         let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
@@ -3614,31 +3628,35 @@
         // ESCUCHADOR 6: USUARIOS DE LA APLICACIÓN (SINCRONIZACIÓN EN TIEMPO REAL)
         let seHaInicializadoUsuarios = false;
         onSnapshot(collection(db, "usuarios_app"), async (snapshot) => {
-            usuariosApp = [];
+            const docsNube = [];
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 data.id = docSnap.id;
-                usuariosApp.push(data);
+                docsNube.push(data);
             });
 
-            // Seeding inicial si la colección está vacía
-            if (usuariosApp.length === 0 && !seHaInicializadoUsuarios) {
-                seHaInicializadoUsuarios = true;
-                const usuariosIniciales = [
-                    { id: "usr_cegrantt", nombre: "Cegrantt R", rol: "admin", activo: true, fechaCreacion: new Date().toISOString() },
-                    { id: "usr_morenita", nombre: "Morenita", rol: "usuario", activo: true, fechaCreacion: new Date().toISOString() }
-                ];
-                try {
-                    for (const u of usuariosIniciales) {
-                        const datos = { ...u };
-                        delete datos.id;
-                        await setDoc(doc(db, "usuarios_app", u.id), datos);
+            if (docsNube.length === 0) {
+                // Sembrar usuarios en Firebase y en memoria si la colección está vacía
+                usuariosApp = [...USUARIOS_DEFAULT_APP];
+                if (!seHaInicializadoUsuarios) {
+                    seHaInicializadoUsuarios = true;
+                    try {
+                        for (const u of USUARIOS_DEFAULT_APP) {
+                            const datos = { ...u };
+                            delete datos.id;
+                            await setDoc(doc(db, "usuarios_app", u.id), datos, { merge: true });
+                        }
+                    } catch (e) {
+                        console.error("Error al sembrar usuarios iniciales:", e);
                     }
-                } catch (e) {
-                    console.error("Error al sembrar usuarios iniciales:", e);
                 }
-                return;
+            } else {
+                usuariosApp = docsNube;
             }
+
+            try {
+                localStorage.setItem('usuarios_app_cache_v1', JSON.stringify(usuariosApp));
+            } catch(e) {}
 
             // Ordenar: Administradores primero, luego alfabéticamente
             usuariosApp.sort((a, b) => {
@@ -3674,6 +3692,11 @@
             renderizarDirectorioUI();
         }, (error) => {
             console.error("Error en escucha de usuarios_app:", error);
+            if (usuariosApp.length === 0) {
+                usuariosApp = [...USUARIOS_DEFAULT_APP];
+                actualizarUIUsuarioActivo();
+                renderizarSelectorUsuarios();
+            }
         });
 
         // ================= PERMISOS Y RESPONSABLES =================
@@ -3774,10 +3797,10 @@
             const cont = document.getElementById('userCardsGrid');
             if (!cont) return;
 
-            const usuariosActivos = usuariosApp.filter(u => u.activo !== false);
+            let usuariosActivos = usuariosApp.filter(u => u.activo !== false);
             if (usuariosActivos.length === 0) {
-                cont.innerHTML = `<div style="color:var(--text-muted); text-align:center;">No hay usuarios activos registrados.</div>`;
-                return;
+                usuariosApp = [...USUARIOS_DEFAULT_APP];
+                usuariosActivos = usuariosApp;
             }
 
             cont.innerHTML = usuariosActivos.map(u => {
@@ -6238,6 +6261,9 @@
             if (headerTasa) headerTasa.textContent = tasaActual.toFixed(2);
             if (typeof renderizarChipsProductos === 'function') {
                 renderizarChipsProductos();
+            }
+            if (typeof renderizarSelectorUsuarios === 'function') {
+                renderizarSelectorUsuarios();
             }
         };
     </script>
