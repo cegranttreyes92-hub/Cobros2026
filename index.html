@@ -1443,6 +1443,18 @@
             font-weight: 600;
         }
 
+        .pill-filter-resp.pill-resp-cegrantt.active {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .pill-filter-resp.pill-resp-morenita.active {
+            background: #9333ea;
+            border-color: #c084fc;
+            color: #ffffff;
+        }
+
         /* Gestión de Usuarios en Configuración */
         .user-mgmt-item {
             display: flex;
@@ -2143,7 +2155,12 @@
     </div>
 
     <div class="list-header">
-        <h2>Estados de Cuenta</h2>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <h2 style="margin:0;">Estados de Cuenta</h2>
+            <div class="filter-pills-row" id="pillsFiltroResponsablesCuentas" style="margin:0; padding:0;">
+                <!-- Píldoras generadas dinámicamente -->
+            </div>
+        </div>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <select id="ordenarCuentas" onchange="renderizarCuentas()" style="width:auto; padding:5px 8px; font-size:0.78rem; border-radius:8px; background:var(--input-dark); color:var(--text-main); border:1px solid var(--card-border); cursor:pointer;">
                 <option value="recientes">⏱️ Más recientes</option>
@@ -2955,6 +2972,7 @@
         })();
         let usuarioActivo = null;
         let filtroResponsableDirectorio = 'todos';
+        let filtroResponsableCuentas = 'todos';
         let tasaActual = parseFloat(localStorage.getItem('tasa_bcv_v4')) || 45.00;
         let filtroActual = 'pendientes';
         let textoBusquedaCuentas = '';
@@ -3908,30 +3926,69 @@
         }
 
         function renderizarPillsFiltroResponsables() {
-            const cont = document.getElementById('pillsFiltroResponsablesDirectorio');
-            if (!cont) return;
-
             const activos = usuariosApp.filter(u => u.activo !== false);
-            let html = `
-                <button type="button" class="pill-filter-resp ${filtroResponsableDirectorio === 'todos' ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('todos')">
-                    Todos
-                </button>
-                <button type="button" class="pill-filter-resp ${filtroResponsableDirectorio === 'mis_clientes' ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('mis_clientes')">
-                    ⭐ Mis Clientes
-                </button>
-            `;
 
-            activos.forEach(u => {
-                const isActivo = filtroResponsableDirectorio === u.id;
-                html += `
-                    <button type="button" class="pill-filter-resp ${isActivo ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('${escapeHTML(u.id)}')">
-                        👤 ${escapeHTML(u.nombre)}
+            // 1. Píldoras para Estados de Cuenta (Módulo de Ventas)
+            const contCuentas = document.getElementById('pillsFiltroResponsablesCuentas');
+            if (contCuentas) {
+                let htmlCuentas = `
+                    <button type="button" class="pill-filter-resp ${filtroResponsableCuentas === 'todos' ? 'active' : ''}" onclick="filtrarPorResponsableCuentas('todos')">
+                        Todos
                     </button>
                 `;
-            });
 
-            cont.innerHTML = html;
+                activos.forEach(u => {
+                    const isActivo = filtroResponsableCuentas === u.id;
+                    const esCegrantt = u.id === 'usr_cegrantt' || u.nombre.toLowerCase().includes('cegrantt');
+                    const esMorenita = u.id === 'usr_morenita' || u.nombre.toLowerCase().includes('morenita');
+                    const colorClass = esCegrantt ? 'pill-resp-cegrantt' : (esMorenita ? 'pill-resp-morenita' : '');
+                    const icono = u.rol === 'admin' ? '👑' : '👤';
+
+                    htmlCuentas += `
+                        <button type="button" class="pill-filter-resp ${colorClass} ${isActivo ? 'active' : ''}" onclick="filtrarPorResponsableCuentas('${escapeHTML(u.id)}')">
+                            ${icono} ${escapeHTML(u.nombre)}
+                        </button>
+                    `;
+                });
+
+                contCuentas.innerHTML = htmlCuentas;
+            }
+
+            // 2. Píldoras para Directorio de Clientes
+            const contDir = document.getElementById('pillsFiltroResponsablesDirectorio');
+            if (contDir) {
+                let htmlDir = `
+                    <button type="button" class="pill-filter-resp ${filtroResponsableDirectorio === 'todos' ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('todos')">
+                        Todos
+                    </button>
+                    <button type="button" class="pill-filter-resp ${filtroResponsableDirectorio === 'mis_clientes' ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('mis_clientes')">
+                        ⭐ Mis Clientes
+                    </button>
+                `;
+
+                activos.forEach(u => {
+                    const isActivo = filtroResponsableDirectorio === u.id;
+                    const esCegrantt = u.id === 'usr_cegrantt' || u.nombre.toLowerCase().includes('cegrantt');
+                    const esMorenita = u.id === 'usr_morenita' || u.nombre.toLowerCase().includes('morenita');
+                    const colorClass = esCegrantt ? 'pill-resp-cegrantt' : (esMorenita ? 'pill-resp-morenita' : '');
+                    const icono = u.rol === 'admin' ? '👑' : '👤';
+
+                    htmlDir += `
+                        <button type="button" class="pill-filter-resp ${colorClass} ${isActivo ? 'active' : ''}" onclick="filtrarPorResponsableDirectorio('${escapeHTML(u.id)}')">
+                            ${icono} ${escapeHTML(u.nombre)}
+                        </button>
+                    `;
+                });
+
+                contDir.innerHTML = htmlDir;
+            }
         }
+
+        window.filtrarPorResponsableCuentas = function(respKey) {
+            filtroResponsableCuentas = respKey;
+            renderizarPillsFiltroResponsables();
+            renderizarCuentas();
+        };
 
         window.filtrarPorResponsableDirectorio = function(respKey) {
             filtroResponsableDirectorio = respKey;
@@ -5379,6 +5436,12 @@
                 c.totalAbonado = totalAbonado;
                 c.saldoRestante = saldoRestante;
 
+                // Si hay un filtro de responsable activo en cuentas, calcular las métricas superiores solo con sus cuentas
+                if (filtroResponsableCuentas !== 'todos') {
+                    const respId = c.responsableId || 'usr_cegrantt';
+                    if (respId !== filtroResponsableCuentas) return;
+                }
+
                 if (c.pagado) {
                     pagadosUSD += totalDeuda;
                 } else {
@@ -5393,8 +5456,14 @@
             document.getElementById('totalCobradoUSD').textContent = `$${pagadosUSD.toFixed(2)}`;
             document.getElementById('totalCobradoBs').textContent = `${(pagadosUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
 
-            // 3. Filtrar por pestaña y por buscador en tiempo real
+            // 3. Filtrar por responsable, por pestaña y por buscador en tiempo real
             const filtradas = cuentas.filter(c => {
+                // Filtro por Responsable
+                if (filtroResponsableCuentas !== 'todos') {
+                    const respId = c.responsableId || 'usr_cegrantt';
+                    if (respId !== filtroResponsableCuentas) return false;
+                }
+
                 // Filtro por pestaña
                 if (filtroActual === 'pendientes' && c.pagado) return false;
                 if (filtroActual === 'pagados' && !c.pagado) return false;
@@ -5434,6 +5503,9 @@
                 let msgVacio = 'No hay cuentas en esta sección.';
                 if (textoBusquedaCuentas) {
                     msgVacio = 'No se encontraron cuentas que coincidan con la búsqueda.';
+                } else if (filtroResponsableCuentas !== 'todos') {
+                    const uNom = usuariosApp.find(u => u.id === filtroResponsableCuentas)?.nombre || 'este responsable';
+                    msgVacio = `No hay cuentas de ${uNom} para este filtro.`;
                 } else if (filtroActual === 'sin_notificar') {
                     msgVacio = '¡Al día! Todas tus cuentas pendientes han sido notificadas por WhatsApp en los últimos 5 días.';
                 } else if (filtroActual === 'pendientes') {
@@ -5793,12 +5865,18 @@
                 return;
             }
 
-            const data = cuentas.map(c => {
+            const cuentasAExportar = filtroResponsableCuentas === 'todos'
+                ? cuentas
+                : cuentas.filter(c => (c.responsableId || 'usr_cegrantt') === filtroResponsableCuentas);
+
+            const data = cuentasAExportar.map(c => {
                 const totalDeuda = (c.items || []).reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
                 const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
                 const saldoRestante = Math.max(0, totalDeuda - totalAbonado);
+                const respNombre = c.responsableNombre || (c.responsableId === 'usr_morenita' ? 'Morenita' : 'Cegrantt R');
                 
                 return {
+                    'Responsable': respNombre,
                     'Cliente': c.cliente || '',
                     'Teléfono': c.telefono || '',
                     'Estado': c.pagado ? 'Pagado' : 'Pendiente',
@@ -6538,6 +6616,9 @@
             }
             if (typeof renderizarSelectorUsuarios === 'function') {
                 renderizarSelectorUsuarios();
+            }
+            if (typeof renderizarPillsFiltroResponsables === 'function') {
+                renderizarPillsFiltroResponsables();
             }
         };
     </script>
