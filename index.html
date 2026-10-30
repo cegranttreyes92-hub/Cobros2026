@@ -2583,6 +2583,81 @@
         </div>
     </div>
 
+    <!-- ================= MODAL: EDITAR / CORREGIR ABONO ================= -->
+    <div id="modalEditarAbono" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalEditarAbono')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>✏️ Corregir Abono</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalEditarAbono')">✕</button>
+            </div>
+            <form id="formEditarAbono" onsubmit="guardarEdicionAbonoSubmit(event)">
+                <input type="hidden" id="editAbonoCuentaId">
+                <input type="hidden" id="editAbonoIndex">
+
+                <!-- Cuadro informativo superior con cliente y valores originales -->
+                <div style="background:var(--input-dark); border:1px solid var(--card-border); padding:10px 12px; border-radius:8px; margin-bottom:14px; font-size:0.85rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="color:var(--text-muted);">Cliente:</span>
+                        <strong id="editAbonoClienteNombre" style="color:var(--text-main);"></strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="color:var(--text-muted);">Monto Registrado:</span>
+                        <strong id="editAbonoMontoOriginal" style="color:#38bdf8;"></strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="color:var(--text-muted);">Método / Ref:</span>
+                        <span id="editAbonoMetodoOriginal" style="color:var(--text-main); font-weight:500;"></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:var(--text-muted);">Fecha de Registro:</span>
+                        <span id="editAbonoFechaOriginal" style="color:var(--text-muted);"></span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Nuevo Monto del Abono en USD ($)</label>
+                    <input type="number" id="editAbonoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteEditAbono()">
+                    <small id="editAbonoEquivalenteBs" style="color:#38bdf8; display:block; margin-top:4px; font-size:0.8rem;"></small>
+                </div>
+
+                <div class="input-group">
+                    <label>Método de Pago</label>
+                    <select id="editAbonoMetodo" required>
+                        <option value="Pago Móvil">Pago Móvil</option>
+                        <option value="Efectivo USD">Efectivo USD ($)</option>
+                        <option value="Efectivo Bs">Efectivo Bs</option>
+                        <option value="Zelle">Zelle</option>
+                        <option value="Transferencia">Transferencia Bancaria</option>
+                        <option value="Punto de Venta">Punto de Venta</option>
+                        <option value="Binance / Cripto">Binance / Cripto</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Referencia o Nota</label>
+                    <input type="text" id="editAbonoReferencia" placeholder="Ej: Ref 8492 o Billetes $5" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <label>Motivo de la Corrección (Auditoría)</label>
+                    <input type="text" id="editAbonoMotivo" placeholder="Ej: Error de tipeo, era $25 en vez de $20" autocomplete="off">
+                    <small style="color:var(--text-muted); font-size:0.75rem; margin-top:2px; display:block;">Quedará registrado en el historial de trazabilidad del movimiento.</small>
+                </div>
+
+                <!-- Historial de correcciones previas -->
+                <div id="editAbonoHistorialLista"></div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal('modalEditarAbono')">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="margin-top:0; width:auto; padding:10px 18px;" id="btnGuardarEdicionAbono">
+                        <span>Guardar Corrección</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ================= MODAL: MARCAR PAGADO TOTAL ================= -->
     <div id="modalMarcarPagado" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalMarcarPagado')">
         <div class="modal-dialog">
@@ -4623,6 +4698,184 @@
             }
         };
 
+        // ================= EDICIÓN CONTROLADA DE ABONOS (AUDITORÍA) =================
+        window.abrirModalEditarAbono = function (cuentaId, abonoIndex) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c || !Array.isArray(c.abonos) || !c.abonos[abonoIndex]) return;
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para editar abonos de esta cuenta", "error");
+                return;
+            }
+
+            const abonoActual = c.abonos[abonoIndex];
+            document.getElementById('editAbonoCuentaId').value = cuentaId;
+            document.getElementById('editAbonoIndex').value = abonoIndex;
+
+            // Datos informativos del abono original
+            document.getElementById('editAbonoClienteNombre').textContent = c.cliente || '';
+            document.getElementById('editAbonoMontoOriginal').textContent = `$${(Number(abonoActual.monto) || 0).toFixed(2)}`;
+            const safeMetodo = abonoActual.metodo || 'Abono';
+            const safeRef = abonoActual.referencia ? ` · Ref: ${abonoActual.referencia}` : '';
+            document.getElementById('editAbonoMetodoOriginal').textContent = `${safeMetodo}${safeRef}`;
+            document.getElementById('editAbonoFechaOriginal').textContent = abonoActual.fecha || 'N/A';
+
+            // Rellenar formulario con los valores actuales
+            document.getElementById('editAbonoMontoUSD').value = (Number(abonoActual.monto) || 0).toFixed(2);
+            document.getElementById('editAbonoMetodo').value = abonoActual.metodo || 'Pago Móvil';
+            document.getElementById('editAbonoReferencia').value = abonoActual.referencia || '';
+            document.getElementById('editAbonoMotivo').value = '';
+
+            // Mostrar historial de correcciones previas si existen
+            const histCont = document.getElementById('editAbonoHistorialLista');
+            if (histCont) {
+                if (Array.isArray(abonoActual.historialEdiciones) && abonoActual.historialEdiciones.length > 0) {
+                    const itemsHist = abonoActual.historialEdiciones.map(h => {
+                        const safeHora = escapeHTML(h.fechaHora || '');
+                        const safeMotivo = escapeHTML(h.motivo || 'Corrección');
+                        const montoAnt = Number(h.montoAnterior).toFixed(2);
+                        const montoNue = Number(h.montoNuevo).toFixed(2);
+                        const metAnt = escapeHTML(h.metodoAnterior || '');
+                        const metNue = escapeHTML(h.metodoNuevo || '');
+                        return `
+                          <li style="padding:6px 8px; border-bottom:1px solid rgba(148,163,184,0.15); font-size:0.75rem; color:var(--text-muted);">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                              <strong style="color:var(--text-main);">${safeHora}</strong>
+                              <span style="color:#fbbf24; font-weight:600;">${safeMotivo}</span>
+                            </div>
+                            <div style="margin-top:2px; font-size:0.73rem;">
+                              <span>$${montoAnt} (${metAnt})</span>
+                              ➔ <strong style="color:var(--accent);">$${montoNue} (${metNue})</strong>
+                            </div>
+                          </li>
+                        `;
+                    }).join('');
+
+                    histCont.innerHTML = `
+                        <div style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.25); border-radius:8px; padding:8px 10px; margin-bottom:12px;">
+                            <div style="font-size:0.75rem; font-weight:700; color:#fbbf24; margin-bottom:4px;">📜 Correcciones Anteriores (${abonoActual.historialEdiciones.length})</div>
+                            <ul style="list-style:none; padding:0; margin:0; max-height:100px; overflow-y:auto;">
+                                ${itemsHist}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    histCont.innerHTML = '';
+                }
+            }
+
+            window.actualizarEquivalenteEditAbono();
+            window.abrirModal('modalEditarAbono');
+            setTimeout(() => {
+                const inp = document.getElementById('editAbonoMontoUSD');
+                if (inp) {
+                    inp.focus();
+                    inp.select();
+                }
+            }, 150);
+        };
+
+        window.actualizarEquivalenteEditAbono = function () {
+            const monto = parseFloat(document.getElementById('editAbonoMontoUSD').value) || 0;
+            const bs = (monto * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const el = document.getElementById('editAbonoEquivalenteBs');
+            if (el) el.textContent = monto > 0 ? `≈ ${bs} Bs a tasa BCV (${tasaActual.toFixed(2)})` : '';
+        };
+
+        window.guardarEdicionAbonoSubmit = async function (e) {
+            e.preventDefault();
+            const cuentaId = document.getElementById('editAbonoCuentaId').value;
+            const abonoIndex = parseInt(document.getElementById('editAbonoIndex').value, 10);
+            const nuevoMontoUSD = parseFloat(document.getElementById('editAbonoMontoUSD').value);
+            const nuevoMetodo = document.getElementById('editAbonoMetodo').value;
+            const nuevaReferencia = document.getElementById('editAbonoReferencia').value.trim();
+            const motivoCorreccion = document.getElementById('editAbonoMotivo').value.trim();
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c || !Array.isArray(c.abonos) || !c.abonos[abonoIndex]) {
+                window.mostrarToast("Registro de abono no encontrado", "error");
+                return;
+            }
+
+            if (!window.puedeAdministrarCuenta(c)) {
+                window.mostrarToast("No tienes permiso para modificar abonos de esta cuenta", "error");
+                return;
+            }
+
+            if (isNaN(nuevoMontoUSD) || nuevoMontoUSD <= 0) {
+                window.mostrarToast("Por favor ingresa un monto válido mayor a 0", "error");
+                return;
+            }
+
+            const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+            const otrosAbonosTotal = c.abonos.reduce((sum, a, idx) => {
+                return idx === abonoIndex ? sum : sum + (Number(a.monto) || 0);
+            }, 0);
+            const nuevoTotalAbonado = otrosAbonosTotal + nuevoMontoUSD;
+
+            if (nuevoTotalAbonado > (totalDeuda + 0.01)) {
+                const maxPermitido = Math.max(0, totalDeuda - otrosAbonosTotal);
+                window.mostrarToast(`El abono ($${nuevoMontoUSD.toFixed(2)}) excede el total de compras. El monto máximo permitido es $${maxPermitido.toFixed(2)}`, "error");
+                return;
+            }
+
+            const btn = document.getElementById('btnGuardarEdicionAbono');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando...</span>';
+
+            try {
+                const abonoActual = c.abonos[abonoIndex];
+                const registroCambio = {
+                    fechaHora: new Date().toLocaleString('es-VE'),
+                    timestamp: Date.now(),
+                    montoAnterior: Number(abonoActual.monto) || 0,
+                    montoNuevo: nuevoMontoUSD,
+                    metodoAnterior: abonoActual.metodo || 'Abono',
+                    metodoNuevo: nuevoMetodo,
+                    referenciaAnterior: abonoActual.referencia || '',
+                    referenciaNueva: nuevaReferencia,
+                    motivo: motivoCorreccion || 'Corrección manual'
+                };
+
+                const historialPrevio = Array.isArray(abonoActual.historialEdiciones) ? [...abonoActual.historialEdiciones] : [];
+                historialPrevio.push(registroCambio);
+
+                const nuevosAbonos = [...c.abonos];
+                nuevosAbonos[abonoIndex] = {
+                    ...abonoActual,
+                    monto: nuevoMontoUSD,
+                    metodo: nuevoMetodo,
+                    referencia: nuevaReferencia,
+                    editado: true,
+                    ultimaEdicion: fechaHoy,
+                    historialEdiciones: historialPrevio
+                };
+
+                const updates = { abonos: nuevosAbonos };
+
+                // Recálculo del estado de la cuenta
+                if (nuevoTotalAbonado >= (totalDeuda - 0.009) && totalDeuda > 0) {
+                    updates.pagado = true;
+                    updates.metodoPago = nuevoMetodo;
+                    if (nuevaReferencia) updates.referencia = nuevaReferencia;
+                    updates.fechaPago = fechaHoy;
+                } else if (c.pagado && nuevoTotalAbonado < (totalDeuda - 0.009)) {
+                    updates.pagado = false;
+                }
+
+                await updateDoc(doc(db, "cuentas", cuentaId), updates);
+                window.cerrarModal('modalEditarAbono');
+                window.mostrarToast('Abono corregido e historial registrado con éxito', 'success');
+            } catch (err) {
+                console.error("Error al actualizar abono:", err);
+                window.mostrarToast('Error al corregir abono: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Guardar Corrección</span>';
+            }
+        };
+
         window.eliminarAbono = function (cuentaId, abonoIndex) {
             const c = cuentas.find(item => item.id === cuentaId);
             if (!c || !Array.isArray(c.abonos) || !c.abonos[abonoIndex]) return;
@@ -5268,15 +5521,36 @@
                         const safeRef = a.referencia ? ` · Ref: ${escapeHTML(a.referencia)}` : '';
                         const safeFecha = a.fecha ? ` (${escapeHTML(a.fecha)})` : '';
                         const montoNum = Number(a.monto) || 0;
+
+                        // Indicador de trazabilidad y auditoría si fue corregido
+                        let auditHTML = '';
+                        if (Array.isArray(a.historialEdiciones) && a.historialEdiciones.length > 0) {
+                            const ultimaEdicion = a.historialEdiciones[a.historialEdiciones.length - 1];
+                            const antesMonto = Number(ultimaEdicion.montoAnterior).toFixed(2);
+                            const ahoraMonto = Number(a.monto).toFixed(2);
+                            const motivoTxt = ultimaEdicion.motivo ? ' · ' + escapeHTML(ultimaEdicion.motivo) : '';
+                            auditHTML = `
+                              <div style="color:#fbbf24; font-size:0.72rem; margin-top:2px; display:flex; align-items:center; gap:4px; opacity:0.95;">
+                                <span>✏️ Corregido (Antes: $${antesMonto} → Ahora: $${ahoraMonto}${motivoTxt})</span>
+                              </div>
+                            `;
+                        }
+
                         return `
                           <li class="abono-item">
                             <div>
-                              <span style="color:#38bdf8; font-weight:600;">-$${montoNum.toFixed(2)}</span>
-                              <small style="color:#94a3b8; margin-left:4px;">${safeMetodo}${safeRef}${safeFecha}</small>
+                              <div>
+                                <span style="color:#38bdf8; font-weight:600;">-$${montoNum.toFixed(2)}</span>
+                                <small style="color:#94a3b8; margin-left:4px;">${safeMetodo}${safeRef}${safeFecha}</small>
+                              </div>
+                              ${auditHTML}
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
                               <button type="button" class="btn-item-receipt" title="Enviar comprobante de este abono por WhatsApp" onclick="enviarReciboAbono('${safeId}', ${aIdx})">🧾 Recibo</button>
-                              ${puedeAdmin ? `<button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>` : ''}
+                              ${puedeAdmin ? `
+                                <button type="button" class="btn-item-edit" title="Corregir o editar este abono" onclick="abrirModalEditarAbono('${safeId}', ${aIdx})">✏️</button>
+                                <button type="button" class="btn-item-delete" title="Eliminar este abono" onclick="eliminarAbono('${safeId}', ${aIdx})">✕</button>
+                              ` : ''}
                             </div>
                           </li>
                         `;
