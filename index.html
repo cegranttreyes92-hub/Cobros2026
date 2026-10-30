@@ -723,12 +723,6 @@
             gap: 8px;
         }
 
-        @media (max-width: 480px) {
-            .actions-row-top {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .btn-qr {
             background: #064e3b;
             color: #34d399;
@@ -1837,6 +1831,42 @@
             background: #059669;
         }
 
+        .btn-text-full {
+            display: inline;
+        }
+
+        .btn-text-mobile {
+            display: none;
+        }
+
+        .list-header-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .list-header-controls-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .sort-export-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-export-excel {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+
         /* ================= VISTA DE ESCRITORIO (PC / LAPTOP) ================= */
         @media (min-width: 769px) {
             body {
@@ -1896,6 +1926,148 @@
 
         /* ================= VISTA MÓVIL (TELÉFONOS) ================= */
         @media (max-width: 768px) {
+            /* 1. Encabezado Superior Simétrico */
+            .header {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .header h1 {
+                width: 100%;
+                padding-right: 60px;
+                box-sizing: border-box;
+            }
+
+            .header-actions {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+                width: 100% !important;
+                margin-right: 0 !important;
+            }
+
+            .header-actions > * {
+                width: 100% !important;
+                min-height: 38px !important;
+                justify-content: center !important;
+                text-align: center !important;
+                border-radius: 10px !important;
+                font-size: 0.78rem !important;
+                padding: 6px 8px !important;
+                white-space: nowrap !important;
+                box-sizing: border-box !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            #headerUsuarioActivoNombre {
+                max-width: 75px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: inline-block;
+            }
+
+            /* 2. Controles de Estados de Cuenta y Pestañas de Filtro */
+            .list-header {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .list-header-title-row {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                width: 100%;
+            }
+
+            #pillsFiltroResponsablesCuentas {
+                display: flex !important;
+                gap: 6px !important;
+                overflow-x: auto !important;
+                padding-bottom: 4px !important;
+                width: 100% !important;
+                scrollbar-width: none !important;
+                white-space: nowrap !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #pillsFiltroResponsablesCuentas::-webkit-scrollbar {
+                display: none;
+            }
+
+            .list-header-controls-row {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .sort-export-container {
+                display: grid !important;
+                grid-template-columns: 1fr auto !important;
+                gap: 8px !important;
+                width: 100% !important;
+                align-items: stretch !important;
+            }
+
+            #ordenarCuentas {
+                height: 40px !important;
+                border-radius: 10px !important;
+                padding: 0 10px !important;
+                font-size: 0.8rem !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .btn-export-excel,
+            #btnExportarExcel {
+                height: 40px !important;
+                border-radius: 10px !important;
+                padding: 0 14px !important;
+                font-size: 0.8rem !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                white-space: nowrap !important;
+            }
+
+            .filter-tabs {
+                display: grid !important;
+                grid-template-columns: repeat(4, auto) !important;
+                width: 100% !important;
+                overflow-x: auto !important;
+                scrollbar-width: none !important;
+                align-items: center !important;
+                box-sizing: border-box !important;
+                -webkit-overflow-scrolling: touch;
+                border-radius: 12px !important;
+            }
+
+            .filter-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-btn {
+                white-space: nowrap !important;
+                height: 34px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 10px !important;
+                font-size: 0.74rem !important;
+            }
+
+            /* 3. Tarjetas y Botones de Acción */
             .sales-list {
                 display: flex;
                 flex-direction: column;
@@ -1916,6 +2088,96 @@
             .amounts-summary,
             .amounts-box {
                 margin-top: 10px;
+            }
+
+            .btn-text-full {
+                display: none !important;
+            }
+
+            .btn-text-mobile {
+                display: inline !important;
+            }
+
+            .actions-row-top {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+            }
+
+            .actions-row-top .btn-wa,
+            .actions-row-top .btn-qr {
+                min-height: 50px !important;
+                padding: 6px 6px !important;
+                box-sizing: border-box !important;
+            }
+
+            .actions-row-top .wa-btn-title {
+                font-size: 0.74rem !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                justify-content: center !important;
+            }
+
+            .actions-row-top .wa-btn-subtitle {
+                font-size: 0.67rem !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            .actions-row {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1.2fr 42px 38px !important;
+                gap: 6px !important;
+                align-items: stretch !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .sale-card.is-paid .actions-row {
+                grid-template-columns: 1fr 42px 38px !important;
+            }
+
+            .actions-row.readonly-actions {
+                display: flex !important;
+            }
+
+            .actions-row .btn-item-add,
+            .actions-row .btn-abono,
+            .actions-row .btn-toggle,
+            .actions-row .btn-delete {
+                height: 42px !important;
+                min-height: 42px !important;
+                max-height: 42px !important;
+                padding: 0 4px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                white-space: nowrap !important;
+                font-size: 0.75rem !important;
+                line-height: 1.1 !important;
+                box-sizing: border-box !important;
+                border-radius: 8px !important;
+            }
+
+            .actions-row .btn-delete {
+                font-size: 1.1rem !important;
+                background: rgba(239, 68, 68, 0.1) !important;
+                border: 1px solid rgba(239, 68, 68, 0.25) !important;
+                color: #f87171 !important;
+                width: 38px !important;
+                min-width: 38px !important;
+                max-width: 38px !important;
+                padding: 0 !important;
+            }
+
+            .actions-row .btn-toggle.btn-icon-only {
+                width: 42px !important;
+                min-width: 42px !important;
+                max-width: 42px !important;
+                padding: 0 !important;
+                font-size: 1.1rem !important;
             }
         }
     </style>
@@ -2155,22 +2417,24 @@
     </div>
 
     <div class="list-header">
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div class="list-header-title-row">
             <h2 style="margin:0;">Estados de Cuenta</h2>
             <div class="filter-pills-row" id="pillsFiltroResponsablesCuentas" style="margin:0; padding:0;">
                 <!-- Píldoras generadas dinámicamente -->
             </div>
         </div>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <select id="ordenarCuentas" onchange="renderizarCuentas()" style="width:auto; padding:5px 8px; font-size:0.78rem; border-radius:8px; background:var(--input-dark); color:var(--text-main); border:1px solid var(--card-border); cursor:pointer;">
-                <option value="recientes">⏱️ Más recientes</option>
-                <option value="mayor_deuda">💰 Mayor deuda</option>
-                <option value="antiguedad">⚠️ Más antiguos / morosos</option>
-                <option value="alfabetico">🔤 Cliente (A - Z)</option>
-            </select>
-            <button type="button" class="btn-mini" style="background:#10b981; color:#fff; border:none; padding:6px 10px; font-size:0.8rem;" onclick="exportarExcel()">
-                📥 Exportar Excel
-            </button>
+        <div class="list-header-controls-row">
+            <div class="sort-export-container">
+                <select id="ordenarCuentas" onchange="renderizarCuentas()" style="width:auto; padding:5px 8px; font-size:0.78rem; border-radius:8px; background:var(--input-dark); color:var(--text-main); border:1px solid var(--card-border); cursor:pointer;">
+                    <option value="recientes">⏱️ Más recientes</option>
+                    <option value="mayor_deuda">💰 Mayor deuda</option>
+                    <option value="antiguedad">⚠️ Más antiguos / morosos</option>
+                    <option value="alfabetico">🔤 Cliente (A - Z)</option>
+                </select>
+                <button type="button" id="btnExportarExcel" class="btn-mini btn-export-excel" style="background:#10b981; color:#fff; border:none; padding:6px 10px; font-size:0.8rem;" onclick="exportarExcel()">
+                    📥 Exportar Excel
+                </button>
+            </div>
             <div class="filter-tabs">
                 <button class="tab-btn active" onclick="cambiarFiltro('pendientes', this)">Pendientes</button>
                 <button class="tab-btn" onclick="cambiarFiltro('sin_notificar', this)" title="Cuentas pendientes sin notificar o con más de 5 días sin aviso por WhatsApp">💬 Sin Notificar (+5d)</button>
@@ -2913,6 +3177,105 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: FICHA E HISTORIAL COMPLETO DEL CLIENTE ================= -->
+    <div id="modalFichaCliente" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalFichaCliente')">
+        <div class="modal-dialog" style="max-width: 580px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="padding-bottom: 8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.25rem;">📋</span>
+                    <h3 style="margin:0;">Ficha del Cliente</h3>
+                </div>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalFichaCliente')">✕</button>
+            </div>
+
+            <div style="overflow-y: auto; padding-right: 4px; flex: 1;">
+                <!-- Encabezado de Ficha -->
+                <div style="background:var(--input-dark); border:1px solid var(--card-border); border-radius:10px; padding:12px 14px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                        <div>
+                            <h2 id="fichaClienteNombre" style="margin:0; font-size:1.25rem; color:var(--text-main); font-weight:700;"></h2>
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
+                                <span>📱 <span id="fichaClienteTelefono"></span></span>
+                            </div>
+                        </div>
+                        <div id="fichaClienteResponsableBadge"></div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+                        <span id="fichaClienteAntiguedadBadge"></span>
+                        <span id="fichaClienteUltimoPagoBadge"></span>
+                    </div>
+                </div>
+
+                <!-- Resumen Financiero Histórico (Grid de 3 tarjetas) -->
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px;">
+                    <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px; padding:8px 10px; text-align:center;">
+                        <span style="font-size:0.68rem; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block;">Total Compras</span>
+                        <div id="fichaTotalCompradoUSD" style="font-size:1.05rem; font-weight:700; color:var(--text-main); margin-top:2px;">$0.00</div>
+                        <small id="fichaTotalCompradoBs" style="font-size:0.68rem; color:var(--text-muted); display:block;"></small>
+                    </div>
+                    <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px; padding:8px 10px; text-align:center;">
+                        <span style="font-size:0.68rem; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block;">Total Pagado</span>
+                        <div id="fichaTotalPagadoUSD" style="font-size:1.05rem; font-weight:700; color:#38bdf8; margin-top:2px;">$0.00</div>
+                        <small id="fichaTotalPagadoBs" style="font-size:0.68rem; color:var(--text-muted); display:block;"></small>
+                    </div>
+                    <div id="fichaCardDeuda" style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:8px; padding:8px 10px; text-align:center;">
+                        <span style="font-size:0.68rem; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block;">Deuda Actual</span>
+                        <div id="fichaDeudaActualUSD" style="font-size:1.05rem; font-weight:700; margin-top:2px;">$0.00</div>
+                        <small id="fichaDeudaActualBs" style="font-size:0.68rem; display:block;"></small>
+                    </div>
+                </div>
+
+                <!-- Selector de Pestañas Internas del Modal -->
+                <div class="filter-tabs" style="margin-bottom:12px; width:100%; justify-content:space-around;">
+                    <button type="button" class="tab-btn active" id="tabFichaMovimientos" style="flex:1; text-align:center;" onclick="cambiarPestanaFicha('movimientos')">
+                        🕒 Línea de Tiempo
+                    </button>
+                    <button type="button" class="tab-btn" id="tabFichaProductos" style="flex:1; text-align:center;" onclick="cambiarPestanaFicha('productos')">
+                        📦 Productos y Cuentas
+                    </button>
+                </div>
+
+                <!-- Vista 1: Línea de Tiempo Cronológica -->
+                <div id="vistaFichaMovimientos">
+                    <div id="fichaTablaMovimientosContainer" style="background:var(--input-dark); border:1px solid var(--card-border); border-radius:8px; overflow:hidden;">
+                        <!-- Se genera dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Vista 2: Productos Más Comprados e Historial de Cuentas -->
+                <div id="vistaFichaProductos" style="display:none;">
+                    <!-- Productos más comprados -->
+                    <div style="margin-bottom:14px;">
+                        <span style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.5px; display:block; margin-bottom:6px;">
+                            🛍️ Productos Más Comprados
+                        </span>
+                        <div id="fichaProductosFrecuentesContainer" style="display:flex; flex-direction:column; gap:6px;">
+                            <!-- Items frecuentes -->
+                        </div>
+                    </div>
+
+                    <!-- Cuentas registradas -->
+                    <div>
+                        <span style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:0.5px; display:block; margin-bottom:6px;">
+                            📑 Cuentas Registradas (<span id="fichaNumCuentas">0</span>)
+                        </span>
+                        <div id="fichaCuentasListaContainer" style="display:flex; flex-direction:column; gap:8px;">
+                            <!-- Lista de cuentas -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie del Modal -->
+            <div class="modal-footer" style="margin-top:14px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalFichaCliente')">Cerrar</button>
+                <button type="button" class="btn-wa" style="width:auto; padding:8px 14px; font-size:0.85rem;" onclick="enviarHistorialClienteWA()">
+                    <span class="wa-btn-title">💬 Enviar Estado de Cuenta por WhatsApp</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -4290,13 +4653,16 @@
                   <div class="sale-card" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
                     <div style="flex:1;">
                       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                        <span class="client-name">${safeNombre}</span>
+                        <span class="client-name" style="cursor:pointer;" onclick="abrirFichaCliente('${safeId}')" title="Ver ficha e historial completo">${safeNombre}</span>
                         ${badgeRespHTML}
                         ${badgeDeudaHTML}
                       </div>
                       <div style="color:var(--text-muted); font-size:0.85rem; margin-top:2px;">${safeTelefono}</div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:6px;">
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+                      <button type="button" class="btn-item-receipt" style="padding:6px 10px; font-size:0.8rem; border-radius:8px; background:var(--input-dark); border:1px solid var(--card-border); color:var(--text-main);" onclick="abrirFichaCliente('${safeId}')" title="Ver ficha e historial completo">
+                        📋 Ver Historial
+                      </button>
                       <button type="button" class="btn-item-receipt" style="padding:6px 10px; font-size:0.8rem; border-radius:8px;" onclick="abrirWhatsAppDirectorio('${safeTelefono}', '${safeNombre}')" title="Abrir chat de WhatsApp">
                         💬 WhatsApp
                       </button>
@@ -4324,6 +4690,429 @@
             }
             const url = `https://api.whatsapp.com/send?phone=${limpio}&text=${encodeURIComponent(`Hola ${nombre}, un cordial saludo.`)}`;
             window.open(url, '_blank');
+        };
+
+        // ================= FICHA INDIVIDUAL E HISTORIAL DEL CLIENTE =================
+        let clienteFichaActual = null;
+
+        window.abrirFichaCliente = function(clienteId) {
+            const contacto = directorio.find(d => d.id === clienteId);
+            if (!contacto) {
+                window.mostrarToast("Cliente no encontrado en el directorio", "error");
+                return;
+            }
+            window.abrirFichaClientePorNombre(contacto.nombre, contacto.telefono);
+        };
+
+        window.abrirFichaClientePorNombre = function(nombre, telefono) {
+            if (!nombre) return;
+            const nombreNorm = nombre.trim().toLowerCase();
+            const telDigitos = (telefono || '').replace(/\D/g, '');
+
+            // 1. Encontrar o deducir contacto del directorio
+            const contacto = directorio.find(d => {
+                if (d.nombre && d.nombre.trim().toLowerCase() === nombreNorm) return true;
+                const dTel = (d.telefono || '').replace(/\D/g, '');
+                if (telDigitos && dTel && telDigitos.length >= 7 && (telDigitos.endsWith(dTel) || dTel.endsWith(telDigitos))) return true;
+                return false;
+            });
+
+            const nombreFinal = contacto ? contacto.nombre : nombre;
+            const telefonoFinal = contacto ? (contacto.telefono || telefono || '') : (telefono || '');
+            const respId = contacto?.responsableId || 'usr_cegrantt';
+
+            // 2. Buscar todas las cuentas pertenecientes a este cliente en `cuentas`
+            const cuentasCliente = cuentas.filter(c => {
+                const cNom = (c.cliente || '').trim().toLowerCase();
+                if (cNom === nombreNorm) return true;
+                if (contacto && cNom === contacto.nombre.trim().toLowerCase()) return true;
+                const cTel = (c.telefono || '').replace(/\D/g, '');
+                if (telDigitos && cTel && telDigitos.length >= 7 && (telDigitos.endsWith(cTel) || cTel.endsWith(telDigitos))) return true;
+                return false;
+            });
+
+            // 3. Procesar Movimientos y Métricas
+            let totalCompras = 0;
+            let totalPagado = 0;
+            let deudaActual = 0;
+            let ultimoPagoTimestamp = 0;
+            let ultimoPagoFecha = '';
+            let timestampMasAntiguoPendiente = null;
+
+            const movimientos = [];
+            const productosMap = {}; // nombre -> { count, totalUSD }
+
+            cuentasCliente.forEach(c => {
+                const items = Array.isArray(c.items) ? c.items : [];
+                const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+                const cTimestamp = c.timestamp || Date.now();
+
+                const totalDeudaCuenta = items.reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+                const totalAbonadoCuenta = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+
+                totalCompras += totalDeudaCuenta;
+
+                // Agregar cada compra como movimiento
+                items.forEach(item => {
+                    const montoItem = Number(item.monto) || 0;
+                    movimientos.push({
+                        tipo: 'COMPRA',
+                        descripcion: item.concepto || 'Producto / Compra',
+                        fecha: item.fecha || (c.timestamp ? new Date(c.timestamp).toLocaleDateString('es-VE') : ''),
+                        timestamp: item.timestamp || cTimestamp,
+                        monto: montoItem
+                    });
+
+                    // Agrupar en productosMap
+                    const conceptoLimpio = (item.concepto || 'Producto').replace(/^\d+x\s+/, '').trim();
+                    if (!productosMap[conceptoLimpio]) {
+                        productosMap[conceptoLimpio] = { nombre: conceptoLimpio, count: 0, totalUSD: 0 };
+                    }
+                    productosMap[conceptoLimpio].count++;
+                    productosMap[conceptoLimpio].totalUSD += montoItem;
+                });
+
+                // Agregar cada abono registrado como movimiento
+                abonos.forEach(abono => {
+                    const montoAbono = Number(abono.monto) || 0;
+                    totalPagado += montoAbono;
+                    const aTimestamp = abono.timestamp || cTimestamp;
+                    if (aTimestamp > ultimoPagoTimestamp) {
+                        ultimoPagoTimestamp = aTimestamp;
+                        ultimoPagoFecha = abono.fecha || new Date(aTimestamp).toLocaleDateString('es-VE');
+                    }
+
+                    movimientos.push({
+                        tipo: 'ABONO',
+                        descripcion: `Abono (${abono.metodo || 'Pago'}${abono.referencia ? ' · Ref: ' + abono.referencia : ''})`,
+                        fecha: abono.fecha || new Date(aTimestamp).toLocaleDateString('es-VE'),
+                        timestamp: aTimestamp,
+                        monto: montoAbono,
+                        editado: abono.editado
+                    });
+                });
+
+                // Si la cuenta figura como pagada directamente
+                if (c.pagado) {
+                    const diferenciaPagoTotal = Math.max(0, totalDeudaCuenta - totalAbonadoCuenta);
+                    if (diferenciaPagoTotal > 0.009) {
+                        totalPagado += diferenciaPagoTotal;
+                        const fechaP = c.fechaPago || (c.timestamp ? new Date(c.timestamp).toLocaleDateString('es-VE') : '');
+                        movimientos.push({
+                            tipo: 'PAGO TOTAL',
+                            descripcion: `Cancelación Total (${c.metodoPago || 'Liquidación'}${c.referencia ? ' · Ref: ' + c.referencia : ''})`,
+                            fecha: fechaP,
+                            timestamp: cTimestamp + 1000,
+                            monto: diferenciaPagoTotal
+                        });
+                        if (cTimestamp > ultimoPagoTimestamp) {
+                            ultimoPagoTimestamp = cTimestamp;
+                            ultimoPagoFecha = fechaP;
+                        }
+                    }
+                } else {
+                    const saldoResta = Math.max(0, totalDeudaCuenta - totalAbonadoCuenta);
+                    deudaActual += saldoResta;
+                    if (saldoResta > 0.009) {
+                        if (!timestampMasAntiguoPendiente || cTimestamp < timestampMasAntiguoPendiente) {
+                            timestampMasAntiguoPendiente = cTimestamp;
+                        }
+                    }
+                }
+            });
+
+            // Guardar estado global de la ficha
+            clienteFichaActual = {
+                nombre: nombreFinal,
+                telefono: telefonoFinal,
+                responsableId: respId,
+                totalCompras,
+                totalPagado,
+                deudaActual,
+                ultimoPagoFecha,
+                movimientos,
+                cuentasCliente
+            };
+
+            // Rellenar cabecera del modal
+            document.getElementById('fichaClienteNombre').textContent = nombreFinal;
+            document.getElementById('fichaClienteTelefono').textContent = telefonoFinal || 'Sin número registrado';
+            
+            const badgeRespEl = document.getElementById('fichaClienteResponsableBadge');
+            if (badgeRespEl) badgeRespEl.innerHTML = window.obtenerBadgeResponsableHTML(respId);
+
+            // Badges de deuda y último pago
+            const badgeAntiguedadEl = document.getElementById('fichaClienteAntiguedadBadge');
+            if (badgeAntiguedadEl) {
+                if (deudaActual > 0.009) {
+                    let dias = 0;
+                    if (timestampMasAntiguoPendiente) {
+                        dias = Math.max(0, Math.floor((Date.now() - timestampMasAntiguoPendiente) / (1000 * 60 * 60 * 24)));
+                    }
+                    if (dias === 0) {
+                        badgeAntiguedadEl.innerHTML = `<span class="badge badge-age-normal">🕒 Deuda de hoy</span>`;
+                    } else if (dias < 15) {
+                        badgeAntiguedadEl.innerHTML = `<span class="badge badge-age-normal">⏳ Pendiente hace ${dias}d</span>`;
+                    } else if (dias < 30) {
+                        badgeAntiguedadEl.innerHTML = `<span class="badge badge-age-warning">⚠️ Pendiente hace ${dias}d</span>`;
+                    } else {
+                        badgeAntiguedadEl.innerHTML = `<span class="badge badge-age-danger">🚨 Mora de ${dias}d</span>`;
+                    }
+                } else {
+                    badgeAntiguedadEl.innerHTML = `<span class="badge badge-paid">✓ Cliente al día</span>`;
+                }
+            }
+
+            const badgeUltimoPagoEl = document.getElementById('fichaClienteUltimoPagoBadge');
+            if (badgeUltimoPagoEl) {
+                if (ultimoPagoFecha) {
+                    badgeUltimoPagoEl.innerHTML = `<span class="badge badge-method">💳 Último pago: ${escapeHTML(ultimoPagoFecha)}</span>`;
+                } else {
+                    badgeUltimoPagoEl.innerHTML = `<span class="badge badge-wa-none">💳 Sin pagos registrados</span>`;
+                }
+            }
+
+            // Rellenar métricas
+            document.getElementById('fichaTotalCompradoUSD').textContent = `$${totalCompras.toFixed(2)}`;
+            document.getElementById('fichaTotalCompradoBs').textContent = `≈ ${(totalCompras * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
+
+            document.getElementById('fichaTotalPagadoUSD').textContent = `$${totalPagado.toFixed(2)}`;
+            document.getElementById('fichaTotalPagadoBs').textContent = `≈ ${(totalPagado * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
+
+            const cardDeuda = document.getElementById('fichaCardDeuda');
+            const deudaUSD = document.getElementById('fichaDeudaActualUSD');
+            const deudaBs = document.getElementById('fichaDeudaActualBs');
+            if (deudaActual > 0.009) {
+                deudaUSD.textContent = `$${deudaActual.toFixed(2)}`;
+                deudaUSD.style.color = 'var(--warning)';
+                deudaBs.textContent = `≈ ${(deudaActual * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs`;
+                deudaBs.style.color = 'var(--warning)';
+                if (cardDeuda) cardDeuda.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+            } else {
+                deudaUSD.textContent = '$0.00';
+                deudaUSD.style.color = 'var(--accent)';
+                deudaBs.textContent = '✓ Al día';
+                deudaBs.style.color = 'var(--accent)';
+                if (cardDeuda) cardDeuda.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            }
+
+            // Renderizar Vista 1: Movimientos Cronológicos
+            renderizarTablaMovimientosFicha(movimientos, deudaActual);
+
+            // Renderizar Vista 2: Productos y Cuentas
+            renderizarProductosYCuentasFicha(productosMap, cuentasCliente);
+
+            // Mostrar pestaña de movimientos por defecto
+            window.cambiarPestanaFicha('movimientos');
+
+            // Abrir el modal
+            window.abrirModal('modalFichaCliente');
+        };
+
+        function renderizarTablaMovimientosFicha(movimientos, deudaActual) {
+            const cont = document.getElementById('fichaTablaMovimientosContainer');
+            if (!cont) return;
+
+            if (movimientos.length === 0) {
+                cont.innerHTML = `<div class="empty-state" style="padding:24px 10px;">No hay movimientos registrados para este cliente.</div>`;
+                return;
+            }
+
+            // Ordenar cronológicamente (más antiguo primero)
+            movimientos.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+            let filasHTML = movimientos.map((m, idx) => {
+                const esCompra = m.tipo === 'COMPRA';
+                const colorMonto = esCompra ? '#f1f5f9' : '#38bdf8';
+                const signo = esCompra ? '+' : '-';
+                const icono = esCompra ? '🛍️' : '💳';
+                const bgFila = idx % 2 === 0 ? 'background:transparent;' : 'background:rgba(255,255,255,0.02);';
+
+                return `
+                  <tr style="${bgFila} border-bottom:1px solid rgba(148,163,184,0.12);">
+                    <td style="padding:8px 10px; font-size:0.8rem;">
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        <span>${icono}</span>
+                        <div>
+                          <strong style="color:var(--text-main); font-weight:600;">${escapeHTML(m.descripcion)}</strong>
+                          ${m.editado ? '<span style="font-size:0.68rem; color:#fbbf24; margin-left:4px;">(Corregido)</span>' : ''}
+                        </div>
+                      </div>
+                    </td>
+                    <td style="padding:8px 10px; font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">
+                      ${escapeHTML(m.fecha || 'N/A')}
+                    </td>
+                    <td style="padding:8px 10px; font-size:0.85rem; font-weight:700; color:${colorMonto}; text-align:right; white-space:nowrap;">
+                      ${signo}$${m.monto.toFixed(2)}
+                    </td>
+                  </tr>
+                `;
+            }).join('');
+
+            const saldoBs = (deudaActual * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const colorDeuda = deudaActual > 0.009 ? 'var(--warning)' : 'var(--accent)';
+
+            cont.innerHTML = `
+                <table style="width:100%; border-collapse:collapse; text-align:left;">
+                    <thead>
+                        <tr style="background:rgba(148,163,184,0.08); border-bottom:1px solid var(--card-border); font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px;">
+                            <th style="padding:8px 10px;">Movimiento</th>
+                            <th style="padding:8px 10px;">Fecha</th>
+                            <th style="padding:8px 10px; text-align:right;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filasHTML}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--card-bg); border-top:2px solid var(--card-border);">
+                            <td colspan="2" style="padding:10px; font-weight:700; font-size:0.85rem; color:var(--text-main);">
+                                SALDO ACTUAL PENDIENTE:
+                            </td>
+                            <td style="padding:10px; font-weight:800; font-size:0.95rem; color:${colorDeuda}; text-align:right; white-space:nowrap;">
+                                $${deudaActual.toFixed(2)} <small style="display:block; font-size:0.72rem; color:var(--text-muted); font-weight:normal;">≈ ${saldoBs} Bs</small>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+        }
+
+        function renderizarProductosYCuentasFicha(productosMap, cuentasCliente) {
+            const contProd = document.getElementById('fichaProductosFrecuentesContainer');
+            const contCuentas = document.getElementById('fichaCuentasListaContainer');
+            const lblNum = document.getElementById('fichaNumCuentas');
+
+            if (lblNum) lblNum.textContent = cuentasCliente.length;
+
+            // 1. Productos más comprados
+            if (contProd) {
+                const arrProd = Object.values(productosMap).sort((a, b) => b.count - a.count || b.totalUSD - a.totalUSD);
+                if (arrProd.length === 0) {
+                    contProd.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:6px 0;">No hay productos registrados.</div>`;
+                } else {
+                    contProd.innerHTML = arrProd.map(p => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--input-dark); border:1px solid var(--card-border); border-radius:8px; padding:6px 10px; font-size:0.8rem;">
+                            <div>
+                                <strong style="color:var(--text-main);">${escapeHTML(p.nombre)}</strong>
+                                <small style="color:var(--text-muted); margin-left:6px;">(${p.count} ${p.count === 1 ? 'compra' : 'compras'})</small>
+                            </div>
+                            <span style="font-weight:700; color:var(--accent);">$${p.totalUSD.toFixed(2)}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 2. Cuentas históricas asociadas
+            if (contCuentas) {
+                if (cuentasCliente.length === 0) {
+                    contCuentas.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:6px 0;">No hay cuentas registradas.</div>`;
+                } else {
+                    const cuentasOrd = [...cuentasCliente].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    contCuentas.innerHTML = cuentasOrd.map(c => {
+                        const items = Array.isArray(c.items) ? c.items : [];
+                        const abonos = Array.isArray(c.abonos) ? c.abonos : [];
+                        const totalD = items.reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+                        const totalA = abonos.reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+                        const saldo = Math.max(0, totalD - totalA);
+                        const fechaStr = c.timestamp ? new Date(c.timestamp).toLocaleDateString('es-VE') : (items[0]?.fecha || 'N/A');
+
+                        const badge = c.pagado
+                            ? `<span class="badge badge-paid" style="font-size:0.7rem; padding:2px 6px;">✓ Cancelada</span>`
+                            : `<span class="badge badge-pending" style="font-size:0.7rem; padding:2px 6px;">Resta: $${saldo.toFixed(2)}</span>`;
+
+                        const itemsDesc = items.map(i => i.concepto).join(', ');
+
+                        return `
+                          <div style="background:var(--input-dark); border:1px solid var(--card-border); border-radius:8px; padding:8px 10px; font-size:0.8rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                              <div>
+                                <span style="color:var(--text-muted); font-size:0.75rem;">📅 ${escapeHTML(fechaStr)}</span>
+                                <span style="font-size:0.75rem; color:var(--text-muted); margin-left:6px;">(${items.length} ${items.length === 1 ? 'ítem' : 'ítems'})</span>
+                              </div>
+                              ${badge}
+                            </div>
+                            <div style="color:var(--text-main); font-size:0.8rem; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHTML(itemsDesc)}">
+                              ${escapeHTML(itemsDesc || 'Sin descripción')}
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed rgba(148,163,184,0.15); padding-top:4px;">
+                              <span>Total: <strong>$${totalD.toFixed(2)}</strong></span>
+                              <span>Abonado: <strong style="color:#38bdf8;">$${totalA.toFixed(2)}</strong></span>
+                            </div>
+                          </div>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+
+        window.cambiarPestanaFicha = function(pestana) {
+            const tabMov = document.getElementById('tabFichaMovimientos');
+            const tabProd = document.getElementById('tabFichaProductos');
+            const vistaMov = document.getElementById('vistaFichaMovimientos');
+            const vistaProd = document.getElementById('vistaFichaProductos');
+
+            if (pestana === 'movimientos') {
+                if (tabMov) tabMov.classList.add('active');
+                if (tabProd) tabProd.classList.remove('active');
+                if (vistaMov) vistaMov.style.display = 'block';
+                if (vistaProd) vistaProd.style.display = 'none';
+            } else {
+                if (tabMov) tabMov.classList.remove('active');
+                if (tabProd) tabProd.classList.add('active');
+                if (vistaMov) vistaMov.style.display = 'none';
+                if (vistaProd) vistaProd.style.display = 'block';
+            }
+        };
+
+        window.enviarHistorialClienteWA = function() {
+            if (!clienteFichaActual) return;
+            const { nombre, telefono, totalCompras, totalPagado, deudaActual, movimientos } = clienteFichaActual;
+
+            let limpio = (telefono || '').replace(/\D/g, '');
+            if (!limpio) {
+                window.mostrarToast("Este cliente no tiene un teléfono válido registrado", "error");
+                return;
+            }
+            if (limpio.startsWith('0')) {
+                limpio = '58' + limpio.substring(1);
+            } else if (limpio.length === 10 && (limpio.startsWith('412') || limpio.startsWith('414') || limpio.startsWith('424') || limpio.startsWith('416') || limpio.startsWith('426'))) {
+                limpio = '58' + limpio;
+            }
+
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+            const saldoBs = (deudaActual * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            let mensaje = `📋 *ESTADO DE CUENTA E HISTORIAL*\n`;
+            mensaje += `Hola *${nombre}*, un cordial saludo.\n`;
+            mensaje += `Te compartimos el resumen histórico de tu cuenta al *${fechaHoy}*:\n\n`;
+
+            mensaje += `📊 *RESUMEN FINANCIERO:*\n`;
+            mensaje += `• *Total Comprado:* $${totalCompras.toFixed(2)}\n`;
+            mensaje += `• *Total Abonado/Pagado:* $${totalPagado.toFixed(2)}\n`;
+            if (deudaActual > 0.009) {
+                mensaje += `• *SALDO PENDIENTE:* *$${deudaActual.toFixed(2)}* (≈ *${saldoBs} Bs* a tasa BCV ${tasaActual.toFixed(2)})\n\n`;
+            } else {
+                mensaje += `• *ESTADO:* ✅ *Cuenta 100% al día (Sin deuda pendiente)*\n\n`;
+            }
+
+            // Últimos movimientos (hasta 8)
+            if (Array.isArray(movimientos) && movimientos.length > 0) {
+                mensaje += `🕒 *ÚLTIMOS MOVIMIENTOS:*\n`;
+                const ultimos = [...movimientos].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 8);
+                ultimos.forEach(m => {
+                    const signo = m.tipo === 'COMPRA' ? '+' : '-';
+                    const icono = m.tipo === 'COMPRA' ? '🛍️' : '💳';
+                    mensaje += `${icono} ${m.fecha ? `[${m.fecha}] ` : ''}${m.descripcion}: *${signo}$${m.monto.toFixed(2)}*\n`;
+                });
+                mensaje += `\n`;
+            }
+
+            mensaje += `_Cualquier duda o consulta, quedamos a tu entera orden._\n¡Muchas gracias por tu confianza!`;
+
+            const url = `https://api.whatsapp.com/send?phone=${limpio}&text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+            window.mostrarToast("Abriendo WhatsApp con el estado de cuenta...", "info");
         };
 
         window.guardarClienteManual = async function (e) {
@@ -5719,17 +6508,18 @@
                               <span>➕ Abonar</span>
                             </button>
                             <button class="btn-toggle" onclick="abrirModalMarcarPagado('${safeId}')">
-                              <span>✓ Marcar Pagado</span>
+                              <span class="btn-text-full">✓ Marcar Pagado</span>
+                              <span class="btn-text-mobile">✓ Pagado</span>
                             </button>
-                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
                             <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
                           </div>
                         ` : `
-                          <div class="actions-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                          <div class="actions-row readonly-actions" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
                             <span style="font-size:0.78rem; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px dashed #64748b; padding:6px 12px; border-radius:8px; flex:1; text-align:center;">
                               🔒 Solo lectura · Asignado a <strong>${escapeHTML(c.responsableNombre || 'otro responsable')}</strong>
                             </span>
-                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
                           </div>
                         `}
                       </div>
@@ -5745,15 +6535,15 @@
                             <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
                               <span>↩ Reabrir Cuenta</span>
                             </button>
-                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
                             <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
                           </div>
                         ` : `
-                          <div class="actions-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                          <div class="actions-row readonly-actions" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
                             <span style="font-size:0.78rem; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px dashed #64748b; padding:6px 12px; border-radius:8px; flex:1; text-align:center;">
                               🔒 Solo lectura · Asignado a <strong>${escapeHTML(c.responsableNombre || 'otro responsable')}</strong>
                             </span>
-                            <button class="btn-toggle" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
                           </div>
                         `}
                       </div>
@@ -5765,11 +6555,12 @@
                     <div class="card-top">
                       <div>
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                          <span class="client-name">${safeCliente}</span>
+                          <span class="client-name" style="cursor:pointer;" onclick="abrirFichaClientePorNombre('${safeCliente}', '${safeTelefono}')" title="Ver ficha e historial completo del cliente">${safeCliente}</span>
                           ${badgeRespHTML}
                         </div>
-                        <div style="font-size:0.8rem; color:#94a3b8; display:flex; align-items:center; gap:6px; margin-top:2px;">
+                        <div style="font-size:0.8rem; color:#94a3b8; display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap;">
                           <span>📱 ${safeTelefono}</span>
+                          <button type="button" class="btn-inline-edit" title="Ver ficha e historial completo del cliente" onclick="abrirFichaClientePorNombre('${safeCliente}', '${safeTelefono}')">📋 Historial</button>
                           ${puedeAdmin ? `<button type="button" class="btn-inline-edit" title="Editar nombre o teléfono del cliente" onclick="abrirModalEditarClienteCuenta('${safeId}')">✏️ Editar</button>` : ''}
                         </div>
                       </div>
