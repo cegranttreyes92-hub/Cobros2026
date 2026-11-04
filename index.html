@@ -683,7 +683,7 @@
             background: #0f3320;
             color: var(--wa-color);
             border: 1px solid #165e38;
-            padding: 8px 12px;
+            padding: 8px 6px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -694,7 +694,10 @@
             justify-content: center;
             gap: 2px;
             text-decoration: none;
+            min-width: 0;
             width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
             min-height: 48px;
             transition: all 0.2s;
         }
@@ -705,29 +708,55 @@
         }
 
         .wa-btn-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.8rem;
+            text-align: center;
         }
 
         .wa-btn-subtitle {
-            font-size: 0.72rem;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.68rem;
+            display: block;
             color: #86efac;
             font-weight: 500;
             opacity: 0.9;
+            text-align: center;
         }
 
         .actions-row-top {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: 8px;
+            width: 100%;
+        }
+
+        .actions-row-top .btn-wa,
+        .actions-row-top .btn-qr {
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .actions-row-top .wa-btn-title,
+        .actions-row-top .wa-btn-subtitle {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
         }
 
         .btn-qr {
             background: #064e3b;
             color: #34d399;
             border: 1px solid #059669;
-            padding: 8px 12px;
+            padding: 8px 6px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -738,7 +767,10 @@
             justify-content: center;
             gap: 2px;
             text-decoration: none;
+            min-width: 0;
             width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
             min-height: 48px;
             transition: all 0.2s;
         }
@@ -1943,7 +1975,7 @@
 
             .header-actions {
                 display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
                 gap: 8px !important;
                 width: 100% !important;
                 margin-right: 0 !important;
@@ -2042,12 +2074,10 @@
             }
 
             .filter-tabs {
-                display: grid !important;
-                grid-template-columns: repeat(4, auto) !important;
-                width: 100% !important;
                 overflow-x: auto !important;
                 scrollbar-width: none !important;
-                align-items: center !important;
+                display: flex !important;
+                width: 100% !important;
                 box-sizing: border-box !important;
                 -webkit-overflow-scrolling: touch;
                 border-radius: 12px !important;
@@ -2059,12 +2089,14 @@
 
             .tab-btn {
                 white-space: nowrap !important;
+                flex: 1 !important;
+                text-align: center !important;
+                padding: 6px 8px !important;
+                font-size: 0.73rem !important;
                 height: 34px !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                padding: 0 10px !important;
-                font-size: 0.74rem !important;
             }
 
             /* 3. Tarjetas y Botones de Acción */
@@ -2100,8 +2132,9 @@
 
             .actions-row-top {
                 display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
                 gap: 8px !important;
+                width: 100% !important;
             }
 
             .actions-row-top .btn-wa,
@@ -2109,6 +2142,10 @@
                 min-height: 50px !important;
                 padding: 6px 6px !important;
                 box-sizing: border-box !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                overflow: hidden !important;
             }
 
             .actions-row-top .wa-btn-title {
@@ -2117,6 +2154,9 @@
                 overflow: hidden !important;
                 text-overflow: ellipsis !important;
                 justify-content: center !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                min-width: 0 !important;
             }
 
             .actions-row-top .wa-btn-subtitle {
@@ -2124,60 +2164,58 @@
                 white-space: nowrap !important;
                 overflow: hidden !important;
                 text-overflow: ellipsis !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                display: block !important;
+                text-align: center !important;
             }
 
             .actions-row {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr 1.2fr 42px 38px !important;
+                display: flex !important;
                 gap: 6px !important;
                 align-items: stretch !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
 
-            .sale-card.is-paid .actions-row {
-                grid-template-columns: 1fr 42px 38px !important;
-            }
-
-            .actions-row.readonly-actions {
-                display: flex !important;
-            }
-
-            .actions-row .btn-item-add,
-            .actions-row .btn-abono,
-            .actions-row .btn-toggle,
-            .actions-row .btn-delete {
+            .actions-row > button {
                 height: 42px !important;
                 min-height: 42px !important;
                 max-height: 42px !important;
-                padding: 0 4px !important;
+                padding: 0 6px !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 white-space: nowrap !important;
                 font-size: 0.75rem !important;
-                line-height: 1.1 !important;
+                line-height: 1 !important;
+                min-width: 0 !important;
                 box-sizing: border-box !important;
                 border-radius: 8px !important;
             }
 
+            .actions-row .btn-item-add,
+            .actions-row .btn-abono,
+            .actions-row .btn-toggle:not(.btn-icon-only) {
+                flex: 1 1 0 !important;
+            }
+
+            .actions-row .btn-toggle.btn-icon-only {
+                flex: 0 0 38px !important;
+                width: 38px !important;
+                padding: 0 !important;
+                font-size: 1.1rem !important;
+            }
+
             .actions-row .btn-delete {
+                flex: 0 0 36px !important;
+                width: 36px !important;
+                padding: 0 !important;
                 font-size: 1.1rem !important;
                 background: rgba(239, 68, 68, 0.1) !important;
                 border: 1px solid rgba(239, 68, 68, 0.25) !important;
                 color: #f87171 !important;
-                width: 38px !important;
-                min-width: 38px !important;
-                max-width: 38px !important;
-                padding: 0 !important;
-            }
-
-            .actions-row .btn-toggle.btn-icon-only {
-                width: 42px !important;
-                min-width: 42px !important;
-                max-width: 42px !important;
-                padding: 0 !important;
-                font-size: 1.1rem !important;
             }
         }
     </style>
@@ -6492,10 +6530,10 @@
                         <div class="actions-row-top">
                           <button class="btn-wa" onclick="abrirModalSeleccionarPago('${safeId}')" title="Enviar factura por WhatsApp">
                             <span class="wa-btn-title">💬 Factura a WhatsApp</span>
-                            ${c.ultimaNotificacionWA ? `<span class="wa-btn-subtitle">🕒 Último aviso: ${escapeHTML(c.ultimaNotificacionWA)}</span>` : '<span class="wa-btn-subtitle" style="opacity:0.6;">Enviar cobro</span>'}
+                            ${c.ultimaNotificacionWA ? `<span class="wa-btn-subtitle" title="Último aviso: ${escapeHTML(c.ultimaNotificacionWA)}">🕒 ${escapeHTML(c.ultimaNotificacionWA)}</span>` : '<span class="wa-btn-subtitle" style="opacity:0.6;">Enviar cobro</span>'}
                           </button>
                           <button class="btn-qr" onclick="abrirModalCobroQR('${safeId}')" title="Cobro presencial con QR">
-                            <span class="wa-btn-title">📱 Cobro Presencial (QR)</span>
+                            <span class="wa-btn-title">📱 Cobro Presencial</span>
                             <span class="wa-btn-subtitle" style="color:#6ee7b7; opacity:0.85;">Mostrar QR Banco</span>
                           </button>
                         </div>
