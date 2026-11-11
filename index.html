@@ -273,7 +273,7 @@
             transform: scale(0.96);
         }
 
-        /* Mini-Carrito / Lista de Pre-venta */
+        /* ================= ESTILOS: MINI-CARRITO / LISTA PRE-VENTA ================= */
         .btn-sumar-lista {
             background: var(--input-dark);
             border: 1px solid var(--accent);
@@ -298,7 +298,7 @@
         .mini-cart-box {
             background: var(--input-dark);
             border: 1px dashed var(--accent);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 10px 12px;
             margin-bottom: 12px;
             animation: fadeIn 0.2s ease;
@@ -461,6 +461,51 @@
             color: var(--text-main);
             font-weight: 600;
         }
+
+        /* ================= ESTILOS: BOTONES DE COPIADO RÁPIDO ================= */
+        .btn-copy-chip {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-copy-chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .btn-copy-chip:active {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        /* ================= ESTILOS: LIENZO RECIBO DIGITAL (PNG) ================= */
+        #lienzoReciboDigital {
+            width: 360px;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-radius: 12px;
+            padding: 22px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        #lienzoReciboDigital * {
+            box-sizing: border-box;
+        }
+
 
         input,
         select {
@@ -2410,6 +2455,7 @@
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -2836,6 +2882,15 @@
                 <button type="button" class="modal-close" onclick="cerrarModal('modalConfigGeneral')">✕</button>
             </div>
             
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>🏪 Nombre del Negocio / Emprendimiento (Para Recibos)</label>
+                <small style="color:var(--text-muted); display:block; margin-bottom:5px;">Aparecerá en el encabezado principal de los recibos e imágenes generadas.</small>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="nombreNegocioModal" placeholder="Ej: Inversiones El Éxito / Estado de Cuenta" style="flex:1;">
+                    <button type="button" class="btn-submit" style="width:auto; padding:10px 14px; margin-top:0;" onclick="guardarNombreNegocio()">Guardar</button>
+                </div>
+            </div>
+
             <div class="input-group">
                 <label>Tasa BCV (Se sincroniza en la nube)</label>
                 <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -2986,6 +3041,33 @@
         </div>
     </div>
 
+    
+    <!-- ================= MODAL: RECIBO DIGITAL EN IMAGEN (PNG) ================= -->
+    <div id="modalReciboDigital" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalReciboDigital')">
+        <div class="modal-dialog" style="max-width: 420px; padding: 18px;">
+            <div class="modal-header" style="margin-bottom: 12px;">
+                <h3>🧾 Recibo Digital</h3>
+                <button type="button" class="modal-close" onclick="cerrarModal('modalReciboDigital')">✕</button>
+            </div>
+            
+            <div style="max-height: 70vh; overflow-y: auto; display: flex; justify-content: center; padding: 4px 0 10px 0;">
+                <div id="lienzoReciboDigital">
+                    <!-- Contenido del recibo generado dinámicamente -->
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: stretch; margin-top: 10px;">
+                <button type="button" class="btn-submit" id="btnCompartirReciboImg" onclick="compartirReciboImagen()" style="flex: 1; background: #25d366; color: #fff; min-width: 135px; margin-top: 0; padding: 10px 12px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                    📲 Compartir Imagen
+                </button>
+                <button type="button" class="btn-submit" id="btnDescargarReciboImg" onclick="descargarReciboImagen()" style="flex: 1; background: #0284c7; color: #fff; min-width: 120px; margin-top: 0; padding: 10px 12px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                    📥 Guardar PNG
+                </button>
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalReciboDigital')" style="width: 100%; margin-top: 4px; padding: 8px;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= MODAL: COBRO PRESENCIAL CON QR ================= -->
     <div id="modalCobroQR" class="modal-backdrop" onclick="cerrarModalOnClickAfuera(event, 'modalCobroQR')">
         <div class="modal-dialog">
@@ -2999,8 +3081,11 @@
                 <span id="qrModalCliente" style="font-weight:600; color:var(--text-main); font-size:1rem;"></span>
             </div>
 
-            <!-- Letrero GIGANTE para el cliente -->
-            <h2 id="qrMontoGigante" style="color:var(--accent); text-align:center; font-size:1.8rem; margin:10px 0; font-weight:800; letter-spacing:0.5px;">0,00 Bs</h2>
+            <!-- Letrero GIGANTE para el cliente con botón de copia rápida -->
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0;">
+                <h2 id="qrMontoGigante" style="color:var(--accent); text-align:center; font-size:1.8rem; margin:0; font-weight:800; letter-spacing:0.5px;">0,00 Bs</h2>
+                <button type="button" class="btn-copy-chip" onclick="copiarMontoBsQR()" title="Copiar monto numérico exacto en Bs para la app del banco">📋</button>
+            </div>
 
             <!-- Selector de cuenta de Pago Móvil -->
             <div class="input-group" style="margin-bottom:12px;">
@@ -3025,9 +3110,18 @@
                     </div>
                     <div style="font-size:1.05rem; line-height:1.7; color:var(--text-main);">
                         <div>🏦 <strong>Banco:</strong> <span id="qrDatoBanco" style="color:var(--accent); font-weight:700;"></span></div>
-                        <div>📱 <strong>Teléfono:</strong> <span id="qrDatoTelefono" style="letter-spacing:0.5px; font-weight:700;"></span></div>
-                        <div>🪪 <strong>Cédula:</strong> <span id="qrDatoCedula" style="letter-spacing:0.5px; font-weight:700;"></span></div>
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div>📱 <strong>Teléfono:</strong> <span id="qrDatoTelefono" style="letter-spacing:0.5px; font-weight:700;"></span></div>
+                            <button type="button" class="btn-copy-chip" onclick="copiarTelefonoQR()" title="Copiar Teléfono">📋</button>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div>🪪 <strong>Cédula:</strong> <span id="qrDatoCedula" style="letter-spacing:0.5px; font-weight:700;"></span></div>
+                            <button type="button" class="btn-copy-chip" onclick="copiarCedulaQR()" title="Copiar Cédula">📋</button>
+                        </div>
                         <div id="qrDatoTitularRow" style="font-size:0.9rem; color:var(--text-muted); margin-top:2px;">👤 <strong>Titular:</strong> <span id="qrDatoTitular"></span></div>
+                        <button type="button" class="btn-submit" style="margin-top:10px; width:100%; background:var(--card-bg); border:1px solid var(--accent); color:var(--accent); font-weight:700; padding:8px 12px; font-size:0.82rem;" onclick="copiarTodosDatosPagoQR()">
+                            📋 Copiar Todos los Datos de Pago
+                        </button>
                     </div>
                 </div>
                 <div id="qrSinCuentasAviso" style="display:none; text-align:center; padding:12px; color:var(--warning); font-size:0.9rem;">
@@ -3566,6 +3660,8 @@
         let productos = [];
         let carritoVenta = [];
         let carritoRapido = [];
+        let cuentaSeleccionadaRecibo = null;
+        let nombreNegocioConfig = localStorage.getItem('nombre_negocio_v1') || "Estado de Cuenta";
         let usuariosApp = (function() {
             try {
                 const guardados = localStorage.getItem('usuarios_app_cache_v1');
@@ -4396,7 +4492,7 @@
             renderizarCuentas();
             renderizarDirectorioUI();
         }, (error) => {
-            console.error("Error en escucha de usuarios_app:", error);
+            console.warn("Aviso en escucha de usuarios_app (usando usuarios locales):", error.message);
             if (usuariosApp.length === 0) {
                 usuariosApp = [...USUARIOS_DEFAULT_APP];
                 actualizarUIUsuarioActivo();
@@ -5474,29 +5570,46 @@
 
             const nombre = document.getElementById('cliente').value.trim();
             const telefono = document.getElementById('telefono').value.trim();
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
 
             if (!nombre || !telefono) {
-                window.mostrarToast("Por favor completa el nombre del cliente y su teléfono.", "error");
+                window.mostrarToast("Por favor ingresa el nombre y teléfono del cliente.", "error");
                 return;
             }
 
-            // Recolectar ítems: lo que esté en carritoVenta + cualquier ítem pendiente escrito en los inputs
-            const itemsAProcesar = [...carritoVenta];
-            const conceptoEscrito = (document.getElementById('concepto')?.value || '').trim();
-            const montoUSD = parseFloat(document.getElementById('montoUSD')?.value);
-            const cantVenta = Math.max(1, parseInt(document.getElementById('cantidadVenta')?.value) || 1);
+            // Recoger ítems: del carrito temporal + de los inputs si hay alguno escrito
+            const itemsParaGuardar = [];
 
-            if (conceptoEscrito && !isNaN(montoUSD) && montoUSD > 0) {
-                itemsAProcesar.push({
-                    nombre: conceptoEscrito,
-                    cantidad: cantVenta,
-                    precioUnitario: Number((montoUSD / cantVenta).toFixed(2)),
-                    subtotal: montoUSD
+            // 1. Ítems del carrito
+            if (carritoVenta.length > 0) {
+                carritoVenta.forEach(item => {
+                    const desc = item.cantidad > 1 ? `${item.cantidad}x ${item.nombre}` : item.nombre;
+                    itemsParaGuardar.push({
+                        concepto: desc,
+                        monto: Number(item.subtotal),
+                        fecha: fechaHoy
+                    });
                 });
             }
 
-            if (itemsAProcesar.length === 0) {
-                window.mostrarToast("Por favor agrega o escribe al menos un producto con monto válido.", "error");
+            // 2. Ítem de los inputs si hay escrito
+            const conceptoManual = document.getElementById('concepto').value.trim();
+            const montoManual = parseFloat(document.getElementById('montoUSD').value);
+            const cantManual = parseInt(document.getElementById('cantidadVenta')?.value) || 1;
+
+            if (conceptoManual && !isNaN(montoManual) && montoManual > 0) {
+                const descManual = cantManual > 1 && !conceptoManual.startsWith(`${cantManual}x `) 
+                    ? `${cantManual}x ${conceptoManual}` 
+                    : conceptoManual;
+                itemsParaGuardar.push({
+                    concepto: descManual,
+                    monto: montoManual,
+                    fecha: fechaHoy
+                });
+            }
+
+            if (itemsParaGuardar.length === 0) {
+                window.mostrarToast("Agrega al menos un producto mediante los chips, la lista o los campos de texto.", "error");
                 return;
             }
 
@@ -5524,19 +5637,6 @@
             btn.disabled = true;
 
             try {
-                const fechaHoy = new Date().toLocaleDateString('es-VE');
-                const nuevosItemsParaGuardar = itemsAProcesar.map((item, idx) => {
-                    const cant = parseInt(item.cantidad) || 1;
-                    const nom = item.nombre.trim();
-                    const conceptoFinal = (cant > 1 && !nom.startsWith(`${cant}x `)) ? `${cant}x ${nom}` : nom;
-                    return {
-                        concepto: conceptoFinal,
-                        monto: Number(Number(item.subtotal).toFixed(2)),
-                        fecha: fechaHoy,
-                        timestamp: Date.now() + idx
-                    };
-                });
-
                 // Guardar/Actualizar en directorio automáticamente con merge
                 const idCliente = normalizarIdCliente(nombre);
                 const datosCliente = { nombre: nombre, telefono: telefono };
@@ -5550,15 +5650,14 @@
                 if (cuentaActiva) {
                     const cuentaRef = doc(db, "cuentas", cuentaActiva.id);
                     const itemsPrevios = Array.isArray(cuentaActiva.items) ? cuentaActiva.items : [];
-                    const nuevosItems = [...itemsPrevios, ...nuevosItemsParaGuardar];
-                    const updatesCuenta = { items: nuevosItems, telefono: telefono, pagado: false };
+                    const nuevosItems = [...itemsPrevios, ...itemsParaGuardar];
+                    const updatesCuenta = { items: nuevosItems, telefono: telefono };
                     if (!cuentaActiva.responsableId) {
                         updatesCuenta.responsableId = respId;
                         updatesCuenta.responsableNombre = respNombre;
                     }
                     await updateDoc(cuentaRef, updatesCuenta);
-                    const cantTexto = nuevosItemsParaGuardar.length === 1 ? '1 ítem añadido' : `${nuevosItemsParaGuardar.length} ítems añadidos`;
-                    window.mostrarToast(`${cantTexto} a la cuenta activa de ${nombre}`, "success");
+                    window.mostrarToast(`${itemsParaGuardar.length} ítem(s) añadido(s) a la cuenta activa de ${nombre}`, "success");
                 } else {
                     await addDoc(collection(db, "cuentas"), {
                         cliente: nombre,
@@ -5566,26 +5665,26 @@
                         responsableId: respId,
                         responsableNombre: respNombre,
                         pagado: false,
-                        items: nuevosItemsParaGuardar,
+                        items: itemsParaGuardar,
                         abonos: [],
                         timestamp: Date.now()
                     });
-                    const cantTexto = nuevosItemsParaGuardar.length === 1 ? 'Venta registrada' : `${nuevosItemsParaGuardar.length} ítems registrados`;
-                    window.mostrarToast(`${cantTexto} para ${nombre} (Responsable: ${respNombre})`, "success");
+                    window.mostrarToast(`Nueva cuenta creada para ${nombre} con ${itemsParaGuardar.length} ítem(s)`, "success");
                 }
 
+                // Limpiar formulario y carrito
+                document.getElementById('formVenta').reset();
                 carritoVenta = [];
                 renderizarCarritoVenta();
-                document.getElementById('formVenta').reset();
                 const cantInput = document.getElementById('cantidadVenta');
                 if (cantInput) cantInput.value = '1';
                 document.getElementById('cliente').focus();
             } catch (error) {
                 window.mostrarToast("Error de conexión: " + error.message, "error");
-            } finally {
-                btn.disabled = false;
-                renderizarCarritoVenta();
             }
+
+            btn.innerHTML = "<span>Añadir a la Cuenta</span>";
+            btn.disabled = false;
         };
 
         // ================= MODO COBRO PRESENCIAL CON QR =================
@@ -6786,7 +6885,7 @@
                               <span class="btn-text-full">✓ Marcar Pagado</span>
                               <span class="btn-text-mobile">✓ Pagado</span>
                             </button>
-                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Generar Recibo Digital" onclick="abrirReciboDigital('${safeId}')">🧾</button>
                             <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
                           </div>
                         ` : `
@@ -6794,7 +6893,7 @@
                             <span style="font-size:0.78rem; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px dashed #64748b; padding:6px 12px; border-radius:8px; flex:1; text-align:center;">
                               🔒 Solo lectura · Asignado a <strong>${escapeHTML(c.responsableNombre || 'otro responsable')}</strong>
                             </span>
-                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#38bdf8; color:#38bdf8;" title="Generar Recibo Digital" onclick="abrirReciboDigital('${safeId}')">🧾</button>
                           </div>
                         `}
                       </div>
@@ -6810,7 +6909,7 @@
                             <button class="btn-toggle" style="flex:1;" onclick="reabrirCuenta('${safeId}')">
                               <span>↩ Reabrir Cuenta</span>
                             </button>
-                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Generar Recibo Digital" onclick="abrirReciboDigital('${safeId}')">🧾</button>
                             <button class="btn-delete" title="Borrar Registro" onclick="eliminarCuenta('${safeId}')">✕</button>
                           </div>
                         ` : `
@@ -6818,7 +6917,7 @@
                             <span style="font-size:0.78rem; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px dashed #64748b; padding:6px 12px; border-radius:8px; flex:1; text-align:center;">
                               🔒 Solo lectura · Asignado a <strong>${escapeHTML(c.responsableNombre || 'otro responsable')}</strong>
                             </span>
-                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Imprimir Recibo" onclick="imprimirRecibo('${safeId}')">🖨️</button>
+                            <button class="btn-toggle btn-icon-only" style="flex:0; padding:8px 10px; border-color:#10b981; color:#10b981;" title="Generar Recibo Digital" onclick="abrirReciboDigital('${safeId}')">🧾</button>
                           </div>
                         `}
                       </div>
@@ -7011,46 +7110,135 @@
             }
         };
 
-        window.seleccionarChipProductoVenta = function(nombreProd) {
-            if (!nombreProd) return;
-            const prod = productos.find(p => (p.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
-            const precioUnit = prod && !isNaN(parseFloat(prod.precio)) ? parseFloat(prod.precio) : 0;
+        
+        // ================= CONFIGURACIÓN NOMBRE DE NEGOCIO =================
+        window.guardarNombreNegocio = async function() {
+            const inp = document.getElementById('nombreNegocioModal');
+            if (!inp) return;
+            const nuevoNombre = inp.value.trim() || "Estado de Cuenta";
+            nombreNegocioConfig = nuevoNombre;
+            localStorage.setItem('nombre_negocio_v1', nuevoNombre);
 
-            const idxExistente = carritoVenta.findIndex(it => (it.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
-            if (idxExistente !== -1) {
-                carritoVenta[idxExistente].cantidad += 1;
-                carritoVenta[idxExistente].subtotal = Number((carritoVenta[idxExistente].cantidad * carritoVenta[idxExistente].precioUnitario).toFixed(2));
-            } else {
-                carritoVenta.push({
-                    id: prod?.id || 'prod_' + Date.now(),
-                    nombre: prod ? prod.nombre : nombreProd.trim(),
-                    cantidad: 1,
-                    precioUnitario: precioUnit,
-                    subtotal: precioUnit
-                });
+            try {
+                await setDoc(doc(db, "configuracion", "negocio"), {
+                    nombre: nuevoNombre,
+                    timestamp: Date.now()
+                }, { merge: true });
+                window.mostrarToast("Nombre del negocio guardado exitosamente", "success");
+            } catch(e) {
+                console.warn("Guardado localmente (sin permisos en Firestore):", e.message);
+                window.mostrarToast("Guardado localmente para este dispositivo", "success");
             }
-            renderizarCarritoVenta();
         };
 
-        window.seleccionarChipProductoRapido = function(nombreProd) {
-            if (!nombreProd) return;
-            const prod = productos.find(p => (p.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
-            const precioUnit = prod && !isNaN(parseFloat(prod.precio)) ? parseFloat(prod.precio) : 0;
+        // ================= MINI-CARRITO / LISTA DE PRE-VENTA =================
+        window.renderizarCarritoVenta = function() {
+            const contenedor = document.getElementById('previewCarritoVenta');
+            if (!contenedor) return;
 
-            const idxExistente = carritoRapido.findIndex(it => (it.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
-            if (idxExistente !== -1) {
-                carritoRapido[idxExistente].cantidad += 1;
-                carritoRapido[idxExistente].subtotal = Number((carritoRapido[idxExistente].cantidad * carritoRapido[idxExistente].precioUnitario).toFixed(2));
-            } else {
-                carritoRapido.push({
-                    id: prod?.id || 'prod_' + Date.now(),
-                    nombre: prod ? prod.nombre : nombreProd.trim(),
-                    cantidad: 1,
-                    precioUnitario: precioUnit,
-                    subtotal: precioUnit
-                });
+            if (carritoVenta.length === 0) {
+                contenedor.innerHTML = '';
+                contenedor.style.display = 'none';
+                return;
             }
-            renderizarCarritoRapido();
+
+            const totalUSD = carritoVenta.reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0);
+            const totalBs = totalUSD * tasaActual;
+
+            let htmlItems = carritoVenta.map((item, idx) => {
+                const subtotalBs = item.subtotal * tasaActual;
+                return `
+                    <div class="mini-cart-item-row">
+                        <div class="mini-cart-item-info">
+                            <span class="mini-cart-item-name" title="${escapeHTML(item.nombre)}">${escapeHTML(item.nombre)}</span>
+                            <span class="mini-cart-item-unit">${item.precioUnitario.toFixed(2)} c/u</span>
+                        </div>
+                        <div class="mini-cart-item-controls">
+                            <div class="mini-cart-qty-group">
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoVenta(${idx}, -1)">−</button>
+                                <span class="mini-cart-qty-value">${item.cantidad}</span>
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoVenta(${idx}, 1)">+</button>
+                            </div>
+                            <div class="mini-cart-item-subtotal">${item.subtotal.toFixed(2)}</div>
+                            <button type="button" class="btn-remove-mini" onclick="eliminarItemCarritoVenta(${idx})" title="Quitar producto">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            contenedor.innerHTML = `
+                <div class="mini-cart-box">
+                    <div class="mini-cart-header">
+                        <strong style="font-size:0.82rem; color:var(--accent);">🛒 Lista de Productos (${carritoVenta.length})</strong>
+                        <button type="button" class="btn-vaciar-mini-cart" onclick="vaciarCarritoVenta()">🗑️ Vaciar</button>
+                    </div>
+                    <div class="mini-cart-items-list">
+                        ${htmlItems}
+                    </div>
+                    <div class="mini-cart-footer">
+                        <span class="mini-cart-total-text">Total acumulado:</span>
+                        <div style="text-align:right;">
+                            <strong style="color:var(--accent); font-size:0.95rem;">${totalUSD.toFixed(2)}</strong>
+                            <small style="display:block; color:var(--text-muted); font-size:0.75rem;">≈ ${totalBs.toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2})} Bs</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            contenedor.style.display = 'block';
+        };
+
+        window.renderizarCarritoRapido = function() {
+            const contenedor = document.getElementById('previewCarritoRapido');
+            if (!contenedor) return;
+
+            if (carritoRapido.length === 0) {
+                contenedor.innerHTML = '';
+                contenedor.style.display = 'none';
+                return;
+            }
+
+            const totalUSD = carritoRapido.reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0);
+            const totalBs = totalUSD * tasaActual;
+
+            let htmlItems = carritoRapido.map((item, idx) => {
+                return `
+                    <div class="mini-cart-item-row">
+                        <div class="mini-cart-item-info">
+                            <span class="mini-cart-item-name" title="${escapeHTML(item.nombre)}">${escapeHTML(item.nombre)}</span>
+                            <span class="mini-cart-item-unit">${item.precioUnitario.toFixed(2)} c/u</span>
+                        </div>
+                        <div class="mini-cart-item-controls">
+                            <div class="mini-cart-qty-group">
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoRapido(${idx}, -1)">−</button>
+                                <span class="mini-cart-qty-value">${item.cantidad}</span>
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoRapido(${idx}, 1)">+</button>
+                            </div>
+                            <div class="mini-cart-item-subtotal">${item.subtotal.toFixed(2)}</div>
+                            <button type="button" class="btn-remove-mini" onclick="eliminarItemCarritoRapido(${idx})" title="Quitar producto">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            contenedor.innerHTML = `
+                <div class="mini-cart-box">
+                    <div class="mini-cart-header">
+                        <strong style="font-size:0.82rem; color:var(--accent);">🛒 Ítems a añadir (${carritoRapido.length})</strong>
+                        <button type="button" class="btn-vaciar-mini-cart" onclick="vaciarCarritoRapido()">🗑️ Vaciar</button>
+                    </div>
+                    <div class="mini-cart-items-list">
+                        ${htmlItems}
+                    </div>
+                    <div class="mini-cart-footer">
+                        <span class="mini-cart-total-text">Total acumulado:</span>
+                        <div style="text-align:right;">
+                            <strong style="color:var(--accent); font-size:0.95rem;">${totalUSD.toFixed(2)}</strong>
+                            <small style="display:block; color:var(--text-muted); font-size:0.75rem;">≈ ${totalBs.toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2})} Bs</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            contenedor.style.display = 'block';
         };
 
         window.sumarItemManualVenta = function() {
@@ -7059,42 +7247,42 @@
             const montoInput = document.getElementById('montoUSD');
             if (!conceptoInput || !montoInput) return;
 
-            const concepto = (conceptoInput.value || '').trim();
-            const cant = Math.max(1, parseInt(cantInput?.value) || 1);
-            const monto = parseFloat(montoInput.value);
+            const nombre = conceptoInput.value.trim();
+            const cantidad = parseInt(cantInput?.value) || 1;
+            const montoTotal = parseFloat(montoInput.value);
 
-            if (!concepto) {
-                window.mostrarToast("Escribe el nombre o detalle del producto", "warning");
+            if (!nombre) {
+                window.mostrarToast("Escribe un detalle o producto para sumar a la lista", "error");
                 conceptoInput.focus();
                 return;
             }
-            if (isNaN(monto) || monto <= 0) {
-                window.mostrarToast("Ingresa un monto válido mayor a 0", "warning");
+
+            if (isNaN(montoTotal) || montoTotal <= 0) {
+                window.mostrarToast("Ingresa un monto válido mayor a 0", "error");
                 montoInput.focus();
                 return;
             }
 
-            const precioUnitario = Number((monto / cant).toFixed(2));
-            const idxExistente = carritoVenta.findIndex(it => (it.nombre || '').toLowerCase() === concepto.toLowerCase());
-            if (idxExistente !== -1) {
-                carritoVenta[idxExistente].cantidad += cant;
-                carritoVenta[idxExistente].subtotal = Number((carritoVenta[idxExistente].subtotal + monto).toFixed(2));
-                carritoVenta[idxExistente].precioUnitario = Number((carritoVenta[idxExistente].subtotal / carritoVenta[idxExistente].cantidad).toFixed(2));
+            const precioUnitario = montoTotal / cantidad;
+            const existeIdx = carritoVenta.findIndex(it => it.nombre.toLowerCase() === nombre.toLowerCase());
+
+            if (existeIdx !== -1) {
+                carritoVenta[existeIdx].cantidad += cantidad;
+                carritoVenta[existeIdx].subtotal = carritoVenta[existeIdx].cantidad * carritoVenta[existeIdx].precioUnitario;
             } else {
                 carritoVenta.push({
-                    id: 'item_' + Date.now(),
-                    nombre: concepto,
-                    cantidad: cant,
+                    nombre: nombre,
+                    cantidad: cantidad,
                     precioUnitario: precioUnitario,
-                    subtotal: monto
+                    subtotal: montoTotal
                 });
             }
 
             conceptoInput.value = '';
-            if (cantInput) cantInput.value = '1';
             montoInput.value = '';
+            if (cantInput) cantInput.value = '1';
             renderizarCarritoVenta();
-            conceptoInput.focus();
+            window.mostrarToast(`"${nombre}" sumado a la lista`, "success");
         };
 
         window.sumarItemManualRapido = function() {
@@ -7103,62 +7291,76 @@
             const montoInput = document.getElementById('rapidoMontoUSD');
             if (!conceptoInput || !montoInput) return;
 
-            const concepto = (conceptoInput.value || '').trim();
-            const cant = Math.max(1, parseInt(cantInput?.value) || 1);
-            const monto = parseFloat(montoInput.value);
+            const nombre = conceptoInput.value.trim();
+            const cantidad = parseInt(cantInput?.value) || 1;
+            const montoTotal = parseFloat(montoInput.value);
 
-            if (!concepto) {
-                window.mostrarToast("Escribe el nombre o detalle del producto", "warning");
+            if (!nombre) {
+                window.mostrarToast("Escribe un producto o detalle para sumar a la lista", "error");
                 conceptoInput.focus();
                 return;
             }
-            if (isNaN(monto) || monto <= 0) {
-                window.mostrarToast("Ingresa un monto válido mayor a 0", "warning");
+
+            if (isNaN(montoTotal) || montoTotal <= 0) {
+                window.mostrarToast("Ingresa un monto válido mayor a 0", "error");
                 montoInput.focus();
                 return;
             }
 
-            const precioUnitario = Number((monto / cant).toFixed(2));
-            const idxExistente = carritoRapido.findIndex(it => (it.nombre || '').toLowerCase() === concepto.toLowerCase());
-            if (idxExistente !== -1) {
-                carritoRapido[idxExistente].cantidad += cant;
-                carritoRapido[idxExistente].subtotal = Number((carritoRapido[idxExistente].subtotal + monto).toFixed(2));
-                carritoRapido[idxExistente].precioUnitario = Number((carritoRapido[idxExistente].subtotal / carritoRapido[idxExistente].cantidad).toFixed(2));
+            const precioUnitario = montoTotal / cantidad;
+            const existeIdx = carritoRapido.findIndex(it => it.nombre.toLowerCase() === nombre.toLowerCase());
+
+            if (existeIdx !== -1) {
+                carritoRapido[existeIdx].cantidad += cantidad;
+                carritoRapido[existeIdx].subtotal = carritoRapido[existeIdx].cantidad * carritoRapido[existeIdx].precioUnitario;
             } else {
                 carritoRapido.push({
-                    id: 'item_' + Date.now(),
-                    nombre: concepto,
-                    cantidad: cant,
+                    nombre: nombre,
+                    cantidad: cantidad,
                     precioUnitario: precioUnitario,
-                    subtotal: monto
+                    subtotal: montoTotal
                 });
             }
 
             conceptoInput.value = '';
-            if (cantInput) cantInput.value = '1';
             montoInput.value = '';
-            const bsEl = document.getElementById('rapidoEquivalenteBs');
-            if (bsEl) bsEl.textContent = '≈ 0,00 Bs';
+            if (cantInput) cantInput.value = '1';
+            const eqEl = document.getElementById('rapidoEquivalenteBs');
+            if (eqEl) eqEl.textContent = '≈ 0,00 Bs';
             renderizarCarritoRapido();
-            conceptoInput.focus();
+            window.mostrarToast(`"${nombre}" sumado a la lista`, "success");
         };
 
-        window.modificarCantidadCarritoVenta = function(index, delta) {
-            if (!carritoVenta[index]) return;
-            carritoVenta[index].cantidad += delta;
-            if (carritoVenta[index].cantidad <= 0) {
-                carritoVenta.splice(index, 1);
+        window.modificarCantidadCarritoVenta = function(idx, delta) {
+            if (!carritoVenta[idx]) return;
+            carritoVenta[idx].cantidad += delta;
+            if (carritoVenta[idx].cantidad <= 0) {
+                carritoVenta.splice(idx, 1);
             } else {
-                carritoVenta[index].subtotal = Number((carritoVenta[index].cantidad * carritoVenta[index].precioUnitario).toFixed(2));
+                carritoVenta[idx].subtotal = carritoVenta[idx].cantidad * carritoVenta[idx].precioUnitario;
             }
             renderizarCarritoVenta();
         };
 
-        window.eliminarItemCarritoVenta = function(index) {
-            if (index >= 0 && index < carritoVenta.length) {
-                carritoVenta.splice(index, 1);
-                renderizarCarritoVenta();
+        window.modificarCantidadCarritoRapido = function(idx, delta) {
+            if (!carritoRapido[idx]) return;
+            carritoRapido[idx].cantidad += delta;
+            if (carritoRapido[idx].cantidad <= 0) {
+                carritoRapido.splice(idx, 1);
+            } else {
+                carritoRapido[idx].subtotal = carritoRapido[idx].cantidad * carritoRapido[idx].precioUnitario;
             }
+            renderizarCarritoRapido();
+        };
+
+        window.eliminarItemCarritoVenta = function(idx) {
+            carritoVenta.splice(idx, 1);
+            renderizarCarritoVenta();
+        };
+
+        window.eliminarItemCarritoRapido = function(idx) {
+            carritoRapido.splice(idx, 1);
+            renderizarCarritoRapido();
         };
 
         window.vaciarCarritoVenta = function() {
@@ -7166,157 +7368,319 @@
             renderizarCarritoVenta();
         };
 
-        window.modificarCantidadCarritoRapido = function(index, delta) {
-            if (!carritoRapido[index]) return;
-            carritoRapido[index].cantidad += delta;
-            if (carritoRapido[index].cantidad <= 0) {
-                carritoRapido.splice(index, 1);
-            } else {
-                carritoRapido[index].subtotal = Number((carritoRapido[index].cantidad * carritoRapido[index].precioUnitario).toFixed(2));
-            }
-            renderizarCarritoRapido();
-        };
-
-        window.eliminarItemCarritoRapido = function(index) {
-            if (index >= 0 && index < carritoRapido.length) {
-                carritoRapido.splice(index, 1);
-                renderizarCarritoRapido();
-            }
-        };
-
         window.vaciarCarritoRapido = function() {
             carritoRapido = [];
             renderizarCarritoRapido();
         };
 
-        window.renderizarCarritoVenta = function() {
-            const preview = document.getElementById('previewCarritoVenta');
-            const btnSubmit = document.getElementById('btnSubmit');
-            if (!preview) return;
+        // ================= BOTONES DE COPIADO RÁPIDO (QR MODAL) =================
+        window.copiarMontoBsQR = function() {
+            const montoTexto = (saldoPendienteCobroQRBs || 0).toFixed(2);
+            navigator.clipboard.writeText(montoTexto).then(() => {
+                window.mostrarToast(`Monto en Bs copiado: ${montoTexto}`, "success");
+            }).catch(() => {
+                window.mostrarToast("No se pudo copiar el monto", "error");
+            });
+        };
 
-            if (!carritoVenta || carritoVenta.length === 0) {
-                preview.style.display = 'none';
-                preview.innerHTML = '';
-                if (btnSubmit) {
-                    btnSubmit.innerHTML = "<span>Añadir a la Cuenta</span>";
-                }
+        window.copiarTelefonoQR = function() {
+            const telEl = document.getElementById('qrDatoTelefono');
+            const texto = telEl ? telEl.textContent.trim() : '';
+            if (!texto) return;
+            navigator.clipboard.writeText(texto).then(() => {
+                window.mostrarToast(`Teléfono copiado: ${texto}`, "success");
+            }).catch(() => {
+                window.mostrarToast("No se pudo copiar el teléfono", "error");
+            });
+        };
+
+        window.copiarCedulaQR = function() {
+            const cedEl = document.getElementById('qrDatoCedula');
+            const texto = cedEl ? cedEl.textContent.trim() : '';
+            if (!texto) return;
+            navigator.clipboard.writeText(texto).then(() => {
+                window.mostrarToast(`Cédula copiada: ${texto}`, "success");
+            }).catch(() => {
+                window.mostrarToast("No se pudo copiar la cédula", "error");
+            });
+        };
+
+        window.copiarTodosDatosPagoQR = function() {
+            const banco = document.getElementById('qrDatoBanco')?.textContent.trim() || '';
+            const telf = document.getElementById('qrDatoTelefono')?.textContent.trim() || '';
+            const ced = document.getElementById('qrDatoCedula')?.textContent.trim() || '';
+            const titular = document.getElementById('qrDatoTitular')?.textContent.trim() || '';
+            const montoBs = (saldoPendienteCobroQRBs || 0).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const montoNum = (saldoPendienteCobroQRBs || 0).toFixed(2);
+
+            const textoCompleto = `*Datos de Pago Móvil:*\n🏦 *Banco:* ${banco}\n📱 *Teléfono:* ${telf}\n🪪 *Cédula:* ${ced}${titular ? '\n👤 *Titular:* ' + titular : ''}\n💰 *Monto exacto:* ${montoBs} Bs (${montoNum})`;
+
+            navigator.clipboard.writeText(textoCompleto).then(() => {
+                window.mostrarToast("Todos los datos de pago copiados al portapapeles", "success");
+            }).catch(() => {
+                window.mostrarToast("No se pudo copiar el resumen", "error");
+            });
+        };
+
+        // ================= RECIBO DIGITAL EN IMAGEN (PNG) =================
+        window.abrirReciboDigital = function(cuentaId) {
+            const c = cuentas.find(item => item.id === cuentaId);
+            if (!c) {
+                window.mostrarToast("Cuenta no encontrada", "error");
                 return;
             }
+            cuentaSeleccionadaRecibo = c;
+            renderizarLienzoRecibo(c);
+            abrirModal('modalReciboDigital');
+        };
 
-            const totalItemsCount = carritoVenta.reduce((acc, it) => acc + (parseInt(it.cantidad) || 1), 0);
-            const totalUSD = carritoVenta.reduce((acc, it) => acc + (Number(it.subtotal) || 0), 0);
-            const totalBs = (totalUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        window.renderizarLienzoRecibo = function(c) {
+            const lienzo = document.getElementById('lienzoReciboDigital');
+            if (!lienzo) return;
 
-            const itemsHTML = carritoVenta.map((item, idx) => {
-                const safeNombre = escapeHTML(item.nombre);
-                const sub = Number(item.subtotal || 0).toFixed(2);
-                const unit = Number(item.precioUnitario || 0).toFixed(2);
+            const totalDeuda = (c.items || []).reduce((sum, i) => sum + (Number(i.monto) || 0), 0);
+            const totalAbonado = (c.abonos || []).reduce((sum, a) => sum + (Number(a.monto) || 0), 0);
+            const saldoPendienteUSD = Math.max(0, totalDeuda - totalAbonado);
+            const saldoPendienteBs = saldoPendienteUSD * tasaActual;
+            const fechaHoy = new Date().toLocaleDateString('es-VE');
+            const horaHoy = new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
+            const negocio = nombreNegocioConfig || "Estado de Cuenta";
+            const estadoBadge = c.pagado || saldoPendienteUSD <= 0 
+                ? '<span style="background:#10b981; color:#fff; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;">CANCELADO</span>'
+                : '<span style="background:#f59e0b; color:#fff; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;">PENDIENTE</span>';
+
+            let itemsRows = (c.items || []).map(i => {
+                const subBs = (Number(i.monto) || 0) * tasaActual;
                 return `
-                    <div class="mini-cart-item-row">
-                        <div class="mini-cart-item-info">
-                            <span class="mini-cart-item-name" title="${safeNombre}">${safeNombre}</span>
-                            <span class="mini-cart-item-unit">($${unit} c/u)</span>
-                        </div>
-                        <div class="mini-cart-item-controls">
-                            <div class="mini-cart-qty-group">
-                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoVenta(${idx}, -1)" title="Restar 1">－</button>
-                                <span class="mini-cart-qty-value">${item.cantidad}</span>
-                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoVenta(${idx}, 1)" title="Sumar 1">＋</button>
-                            </div>
-                            <span class="mini-cart-item-subtotal">$${sub}</span>
-                            <button type="button" class="btn-remove-mini" onclick="eliminarItemCarritoVenta(${idx})" title="Quitar producto">✕</button>
-                        </div>
-                    </div>
+                    <tr style="border-bottom:1px solid #f1f5f9;">
+                        <td style="padding:6px 0; font-size:0.82rem; color:#1e293b; font-weight:600;">${escapeHTML(i.concepto)}</td>
+                        <td style="padding:6px 0; font-size:0.82rem; text-align:right; color:#0f172a; font-weight:700;">${Number(i.monto).toFixed(2)}</td>
+                    </tr>
                 `;
             }).join('');
 
-            preview.innerHTML = `
-                <div class="mini-cart-box">
-                    <div class="mini-cart-header">
-                        <span style="font-weight:700; font-size:0.82rem; color:var(--accent);">📋 Lista de productos a registrar:</span>
-                        <button type="button" class="btn-vaciar-mini-cart" onclick="vaciarCarritoVenta()">🗑️ Vaciar lista</button>
+            let abonosHtml = '';
+            if (c.abonos && c.abonos.length > 0) {
+                let abonosRows = c.abonos.map(a => `
+                    <tr style="border-bottom:1px solid #f8fafc;">
+                        <td style="padding:4px 0; font-size:0.75rem; color:#64748b;">${escapeHTML(a.fecha || '')} - ${escapeHTML(a.nota || 'Abono')}</td>
+                        <td style="padding:4px 0; font-size:0.75rem; text-align:right; color:#10b981; font-weight:700;">-${Number(a.monto).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
+                abonosHtml = `
+                    <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #cbd5e1;">
+                        <div style="font-size:0.75rem; font-weight:700; color:#475569; text-transform:uppercase; margin-bottom:4px;">Abonos Registrados</div>
+                        <table style="width:100%; border-collapse:collapse;">
+                            ${abonosRows}
+                        </table>
                     </div>
-                    <div class="mini-cart-items-list">
-                        ${itemsHTML}
-                    </div>
-                    <div class="mini-cart-footer">
-                        <div class="mini-cart-total-text">
-                            Total a registrar (${totalItemsCount} ${totalItemsCount === 1 ? 'ítem' : 'ítems'}): <strong style="color:var(--accent); font-size:0.95rem;">$${totalUSD.toFixed(2)}</strong>
-                            <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(≈ ${totalBs} Bs)</small>
-                        </div>
+                `;
+            }
+
+            lienzo.innerHTML = `
+                <div style="text-align:center; padding-bottom:12px; border-bottom:2px solid #0f172a; margin-bottom:12px;">
+                    <div style="font-size:1.15rem; font-weight:800; color:#0f172a; letter-spacing:0.5px; text-transform:uppercase;">${escapeHTML(negocio)}</div>
+                    <div style="font-size:0.75rem; font-weight:700; color:#64748b; letter-spacing:1px; margin-top:2px;">COMPROBANTE DE CUENTA</div>
+                    <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:6px;">
+                        ${estadoBadge}
+                        <span style="font-size:0.75rem; color:#64748b;">${fechaHoy} ${horaHoy}</span>
                     </div>
                 </div>
-            `;
-            preview.style.display = 'block';
 
-            if (btnSubmit) {
-                btnSubmit.innerHTML = `<span>Añadir ${totalItemsCount} ${totalItemsCount === 1 ? 'Ítem' : 'Ítems'} a la Cuenta ($${totalUSD.toFixed(2)})</span>`;
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:0.8rem; line-height:1.5;">
+                    <div style="color:#64748b;">Cliente: <strong style="color:#0f172a; font-size:0.9rem;">${escapeHTML(c.cliente)}</strong></div>
+                    <div style="color:#64748b;">Teléfono: <strong style="color:#0f172a;">${escapeHTML(c.telefono || 'Sin teléfono')}</strong></div>
+                    <div style="color:#64748b;">Atendido por: <strong style="color:#0f172a;">${escapeHTML(c.responsableNombre || 'Cegrantt R')}</strong></div>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <div style="font-size:0.75rem; font-weight:700; color:#475569; text-transform:uppercase; margin-bottom:6px;">Detalle de Compras</div>
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="border-bottom:1px solid #cbd5e1; text-align:left;">
+                                <th style="padding-bottom:4px; font-size:0.72rem; color:#64748b; text-transform:uppercase;">Descripción</th>
+                                <th style="padding-bottom:4px; font-size:0.72rem; color:#64748b; text-transform:uppercase; text-align:right;">Monto ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsRows}
+                        </tbody>
+                    </table>
+                </div>
+
+                ${abonosHtml}
+
+                <div style="background:#0f172a; color:#ffffff; border-radius:8px; padding:12px; margin-top:14px; text-align:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; margin-bottom:4px; opacity:0.85;">
+                        <span>Total Compras:</span>
+                        <span>${totalDeuda.toFixed(2)}</span>
+                    </div>
+                    ${totalAbonado > 0 ? `
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; margin-bottom:6px; color:#34d399;">
+                            <span>Total Abonado:</span>
+                            <span>-${totalAbonado.toFixed(2)}</span>
+                        </div>
+                    ` : ''}
+                    <div style="border-top:1px solid rgba(255,255,255,0.15); padding-top:6px; margin-top:4px; display:flex; justify-content:space-between; align-items:baseline;">
+                        <span style="font-size:0.95rem; font-weight:800; color:#ffffff;">${c.pagado || saldoPendienteUSD <= 0 ? 'SALDO PENDIENTE:' : 'TOTAL A PAGAR:'}</span>
+                        <div style="text-align:right;">
+                            <div style="font-size:1.25rem; font-weight:900; color:#34d399;">${saldoPendienteUSD.toFixed(2)}</div>
+                            <div style="font-size:0.82rem; font-weight:700; color:#93c5fd;">≈ ${saldoPendienteBs.toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2})} Bs</div>
+                        </div>
+                    </div>
+                    <div style="font-size:0.68rem; color:#94a3b8; margin-top:6px; text-align:right;">Tasa referencial BCV: ${tasaActual.toFixed(2)} Bs/$</div>
+                </div>
+
+                <div style="text-align:center; margin-top:14px; font-size:0.72rem; color:#64748b;">
+                    ¡Gracias por su compra y preferencia! ✨<br>
+                    <span style="font-size:0.65rem; color:#94a3b8;">Comprobante de uso comercial y control interno.</span>
+                </div>
+            `;
+        };
+
+        window.descargarReciboImagen = async function() {
+            const lienzo = document.getElementById('lienzoReciboDigital');
+            if (!lienzo || !cuentaSeleccionadaRecibo) return;
+
+            const btn = document.getElementById('btnDescargarReciboImg');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) btn.innerHTML = '⏳ Generando...';
+
+            try {
+                const canvas = await html2canvas(lienzo, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true
+                });
+
+                const link = document.createElement('a');
+                const safeNombre = (cuentaSeleccionadaRecibo.cliente || 'Cliente').replace(/[^a-zA-Z0-9_-]/g, '_');
+                link.download = `Recibo_${safeNombre}_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                window.mostrarToast("Recibo PNG descargado con éxito", "success");
+            } catch (err) {
+                console.error("Error al generar imagen de recibo:", err);
+                window.mostrarToast("Error al exportar recibo en imagen", "error");
+            } finally {
+                if (btn) btn.innerHTML = originalText;
             }
         };
 
-        window.renderizarCarritoRapido = function() {
-            const preview = document.getElementById('previewCarritoRapido');
-            const btnSubmit = document.getElementById('btnGuardarItemRapido');
-            if (!preview) return;
+        window.compartirReciboImagen = async function() {
+            const lienzo = document.getElementById('lienzoReciboDigital');
+            if (!lienzo || !cuentaSeleccionadaRecibo) return;
 
-            if (!carritoRapido || carritoRapido.length === 0) {
-                preview.style.display = 'none';
-                preview.innerHTML = '';
-                if (btnSubmit) {
-                    btnSubmit.innerHTML = "<span>➕ Añadir Ítem</span>";
-                }
-                return;
+            const btn = document.getElementById('btnCompartirReciboImg');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) btn.innerHTML = '⏳ Procesando...';
+
+            try {
+                const canvas = await html2canvas(lienzo, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true
+                });
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        window.mostrarToast("Error al crear el archivo de imagen", "error");
+                        if (btn) btn.innerHTML = originalText;
+                        return;
+                    }
+
+                    const safeNombre = (cuentaSeleccionadaRecibo.cliente || 'Cliente').replace(/[^a-zA-Z0-9_-]/g, '_');
+                    const file = new File([blob], `Recibo_${safeNombre}.png`, { type: 'image/png' });
+
+                    // 1. Probar Web Share API (Ideal para WhatsApp en Móviles)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: `Recibo de Cuenta - ${cuentaSeleccionadaRecibo.cliente}`,
+                                text: `Hola ${cuentaSeleccionadaRecibo.cliente}, te adjunto tu comprobante de cuenta.`
+                            });
+                            window.mostrarToast("Recibo compartido exitosamente", "success");
+                            if (btn) btn.innerHTML = originalText;
+                            return;
+                        } catch (shareErr) {
+                            if (shareErr.name === 'AbortError') {
+                                if (btn) btn.innerHTML = originalText;
+                                return;
+                            }
+                        }
+                    }
+
+                    // 2. Probar Copiado al Portapapeles (Ideal para WhatsApp Web en PC)
+                    try {
+                        if (navigator.clipboard && window.ClipboardItem) {
+                            const item = new ClipboardItem({ 'image/png': blob });
+                            await navigator.clipboard.write([item]);
+                            window.mostrarToast("¡Imagen copiada al portapapeles! Pégala directamente en WhatsApp (Ctrl+V)", "success");
+                            if (btn) btn.innerHTML = originalText;
+                            return;
+                        }
+                    } catch (clipErr) {
+                        console.warn("Copiado al portapapeles no soportado o bloqueado:", clipErr);
+                    }
+
+                    // 3. Fallback: Descarga directa
+                    const link = document.createElement('a');
+                    link.download = `Recibo_${safeNombre}_${Date.now()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    window.mostrarToast("Imagen descargada. Ya puedes enviarla por WhatsApp", "success");
+                    if (btn) btn.innerHTML = originalText;
+                }, 'image/png');
+
+            } catch (err) {
+                console.error("Error al procesar imagen:", err);
+                window.mostrarToast("Error al procesar recibo", "error");
+                if (btn) btn.innerHTML = originalText;
+            }
+        };
+
+        window.seleccionarChipProductoVenta = function(nombreProd) {
+            const prod = productos.find(p => (p.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
+            const precioBase = prod ? Number(prod.precio || 0) : 0;
+
+            const existeIdx = carritoVenta.findIndex(it => it.nombre.toLowerCase() === nombreProd.trim().toLowerCase());
+            if (existeIdx !== -1) {
+                carritoVenta[existeIdx].cantidad += 1;
+                carritoVenta[existeIdx].subtotal = carritoVenta[existeIdx].cantidad * carritoVenta[existeIdx].precioUnitario;
+            } else {
+                carritoVenta.push({
+                    nombre: nombreProd,
+                    cantidad: 1,
+                    precioUnitario: precioBase,
+                    subtotal: precioBase
+                });
             }
 
-            const totalItemsCount = carritoRapido.reduce((acc, it) => acc + (parseInt(it.cantidad) || 1), 0);
-            const totalUSD = carritoRapido.reduce((acc, it) => acc + (Number(it.subtotal) || 0), 0);
-            const totalBs = (totalUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            renderizarCarritoVenta();
+            window.mostrarToast(`➕ ${nombreProd} añadido a la lista`, "success");
+        };
 
-            const itemsHTML = carritoRapido.map((item, idx) => {
-                const safeNombre = escapeHTML(item.nombre);
-                const sub = Number(item.subtotal || 0).toFixed(2);
-                const unit = Number(item.precioUnitario || 0).toFixed(2);
-                return `
-                    <div class="mini-cart-item-row">
-                        <div class="mini-cart-item-info">
-                            <span class="mini-cart-item-name" title="${safeNombre}">${safeNombre}</span>
-                            <span class="mini-cart-item-unit">($${unit} c/u)</span>
-                        </div>
-                        <div class="mini-cart-item-controls">
-                            <div class="mini-cart-qty-group">
-                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoRapido(${idx}, -1)" title="Restar 1">－</button>
-                                <span class="mini-cart-qty-value">${item.cantidad}</span>
-                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoRapido(${idx}, 1)" title="Sumar 1">＋</button>
-                            </div>
-                            <span class="mini-cart-item-subtotal">$${sub}</span>
-                            <button type="button" class="btn-remove-mini" onclick="eliminarItemCarritoRapido(${idx})" title="Quitar producto">✕</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        window.seleccionarChipProductoRapido = function(nombreProd) {
+            const prod = productos.find(p => (p.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
+            const precioBase = prod ? Number(prod.precio || 0) : 0;
 
-            preview.innerHTML = `
-                <div class="mini-cart-box">
-                    <div class="mini-cart-header">
-                        <span style="font-weight:700; font-size:0.82rem; color:var(--accent);">📋 Lista de productos a registrar:</span>
-                        <button type="button" class="btn-vaciar-mini-cart" onclick="vaciarCarritoRapido()">🗑️ Vaciar lista</button>
-                    </div>
-                    <div class="mini-cart-items-list">
-                        ${itemsHTML}
-                    </div>
-                    <div class="mini-cart-footer">
-                        <div class="mini-cart-total-text">
-                            Total a registrar (${totalItemsCount} ${totalItemsCount === 1 ? 'ítem' : 'ítems'}): <strong style="color:var(--accent); font-size:0.95rem;">$${totalUSD.toFixed(2)}</strong>
-                            <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(≈ ${totalBs} Bs)</small>
-                        </div>
-                    </div>
-                </div>
-            `;
-            preview.style.display = 'block';
-
-            if (btnSubmit) {
-                btnSubmit.innerHTML = `<span>➕ Añadir ${totalItemsCount} ${totalItemsCount === 1 ? 'Ítem' : 'Ítems'} ($${totalUSD.toFixed(2)})</span>`;
+            const existeIdx = carritoRapido.findIndex(it => it.nombre.toLowerCase() === nombreProd.trim().toLowerCase());
+            if (existeIdx !== -1) {
+                carritoRapido[existeIdx].cantidad += 1;
+                carritoRapido[existeIdx].subtotal = carritoRapido[existeIdx].cantidad * carritoRapido[existeIdx].precioUnitario;
+            } else {
+                carritoRapido.push({
+                    nombre: nombreProd,
+                    cantidad: 1,
+                    precioUnitario: precioBase,
+                    subtotal: precioBase
+                });
             }
+
+            renderizarCarritoRapido();
+            window.mostrarToast(`➕ ${nombreProd} añadido a la lista`, "success");
         };
 
         function actualizarDatalistProductos() {
@@ -7477,6 +7841,8 @@
             console.error("Error en escucha de productos:", error);
         });
         window.abrirModalConfigGeneral = function() {
+            const nomNegInp = document.getElementById('nombreNegocioModal');
+            if (nomNegInp) nomNegInp.value = nombreNegocioConfig || "Estado de Cuenta";
             document.getElementById('tasaBCVModal').value = tasaActual.toFixed(2);
             document.getElementById('plantillaWAModal').value = localStorage.getItem('plantilla_wa_v1') || "Hola {cliente}, un cordial saludo.\nTe escribo para compartirte el estado de tu cuenta:";
             document.getElementById('temaVisualModal').value = localStorage.getItem('tema_cobros_v1') || 'dark';
@@ -7848,8 +8214,6 @@
             }
 
             cuentaParaItemRapido = c;
-            carritoRapido = [];
-            renderizarCarritoRapido();
             document.getElementById('rapidoCuentaId').value = c.id;
             document.getElementById('rapidoClienteNombre').textContent = c.cliente;
             document.getElementById('rapidoConcepto').value = '';
@@ -7899,23 +8263,41 @@
                 return;
             }
 
-            // Recolectar ítems: lo que esté en carritoRapido + cualquier ítem pendiente escrito en los inputs
-            const itemsAProcesar = [...carritoRapido];
-            const conceptoEscrito = (document.getElementById('rapidoConcepto')?.value || '').trim();
-            const monto = parseFloat(document.getElementById('rapidoMontoUSD')?.value);
-            const cantRapida = Math.max(1, parseInt(document.getElementById('rapidoCantidad')?.value) || 1);
+            const fechaActual = new Date().toLocaleDateString('es-VE');
+            const itemsParaGuardar = [];
 
-            if (conceptoEscrito && !isNaN(monto) && monto > 0) {
-                itemsAProcesar.push({
-                    nombre: conceptoEscrito,
-                    cantidad: cantRapida,
-                    precioUnitario: Number((monto / cantRapida).toFixed(2)),
-                    subtotal: monto
+            // 1. Del carrito rápido
+            if (carritoRapido.length > 0) {
+                carritoRapido.forEach(item => {
+                    const desc = item.cantidad > 1 ? `${item.cantidad}x ${item.nombre}` : item.nombre;
+                    itemsParaGuardar.push({
+                        concepto: desc,
+                        monto: Number(item.subtotal),
+                        fecha: fechaActual,
+                        timestamp: Date.now()
+                    });
                 });
             }
 
-            if (itemsAProcesar.length === 0) {
-                window.mostrarToast("Ingresa o agrega al menos un producto y monto válido", "error");
+            // 2. Del input manual rápido si hay
+            const conceptoManual = document.getElementById('rapidoConcepto').value.trim();
+            const montoManual = parseFloat(document.getElementById('rapidoMontoUSD').value);
+            const cantManual = parseInt(document.getElementById('rapidoCantidad')?.value) || 1;
+
+            if (conceptoManual && !isNaN(montoManual) && montoManual > 0) {
+                const descManual = cantManual > 1 && !conceptoManual.startsWith(`${cantManual}x `) 
+                    ? `${cantManual}x ${conceptoManual}` 
+                    : conceptoManual;
+                itemsParaGuardar.push({
+                    concepto: descManual,
+                    monto: montoManual,
+                    fecha: fechaActual,
+                    timestamp: Date.now()
+                });
+            }
+
+            if (itemsParaGuardar.length === 0) {
+                window.mostrarToast("Agrega al menos un producto mediante los chips, la lista o los campos de texto.", "error");
                 return;
             }
 
@@ -7924,46 +8306,28 @@
             btn.innerHTML = "<span>Guardando...</span>";
 
             try {
-                const ahora = new Date();
-                const fechaActual = ahora.toLocaleDateString('es-VE');
-                const nuevosItemsParaGuardar = itemsAProcesar.map((item, idx) => {
-                    const cant = parseInt(item.cantidad) || 1;
-                    const nom = item.nombre.trim();
-                    const conceptoFinal = (cant > 1 && !nom.startsWith(`${cant}x `)) ? `${cant}x ${nom}` : nom;
-                    return {
-                        concepto: conceptoFinal,
-                        monto: Number(Number(item.subtotal).toFixed(2)),
-                        fecha: fechaActual,
-                        timestamp: Date.now() + idx
-                    };
-                });
-
                 const itemsActuales = Array.isArray(c.items) ? [...c.items] : [];
-                itemsActuales.push(...nuevosItemsParaGuardar);
+                itemsActuales.push(...itemsParaGuardar);
 
                 await updateDoc(doc(db, "cuentas", c.id), {
                     items: itemsActuales,
                     pagado: false
                 });
 
-                carritoRapido = [];
-                renderizarCarritoRapido();
                 document.getElementById('rapidoConcepto').value = '';
+                document.getElementById('rapidoMontoUSD').value = '';
                 const rapidoCant = document.getElementById('rapidoCantidad');
                 if (rapidoCant) rapidoCant.value = '1';
-                document.getElementById('rapidoMontoUSD').value = '';
-                const bsEl = document.getElementById('rapidoEquivalenteBs');
-                if (bsEl) bsEl.textContent = '≈ 0,00 Bs';
-
+                carritoRapido = [];
+                renderizarCarritoRapido();
                 window.cerrarModal('modalAgregarItemRapido');
-                const cantTexto = nuevosItemsParaGuardar.length === 1 ? '1 ítem añadido' : `${nuevosItemsParaGuardar.length} ítems añadidos`;
-                window.mostrarToast(`${cantTexto} a la cuenta de ${c.cliente}`, "success");
+                window.mostrarToast(`${itemsParaGuardar.length} ítem(s) añadido(s) a la cuenta de ${c.cliente}`, "success");
             } catch (err) {
-                console.error("Error al añadir ítem rápido:", err);
+                console.error("Error al añadir ítems rápidos:", err);
                 window.mostrarToast("Error al guardar ítem: " + err.message, "error");
             } finally {
                 btn.disabled = false;
-                renderizarCarritoRapido();
+                btn.innerHTML = "<span>➕ Añadir Ítem</span>";
             }
         };
 
@@ -7985,7 +8349,8 @@
 
     <!-- ================= REGISTRO SERVICE WORKER PWA ================= -->
     <script>
-        if ('serviceWorker' in navigator) {
+        // Registrar Service Worker solo en entornos web soportados (no en file:///)
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:' || window.location.hostname === 'localhost')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(reg => console.log('Service Worker registrado:', reg.scope))
