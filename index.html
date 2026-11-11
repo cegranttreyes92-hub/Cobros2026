@@ -273,6 +273,195 @@
             transform: scale(0.96);
         }
 
+        /* Mini-Carrito / Lista de Pre-venta */
+        .btn-sumar-lista {
+            background: var(--input-dark);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sumar-lista:hover {
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        .mini-cart-box {
+            background: var(--input-dark);
+            border: 1px dashed var(--accent);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .mini-cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        :root[data-theme="light"] .mini-cart-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-vaciar-mini-cart {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-vaciar-mini-cart:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .mini-cart-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .mini-cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            gap: 8px;
+            font-size: 0.82rem;
+        }
+
+        .mini-cart-item-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .mini-cart-item-name {
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-cart-item-unit {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .mini-cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .mini-cart-qty-group {
+            display: inline-flex;
+            align-items: center;
+            background: var(--input-dark);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .btn-qty-mini {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: background 0.15s;
+        }
+
+        .btn-qty-mini:hover {
+            background: var(--card-bg);
+            color: var(--accent);
+        }
+
+        .mini-cart-qty-value {
+            min-width: 22px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-main);
+        }
+
+        .mini-cart-item-subtotal {
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 52px;
+            text-align: right;
+            font-size: 0.82rem;
+        }
+
+        .btn-remove-mini {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+
+        .btn-remove-mini:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .mini-cart-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        :root[data-theme="light"] .mini-cart-footer {
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .mini-cart-total-text {
+            font-size: 0.82rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
         input,
         select {
             width: 100%;
@@ -2426,19 +2615,26 @@
             <div class="input-row-producto">
                 <div class="input-group">
                     <label>Detalle / Producto (Selecciona o escribe)</label>
-                    <input type="text" id="concepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN y Café" required autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
+                    <input type="text" id="concepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN y Café" autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
                     <datalist id="listaProductosDatalist"></datalist>
                 </div>
                 <div class="input-group">
                     <label>Cant.</label>
-                    <input type="number" id="cantidadVenta" min="1" value="1" style="text-align:center;" required autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
+                    <input type="number" id="cantidadVenta" min="1" value="1" style="text-align:center;" autocomplete="off" oninput="autocompletarPrecio()" onchange="autocompletarPrecio()">
                 </div>
                 <div class="input-group input-group-monto">
                     <label>Monto en USD ($)</label>
-                    <input type="number" id="montoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required>
+                    <input type="number" id="montoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00">
                 </div>
             </div>
+            <div class="row-sumar-lista" style="display:flex; justify-content:space-between; align-items:center; margin: 4px 0 10px 0; flex-wrap:wrap; gap:6px;">
+                <span style="font-size:0.75rem; color:var(--text-muted);">💡 Toca un chip o escribe y suma a la lista:</span>
+                <button type="button" class="btn-sumar-lista" onclick="sumarItemManualVenta()" title="Añadir este producto a la lista temporal">
+                    ➕ Sumar a la lista
+                </button>
+            </div>
             <div id="chipsProductosVenta" class="chips-container"></div>
+            <div id="previewCarritoVenta" style="display:none;"></div>
             <button type="submit" class="btn-submit" id="btnSubmit">
                 <span>Añadir a la Cuenta</span>
             </button>
@@ -2600,19 +2796,26 @@
                 <div class="input-row-producto">
                     <div class="input-group">
                         <label>Producto o Detalle (Selecciona o escribe)</label>
-                        <input type="text" id="rapidoConcepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN" required autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
+                        <input type="text" id="rapidoConcepto" list="listaProductosDatalist" placeholder="Ej: Harina PAN" autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
                     </div>
                     <div class="input-group">
                         <label>Cant.</label>
-                        <input type="number" id="rapidoCantidad" min="1" value="1" style="text-align:center;" required autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
+                        <input type="number" id="rapidoCantidad" min="1" value="1" style="text-align:center;" autocomplete="off" oninput="autocompletarPrecioItemRapido()" onchange="autocompletarPrecioItemRapido()">
                     </div>
                     <div class="input-group input-group-monto">
                         <label>Monto en USD ($)</label>
-                        <input type="number" id="rapidoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" required oninput="actualizarEquivalenteBsItemRapido()">
+                        <input type="number" id="rapidoMontoUSD" step="0.01" min="0.01" placeholder="Ej: 5.00" oninput="actualizarEquivalenteBsItemRapido()">
                         <small id="rapidoEquivalenteBs" style="display:block; margin-top:4px; color:var(--text-muted); font-size:0.8rem;">≈ 0,00 Bs</small>
                     </div>
                 </div>
+                <div class="row-sumar-lista" style="display:flex; justify-content:space-between; align-items:center; margin: 4px 0 10px 0; flex-wrap:wrap; gap:6px;">
+                    <span style="font-size:0.75rem; color:var(--text-muted);">💡 Toca un chip o escribe y suma a la lista:</span>
+                    <button type="button" class="btn-sumar-lista" onclick="sumarItemManualRapido()" title="Añadir este producto a la lista temporal">
+                        ➕ Sumar a la lista
+                    </button>
+                </div>
                 <div id="chipsProductosRapido" class="chips-container"></div>
+                <div id="previewCarritoRapido" style="display:none;"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="cerrarModal('modalAgregarItemRapido')">Cancelar</button>
                     <button type="submit" class="btn-submit btn-blue" id="btnGuardarItemRapido" style="margin-top:0; width:auto; padding:10px 18px;">
@@ -3361,6 +3564,8 @@
         let directorio = [];
         let cuentasPago = [];
         let productos = [];
+        let carritoVenta = [];
+        let carritoRapido = [];
         let usuariosApp = (function() {
             try {
                 const guardados = localStorage.getItem('usuarios_app_cache_v1');
@@ -3446,6 +3651,12 @@
         window.cerrarModal = function (id) {
             const m = document.getElementById(id);
             if (m) m.classList.remove('show');
+            if (id === 'modalAgregarItemRapido') {
+                carritoRapido = [];
+                if (typeof renderizarCarritoRapido === 'function') {
+                    renderizarCarritoRapido();
+                }
+            }
         };
 
         window.cerrarModalOnClickAfuera = function (e, id) {
@@ -5263,21 +5474,29 @@
 
             const nombre = document.getElementById('cliente').value.trim();
             const telefono = document.getElementById('telefono').value.trim();
-            const montoUSD = parseFloat(document.getElementById('montoUSD').value);
-            let concepto = document.getElementById('concepto').value.trim();
-            const cantVenta = parseInt(document.getElementById('cantidadVenta')?.value) || 1;
-            if (cantVenta > 1 && !concepto.startsWith(`${cantVenta}x `)) {
-                concepto = `${cantVenta}x ${concepto}`;
-            }
-            const fechaHoy = new Date().toLocaleDateString('es-VE');
 
-            if (!nombre || !telefono || !concepto) {
-                window.mostrarToast("Por favor completa todos los campos requeridos.", "error");
+            if (!nombre || !telefono) {
+                window.mostrarToast("Por favor completa el nombre del cliente y su teléfono.", "error");
                 return;
             }
 
-            if (isNaN(montoUSD) || montoUSD <= 0) {
-                window.mostrarToast("Por favor ingresa un monto válido mayor a 0.", "error");
+            // Recolectar ítems: lo que esté en carritoVenta + cualquier ítem pendiente escrito en los inputs
+            const itemsAProcesar = [...carritoVenta];
+            const conceptoEscrito = (document.getElementById('concepto')?.value || '').trim();
+            const montoUSD = parseFloat(document.getElementById('montoUSD')?.value);
+            const cantVenta = Math.max(1, parseInt(document.getElementById('cantidadVenta')?.value) || 1);
+
+            if (conceptoEscrito && !isNaN(montoUSD) && montoUSD > 0) {
+                itemsAProcesar.push({
+                    nombre: conceptoEscrito,
+                    cantidad: cantVenta,
+                    precioUnitario: Number((montoUSD / cantVenta).toFixed(2)),
+                    subtotal: montoUSD
+                });
+            }
+
+            if (itemsAProcesar.length === 0) {
+                window.mostrarToast("Por favor agrega o escribe al menos un producto con monto válido.", "error");
                 return;
             }
 
@@ -5305,6 +5524,19 @@
             btn.disabled = true;
 
             try {
+                const fechaHoy = new Date().toLocaleDateString('es-VE');
+                const nuevosItemsParaGuardar = itemsAProcesar.map((item, idx) => {
+                    const cant = parseInt(item.cantidad) || 1;
+                    const nom = item.nombre.trim();
+                    const conceptoFinal = (cant > 1 && !nom.startsWith(`${cant}x `)) ? `${cant}x ${nom}` : nom;
+                    return {
+                        concepto: conceptoFinal,
+                        monto: Number(Number(item.subtotal).toFixed(2)),
+                        fecha: fechaHoy,
+                        timestamp: Date.now() + idx
+                    };
+                });
+
                 // Guardar/Actualizar en directorio automáticamente con merge
                 const idCliente = normalizarIdCliente(nombre);
                 const datosCliente = { nombre: nombre, telefono: telefono };
@@ -5318,14 +5550,15 @@
                 if (cuentaActiva) {
                     const cuentaRef = doc(db, "cuentas", cuentaActiva.id);
                     const itemsPrevios = Array.isArray(cuentaActiva.items) ? cuentaActiva.items : [];
-                    const nuevosItems = [...itemsPrevios, { concepto, monto: montoUSD, fecha: fechaHoy }];
-                    const updatesCuenta = { items: nuevosItems, telefono: telefono };
+                    const nuevosItems = [...itemsPrevios, ...nuevosItemsParaGuardar];
+                    const updatesCuenta = { items: nuevosItems, telefono: telefono, pagado: false };
                     if (!cuentaActiva.responsableId) {
                         updatesCuenta.responsableId = respId;
                         updatesCuenta.responsableNombre = respNombre;
                     }
                     await updateDoc(cuentaRef, updatesCuenta);
-                    window.mostrarToast(`Ítem añadido a la cuenta activa de ${nombre}`, "success");
+                    const cantTexto = nuevosItemsParaGuardar.length === 1 ? '1 ítem añadido' : `${nuevosItemsParaGuardar.length} ítems añadidos`;
+                    window.mostrarToast(`${cantTexto} a la cuenta activa de ${nombre}`, "success");
                 } else {
                     await addDoc(collection(db, "cuentas"), {
                         cliente: nombre,
@@ -5333,22 +5566,26 @@
                         responsableId: respId,
                         responsableNombre: respNombre,
                         pagado: false,
-                        items: [{ concepto, monto: montoUSD, fecha: fechaHoy }],
+                        items: nuevosItemsParaGuardar,
                         abonos: [],
                         timestamp: Date.now()
                     });
-                    window.mostrarToast(`Nueva cuenta creada para ${nombre} (Responsable: ${respNombre})`, "success");
+                    const cantTexto = nuevosItemsParaGuardar.length === 1 ? 'Venta registrada' : `${nuevosItemsParaGuardar.length} ítems registrados`;
+                    window.mostrarToast(`${cantTexto} para ${nombre} (Responsable: ${respNombre})`, "success");
                 }
+
+                carritoVenta = [];
+                renderizarCarritoVenta();
                 document.getElementById('formVenta').reset();
                 const cantInput = document.getElementById('cantidadVenta');
                 if (cantInput) cantInput.value = '1';
                 document.getElementById('cliente').focus();
             } catch (error) {
                 window.mostrarToast("Error de conexión: " + error.message, "error");
+            } finally {
+                btn.disabled = false;
+                renderizarCarritoVenta();
             }
-
-            btn.innerHTML = "<span>Añadir a la Cuenta</span>";
-            btn.disabled = false;
         };
 
         // ================= MODO COBRO PRESENCIAL CON QR =================
@@ -6775,38 +7012,310 @@
         };
 
         window.seleccionarChipProductoVenta = function(nombreProd) {
-            const conceptoInput = document.getElementById('concepto');
-            const cantInput = document.getElementById('cantidadVenta');
-            if (!conceptoInput || !cantInput) return;
+            if (!nombreProd) return;
+            const prod = productos.find(p => (p.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
+            const precioUnit = prod && !isNaN(parseFloat(prod.precio)) ? parseFloat(prod.precio) : 0;
 
-            const actual = (conceptoInput.value || '').trim();
-            if (actual.toLowerCase() === nombreProd.trim().toLowerCase()) {
-                const cant = parseInt(cantInput.value) || 1;
-                cantInput.value = cant + 1;
+            const idxExistente = carritoVenta.findIndex(it => (it.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
+            if (idxExistente !== -1) {
+                carritoVenta[idxExistente].cantidad += 1;
+                carritoVenta[idxExistente].subtotal = Number((carritoVenta[idxExistente].cantidad * carritoVenta[idxExistente].precioUnitario).toFixed(2));
             } else {
-                conceptoInput.value = nombreProd;
-                cantInput.value = 1;
+                carritoVenta.push({
+                    id: prod?.id || 'prod_' + Date.now(),
+                    nombre: prod ? prod.nombre : nombreProd.trim(),
+                    cantidad: 1,
+                    precioUnitario: precioUnit,
+                    subtotal: precioUnit
+                });
             }
-            if (typeof window.autocompletarPrecio === 'function') {
-                window.autocompletarPrecio();
-            }
+            renderizarCarritoVenta();
         };
 
         window.seleccionarChipProductoRapido = function(nombreProd) {
+            if (!nombreProd) return;
+            const prod = productos.find(p => (p.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
+            const precioUnit = prod && !isNaN(parseFloat(prod.precio)) ? parseFloat(prod.precio) : 0;
+
+            const idxExistente = carritoRapido.findIndex(it => (it.nombre || '').toLowerCase() === nombreProd.trim().toLowerCase());
+            if (idxExistente !== -1) {
+                carritoRapido[idxExistente].cantidad += 1;
+                carritoRapido[idxExistente].subtotal = Number((carritoRapido[idxExistente].cantidad * carritoRapido[idxExistente].precioUnitario).toFixed(2));
+            } else {
+                carritoRapido.push({
+                    id: prod?.id || 'prod_' + Date.now(),
+                    nombre: prod ? prod.nombre : nombreProd.trim(),
+                    cantidad: 1,
+                    precioUnitario: precioUnit,
+                    subtotal: precioUnit
+                });
+            }
+            renderizarCarritoRapido();
+        };
+
+        window.sumarItemManualVenta = function() {
+            const conceptoInput = document.getElementById('concepto');
+            const cantInput = document.getElementById('cantidadVenta');
+            const montoInput = document.getElementById('montoUSD');
+            if (!conceptoInput || !montoInput) return;
+
+            const concepto = (conceptoInput.value || '').trim();
+            const cant = Math.max(1, parseInt(cantInput?.value) || 1);
+            const monto = parseFloat(montoInput.value);
+
+            if (!concepto) {
+                window.mostrarToast("Escribe el nombre o detalle del producto", "warning");
+                conceptoInput.focus();
+                return;
+            }
+            if (isNaN(monto) || monto <= 0) {
+                window.mostrarToast("Ingresa un monto válido mayor a 0", "warning");
+                montoInput.focus();
+                return;
+            }
+
+            const precioUnitario = Number((monto / cant).toFixed(2));
+            const idxExistente = carritoVenta.findIndex(it => (it.nombre || '').toLowerCase() === concepto.toLowerCase());
+            if (idxExistente !== -1) {
+                carritoVenta[idxExistente].cantidad += cant;
+                carritoVenta[idxExistente].subtotal = Number((carritoVenta[idxExistente].subtotal + monto).toFixed(2));
+                carritoVenta[idxExistente].precioUnitario = Number((carritoVenta[idxExistente].subtotal / carritoVenta[idxExistente].cantidad).toFixed(2));
+            } else {
+                carritoVenta.push({
+                    id: 'item_' + Date.now(),
+                    nombre: concepto,
+                    cantidad: cant,
+                    precioUnitario: precioUnitario,
+                    subtotal: monto
+                });
+            }
+
+            conceptoInput.value = '';
+            if (cantInput) cantInput.value = '1';
+            montoInput.value = '';
+            renderizarCarritoVenta();
+            conceptoInput.focus();
+        };
+
+        window.sumarItemManualRapido = function() {
             const conceptoInput = document.getElementById('rapidoConcepto');
             const cantInput = document.getElementById('rapidoCantidad');
-            if (!conceptoInput || !cantInput) return;
+            const montoInput = document.getElementById('rapidoMontoUSD');
+            if (!conceptoInput || !montoInput) return;
 
-            const actual = (conceptoInput.value || '').trim();
-            if (actual.toLowerCase() === nombreProd.trim().toLowerCase()) {
-                const cant = parseInt(cantInput.value) || 1;
-                cantInput.value = cant + 1;
-            } else {
-                conceptoInput.value = nombreProd;
-                cantInput.value = 1;
+            const concepto = (conceptoInput.value || '').trim();
+            const cant = Math.max(1, parseInt(cantInput?.value) || 1);
+            const monto = parseFloat(montoInput.value);
+
+            if (!concepto) {
+                window.mostrarToast("Escribe el nombre o detalle del producto", "warning");
+                conceptoInput.focus();
+                return;
             }
-            if (typeof window.autocompletarPrecioItemRapido === 'function') {
-                window.autocompletarPrecioItemRapido();
+            if (isNaN(monto) || monto <= 0) {
+                window.mostrarToast("Ingresa un monto válido mayor a 0", "warning");
+                montoInput.focus();
+                return;
+            }
+
+            const precioUnitario = Number((monto / cant).toFixed(2));
+            const idxExistente = carritoRapido.findIndex(it => (it.nombre || '').toLowerCase() === concepto.toLowerCase());
+            if (idxExistente !== -1) {
+                carritoRapido[idxExistente].cantidad += cant;
+                carritoRapido[idxExistente].subtotal = Number((carritoRapido[idxExistente].subtotal + monto).toFixed(2));
+                carritoRapido[idxExistente].precioUnitario = Number((carritoRapido[idxExistente].subtotal / carritoRapido[idxExistente].cantidad).toFixed(2));
+            } else {
+                carritoRapido.push({
+                    id: 'item_' + Date.now(),
+                    nombre: concepto,
+                    cantidad: cant,
+                    precioUnitario: precioUnitario,
+                    subtotal: monto
+                });
+            }
+
+            conceptoInput.value = '';
+            if (cantInput) cantInput.value = '1';
+            montoInput.value = '';
+            const bsEl = document.getElementById('rapidoEquivalenteBs');
+            if (bsEl) bsEl.textContent = '≈ 0,00 Bs';
+            renderizarCarritoRapido();
+            conceptoInput.focus();
+        };
+
+        window.modificarCantidadCarritoVenta = function(index, delta) {
+            if (!carritoVenta[index]) return;
+            carritoVenta[index].cantidad += delta;
+            if (carritoVenta[index].cantidad <= 0) {
+                carritoVenta.splice(index, 1);
+            } else {
+                carritoVenta[index].subtotal = Number((carritoVenta[index].cantidad * carritoVenta[index].precioUnitario).toFixed(2));
+            }
+            renderizarCarritoVenta();
+        };
+
+        window.eliminarItemCarritoVenta = function(index) {
+            if (index >= 0 && index < carritoVenta.length) {
+                carritoVenta.splice(index, 1);
+                renderizarCarritoVenta();
+            }
+        };
+
+        window.vaciarCarritoVenta = function() {
+            carritoVenta = [];
+            renderizarCarritoVenta();
+        };
+
+        window.modificarCantidadCarritoRapido = function(index, delta) {
+            if (!carritoRapido[index]) return;
+            carritoRapido[index].cantidad += delta;
+            if (carritoRapido[index].cantidad <= 0) {
+                carritoRapido.splice(index, 1);
+            } else {
+                carritoRapido[index].subtotal = Number((carritoRapido[index].cantidad * carritoRapido[index].precioUnitario).toFixed(2));
+            }
+            renderizarCarritoRapido();
+        };
+
+        window.eliminarItemCarritoRapido = function(index) {
+            if (index >= 0 && index < carritoRapido.length) {
+                carritoRapido.splice(index, 1);
+                renderizarCarritoRapido();
+            }
+        };
+
+        window.vaciarCarritoRapido = function() {
+            carritoRapido = [];
+            renderizarCarritoRapido();
+        };
+
+        window.renderizarCarritoVenta = function() {
+            const preview = document.getElementById('previewCarritoVenta');
+            const btnSubmit = document.getElementById('btnSubmit');
+            if (!preview) return;
+
+            if (!carritoVenta || carritoVenta.length === 0) {
+                preview.style.display = 'none';
+                preview.innerHTML = '';
+                if (btnSubmit) {
+                    btnSubmit.innerHTML = "<span>Añadir a la Cuenta</span>";
+                }
+                return;
+            }
+
+            const totalItemsCount = carritoVenta.reduce((acc, it) => acc + (parseInt(it.cantidad) || 1), 0);
+            const totalUSD = carritoVenta.reduce((acc, it) => acc + (Number(it.subtotal) || 0), 0);
+            const totalBs = (totalUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const itemsHTML = carritoVenta.map((item, idx) => {
+                const safeNombre = escapeHTML(item.nombre);
+                const sub = Number(item.subtotal || 0).toFixed(2);
+                const unit = Number(item.precioUnitario || 0).toFixed(2);
+                return `
+                    <div class="mini-cart-item-row">
+                        <div class="mini-cart-item-info">
+                            <span class="mini-cart-item-name" title="${safeNombre}">${safeNombre}</span>
+                            <span class="mini-cart-item-unit">($${unit} c/u)</span>
+                        </div>
+                        <div class="mini-cart-item-controls">
+                            <div class="mini-cart-qty-group">
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoVenta(${idx}, -1)" title="Restar 1">－</button>
+                                <span class="mini-cart-qty-value">${item.cantidad}</span>
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoVenta(${idx}, 1)" title="Sumar 1">＋</button>
+                            </div>
+                            <span class="mini-cart-item-subtotal">$${sub}</span>
+                            <button type="button" class="btn-remove-mini" onclick="eliminarItemCarritoVenta(${idx})" title="Quitar producto">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            preview.innerHTML = `
+                <div class="mini-cart-box">
+                    <div class="mini-cart-header">
+                        <span style="font-weight:700; font-size:0.82rem; color:var(--accent);">📋 Lista de productos a registrar:</span>
+                        <button type="button" class="btn-vaciar-mini-cart" onclick="vaciarCarritoVenta()">🗑️ Vaciar lista</button>
+                    </div>
+                    <div class="mini-cart-items-list">
+                        ${itemsHTML}
+                    </div>
+                    <div class="mini-cart-footer">
+                        <div class="mini-cart-total-text">
+                            Total a registrar (${totalItemsCount} ${totalItemsCount === 1 ? 'ítem' : 'ítems'}): <strong style="color:var(--accent); font-size:0.95rem;">$${totalUSD.toFixed(2)}</strong>
+                            <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(≈ ${totalBs} Bs)</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            preview.style.display = 'block';
+
+            if (btnSubmit) {
+                btnSubmit.innerHTML = `<span>Añadir ${totalItemsCount} ${totalItemsCount === 1 ? 'Ítem' : 'Ítems'} a la Cuenta ($${totalUSD.toFixed(2)})</span>`;
+            }
+        };
+
+        window.renderizarCarritoRapido = function() {
+            const preview = document.getElementById('previewCarritoRapido');
+            const btnSubmit = document.getElementById('btnGuardarItemRapido');
+            if (!preview) return;
+
+            if (!carritoRapido || carritoRapido.length === 0) {
+                preview.style.display = 'none';
+                preview.innerHTML = '';
+                if (btnSubmit) {
+                    btnSubmit.innerHTML = "<span>➕ Añadir Ítem</span>";
+                }
+                return;
+            }
+
+            const totalItemsCount = carritoRapido.reduce((acc, it) => acc + (parseInt(it.cantidad) || 1), 0);
+            const totalUSD = carritoRapido.reduce((acc, it) => acc + (Number(it.subtotal) || 0), 0);
+            const totalBs = (totalUSD * tasaActual).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const itemsHTML = carritoRapido.map((item, idx) => {
+                const safeNombre = escapeHTML(item.nombre);
+                const sub = Number(item.subtotal || 0).toFixed(2);
+                const unit = Number(item.precioUnitario || 0).toFixed(2);
+                return `
+                    <div class="mini-cart-item-row">
+                        <div class="mini-cart-item-info">
+                            <span class="mini-cart-item-name" title="${safeNombre}">${safeNombre}</span>
+                            <span class="mini-cart-item-unit">($${unit} c/u)</span>
+                        </div>
+                        <div class="mini-cart-item-controls">
+                            <div class="mini-cart-qty-group">
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoRapido(${idx}, -1)" title="Restar 1">－</button>
+                                <span class="mini-cart-qty-value">${item.cantidad}</span>
+                                <button type="button" class="btn-qty-mini" onclick="modificarCantidadCarritoRapido(${idx}, 1)" title="Sumar 1">＋</button>
+                            </div>
+                            <span class="mini-cart-item-subtotal">$${sub}</span>
+                            <button type="button" class="btn-remove-mini" onclick="eliminarItemCarritoRapido(${idx})" title="Quitar producto">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            preview.innerHTML = `
+                <div class="mini-cart-box">
+                    <div class="mini-cart-header">
+                        <span style="font-weight:700; font-size:0.82rem; color:var(--accent);">📋 Lista de productos a registrar:</span>
+                        <button type="button" class="btn-vaciar-mini-cart" onclick="vaciarCarritoRapido()">🗑️ Vaciar lista</button>
+                    </div>
+                    <div class="mini-cart-items-list">
+                        ${itemsHTML}
+                    </div>
+                    <div class="mini-cart-footer">
+                        <div class="mini-cart-total-text">
+                            Total a registrar (${totalItemsCount} ${totalItemsCount === 1 ? 'ítem' : 'ítems'}): <strong style="color:var(--accent); font-size:0.95rem;">$${totalUSD.toFixed(2)}</strong>
+                            <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(≈ ${totalBs} Bs)</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            preview.style.display = 'block';
+
+            if (btnSubmit) {
+                btnSubmit.innerHTML = `<span>➕ Añadir ${totalItemsCount} ${totalItemsCount === 1 ? 'Ítem' : 'Ítems'} ($${totalUSD.toFixed(2)})</span>`;
             }
         };
 
@@ -7339,6 +7848,8 @@
             }
 
             cuentaParaItemRapido = c;
+            carritoRapido = [];
+            renderizarCarritoRapido();
             document.getElementById('rapidoCuentaId').value = c.id;
             document.getElementById('rapidoClienteNombre').textContent = c.cliente;
             document.getElementById('rapidoConcepto').value = '';
@@ -7388,16 +7899,23 @@
                 return;
             }
 
-            let concepto = document.getElementById('rapidoConcepto').value.trim();
-            const monto = parseFloat(document.getElementById('rapidoMontoUSD').value);
-            const cantRapida = parseInt(document.getElementById('rapidoCantidad')?.value) || 1;
+            // Recolectar ítems: lo que esté en carritoRapido + cualquier ítem pendiente escrito en los inputs
+            const itemsAProcesar = [...carritoRapido];
+            const conceptoEscrito = (document.getElementById('rapidoConcepto')?.value || '').trim();
+            const monto = parseFloat(document.getElementById('rapidoMontoUSD')?.value);
+            const cantRapida = Math.max(1, parseInt(document.getElementById('rapidoCantidad')?.value) || 1);
 
-            if (cantRapida > 1 && !concepto.startsWith(`${cantRapida}x `)) {
-                concepto = `${cantRapida}x ${concepto}`;
+            if (conceptoEscrito && !isNaN(monto) && monto > 0) {
+                itemsAProcesar.push({
+                    nombre: conceptoEscrito,
+                    cantidad: cantRapida,
+                    precioUnitario: Number((monto / cantRapida).toFixed(2)),
+                    subtotal: monto
+                });
             }
 
-            if (!concepto || isNaN(monto) || monto <= 0) {
-                window.mostrarToast("Ingresa un producto y monto válido", "error");
+            if (itemsAProcesar.length === 0) {
+                window.mostrarToast("Ingresa o agrega al menos un producto y monto válido", "error");
                 return;
             }
 
@@ -7408,31 +7926,44 @@
             try {
                 const ahora = new Date();
                 const fechaActual = ahora.toLocaleDateString('es-VE');
-                const nuevoItem = {
-                    concepto: concepto,
-                    monto: monto,
-                    fecha: fechaActual,
-                    timestamp: Date.now()
-                };
+                const nuevosItemsParaGuardar = itemsAProcesar.map((item, idx) => {
+                    const cant = parseInt(item.cantidad) || 1;
+                    const nom = item.nombre.trim();
+                    const conceptoFinal = (cant > 1 && !nom.startsWith(`${cant}x `)) ? `${cant}x ${nom}` : nom;
+                    return {
+                        concepto: conceptoFinal,
+                        monto: Number(Number(item.subtotal).toFixed(2)),
+                        fecha: fechaActual,
+                        timestamp: Date.now() + idx
+                    };
+                });
 
                 const itemsActuales = Array.isArray(c.items) ? [...c.items] : [];
-                itemsActuales.push(nuevoItem);
+                itemsActuales.push(...nuevosItemsParaGuardar);
 
                 await updateDoc(doc(db, "cuentas", c.id), {
                     items: itemsActuales,
                     pagado: false
                 });
 
+                carritoRapido = [];
+                renderizarCarritoRapido();
+                document.getElementById('rapidoConcepto').value = '';
                 const rapidoCant = document.getElementById('rapidoCantidad');
                 if (rapidoCant) rapidoCant.value = '1';
+                document.getElementById('rapidoMontoUSD').value = '';
+                const bsEl = document.getElementById('rapidoEquivalenteBs');
+                if (bsEl) bsEl.textContent = '≈ 0,00 Bs';
+
                 window.cerrarModal('modalAgregarItemRapido');
-                window.mostrarToast(`Ítem "${concepto}" añadido a la cuenta de ${c.cliente}`, "success");
+                const cantTexto = nuevosItemsParaGuardar.length === 1 ? '1 ítem añadido' : `${nuevosItemsParaGuardar.length} ítems añadidos`;
+                window.mostrarToast(`${cantTexto} a la cuenta de ${c.cliente}`, "success");
             } catch (err) {
                 console.error("Error al añadir ítem rápido:", err);
                 window.mostrarToast("Error al guardar ítem: " + err.message, "error");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = "<span>➕ Añadir Ítem</span>";
+                renderizarCarritoRapido();
             }
         };
 
